@@ -16,9 +16,9 @@
 		A9110A981B15FC7B00DE37C9 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9110A961B15FC7B00DE37C9 /* LaunchScreen.xib */; };
 		A9110AA41B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9110AA31B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift */; };
 		A9A637431B19D67A0049D46F /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A637421B19D67A0049D46F /* LoginViewController.swift */; };
-		A9A637451B19D6B50049D46F /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A637441B19D6B50049D46F /* HomeViewController.swift */; };
+		A9A637451B19D6B50049D46F /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A637441B19D6B50049D46F /* StartViewController.swift */; };
 		A9A637471B19D6C50049D46F /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A637461B19D6C50049D46F /* SignupViewController.swift */; };
-		A9A637491B19DB280049D46F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A637481B19DB280049D46F /* ProfileViewController.swift */; };
+		A9A637491B19DB280049D46F /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A637481B19DB280049D46F /* HomeViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,9 +45,9 @@
 		A9110AA21B15FC7B00DE37C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A9110AA31B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flamingo_PrototypeTests.swift; sourceTree = "<group>"; };
 		A9A637421B19D67A0049D46F /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
-		A9A637441B19D6B50049D46F /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		A9A637441B19D6B50049D46F /* StartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
 		A9A637461B19D6C50049D46F /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
-		A9A637481B19DB280049D46F /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		A9A637481B19DB280049D46F /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,11 +96,11 @@
 			isa = PBXGroup;
 			children = (
 				A9110A8D1B15FC7B00DE37C9 /* AppDelegate.swift */,
-				A9A637441B19D6B50049D46F /* HomeViewController.swift */,
+				A9A637441B19D6B50049D46F /* StartViewController.swift */,
 				A9A637461B19D6C50049D46F /* SignupViewController.swift */,
 				A9110A911B15FC7B00DE37C9 /* Main.storyboard */,
 				A9A637421B19D67A0049D46F /* LoginViewController.swift */,
-				A9A637481B19DB280049D46F /* ProfileViewController.swift */,
+				A9A637481B19DB280049D46F /* HomeViewController.swift */,
 				A9110A941B15FC7B00DE37C9 /* Images.xcassets */,
 				A9110A961B15FC7B00DE37C9 /* LaunchScreen.xib */,
 				A9110A8B1B15FC7B00DE37C9 /* Supporting Files */,
@@ -235,9 +235,9 @@
 			files = (
 				A9A637431B19D67A0049D46F /* LoginViewController.swift in Sources */,
 				A9A637471B19D6C50049D46F /* SignupViewController.swift in Sources */,
-				A9A637491B19DB280049D46F /* ProfileViewController.swift in Sources */,
+				A9A637491B19DB280049D46F /* HomeViewController.swift in Sources */,
 				A9110A8E1B15FC7B00DE37C9 /* AppDelegate.swift in Sources */,
-				A9A637451B19D6B50049D46F /* HomeViewController.swift in Sources */,
+				A9A637451B19D6B50049D46F /* StartViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

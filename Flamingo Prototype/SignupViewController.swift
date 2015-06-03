@@ -10,7 +10,7 @@ import UIKit
 import FBSDKCoreKit
 import FBSDKLoginKit
 
-class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPickerViewDataSource, UIPickerViewDelegate {
+class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
 
     @IBOutlet weak var emailText: UITextField!
     @IBOutlet weak var userText: UITextField!
@@ -18,12 +18,14 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     @IBOutlet weak var lastnameText: UITextField!
     @IBOutlet weak var passText: UITextField!
     @IBOutlet weak var fbLogin: FBSDKLoginButton!
-    @IBOutlet weak var agePicker: UIPickerView!
-    @IBOutlet weak var genderPicker: UIPickerView!
+    @IBOutlet weak var ageText: UITextField!
+    @IBOutlet weak var genderText: UITextField!
     
-    let genderArray = ["Male", "Female", "Other"]
-    let ageArray = [Int](18...100)
-    var success = false
+    var genderPickerView: UIPickerView = UIPickerView()
+    let genderArray: [String] = ["Male", "Female", "Other"]
+    var agePickerView: UIPickerView = UIPickerView()
+    let ageArray: [Int] = [Int](18...100)
+    var success: Bool = false
     
     @IBAction func backDismiss(sender: AnyObject) {
         
@@ -35,8 +37,8 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         let user = userText.text
         let first = firstnameText.text
         let last = lastnameText.text
-        let age = ageArray[agePicker.selectedRowInComponent(0)]
-        let gender = genderArray[genderPicker.selectedRowInComponent(0)]
+        let age = ageText.text
+        let gender = genderText.text
         let pass = passText.text
         println("GENDER: \(gender)")
         signup(["email": "\(email)", "username": "\(user)", "password": "\(pass)", "firstname": "\(first)", "lastname": "\(last)", "gender": "\(gender)", "age": "\(age)", "provider": "mobile"], url: "https://thawing-garden-5169.herokuapp.com/users"){
@@ -88,6 +90,16 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
             return String(ageArray[row])
         } else {
             return genderArray[row]
+        }
+    }
+    
+    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if(pickerView.tag == 0){
+            ageText.text = String(ageArray[row])
+            ageText.resignFirstResponder()
+        } else {
+            genderText.text = genderArray[row]
+            genderText.resignFirstResponder()
         }
     }
     
@@ -176,6 +188,23 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
             }
         })
     }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        textField.autocorrectionType = UITextAutocorrectionType.No
+        if(textField.tag == 2 || textField.tag == 3){
+            textField.autocapitalizationType = UITextAutocapitalizationType.AllCharacters
+        }
+        println(textField.autocapitalizationType.rawValue)
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        self.view.endEditing(true)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -187,17 +216,34 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
  //           self.fbLogin = FBSDKLoginButton()
 
         }
-        self.fbLogin.readPermissions = ["email", "public_profile", "user_friends"]
-        self.fbLogin.delegate = self
+        fbLogin.readPermissions = ["email", "public_profile", "user_friends"]
+        fbLogin.delegate = self
         
-        self.agePicker.delegate = self
-        self.agePicker.dataSource = self
-        self.genderPicker.delegate = self
-        self.genderPicker.dataSource = self
+        
+        agePickerView.delegate = self
+        agePickerView.dataSource = self
+        agePickerView.tag = 0
+        ageText.inputView = agePickerView
+        agePickerView.backgroundColor = UIColor.clearColor()
+        agePickerView.selectRow(7, inComponent: 0, animated: false)
+        
+        genderPickerView.delegate = self
+        genderPickerView.dataSource = self
+        genderPickerView.tag = 1
+        genderText.inputView = genderPickerView
+        genderPickerView.backgroundColor = UIColor.clearColor()
 
         // Do any additional setup after loading the view.
 //        FBSDKLoginButton.initialize() // already initialized in appdelegate
+        emailText.delegate = self
+        userText.delegate = self
+        firstnameText.delegate = self
+        lastnameText.delegate = self
+        passText.delegate = self
+        ageText.delegate = self
+        genderText.delegate = self
         
+        passText.secureTextEntry = true
         
     }
 

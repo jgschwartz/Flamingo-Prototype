@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var userText: UITextField!
     @IBOutlet weak var passText: UITextField!
     
@@ -63,11 +63,28 @@ class LoginViewController: UIViewController {
         }
     }
     
+    func textFieldDidBeginEditing(textField: UITextField) {
+        textField.autocapitalizationType = UITextAutocapitalizationType.None
+        textField.autocorrectionType = UITextAutocorrectionType.No
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        self.view.endEditing(true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        success = false
+        userText.delegate = self
+        passText.delegate = self
+        
+        passText.secureTextEntry = true
     }
 
     override func didReceiveMemoryWarning() {

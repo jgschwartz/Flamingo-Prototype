@@ -1,5 +1,5 @@
 //
-//  HomeViewController.swift
+//  ProfileViewController.swift
 //  Flamingo Prototype
 //
 //  Created by Jared Schwartz on 5/30/15.
@@ -8,45 +8,57 @@
 
 import UIKit
 
-class HomeViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+
+    @IBOutlet weak var groupText: UITextField!
     
-    let ageArray = [Int](18...100)
     let groupArray = [Int](1...20)
+    var groupPickerView = UIPickerView()
     
-    @IBOutlet weak var ageText: UITextField!
+    @IBAction func signoutButton(sender: AnyObject) {
+        signout("https://thawing-garden-5169.herokuapp.com/signout")
+    }
+
+    func signout(sUrl: String){
+        // just a GET request
+        let url = NSURL(string: sUrl)
+        
+        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+            var parseError: NSError?
+//            let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
+//            if(json != nil){
+//                println(json)
+//            }
+        }
+        task.resume()
+    }
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         return 1
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if(pickerView.tag == 0){
-            return ageArray.count
-        } else {
-            return groupArray.count
-        }
+        return groupArray.count
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-        if(pickerView.tag == 0){
-            return String(ageArray[row])
-        } else {
-            return String(groupArray[row])
-        }
+        return String(groupArray[row])
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.ageText.text = String(ageArray[row])
-        self.ageText.resignFirstResponder()
+        groupText.text = String(groupArray[row])
+        groupText.resignFirstResponder()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        var agePickerView: UIPickerView = UIPickerView()
-        agePickerView.tag = 0
-        ageText.inputView = agePickerView
+        groupPickerView.delegate = self
+        groupPickerView.dataSource = self
+        groupText.inputView = groupPickerView
+        groupPickerView.selectRow(4, inComponent: 0, animated: true)
     }
 
     override func didReceiveMemoryWarning() {
