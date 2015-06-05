@@ -19,6 +19,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+//        let viewcontroller: UIViewController = HomeViewController()
+//        self.window?.rootViewController = viewcontroller
+        let defaults = NSUserDefaults.standardUserDefaults()
+        println(defaults.stringForKey("user"))
         FBSDKLoginButton.initialize()
         return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
     }

@@ -12,6 +12,7 @@ import FBSDKLoginKit
 
 class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
 
+    @IBOutlet weak var blurEffect: UIVisualEffectView!
     @IBOutlet weak var emailText: UITextField!
     @IBOutlet weak var userText: UITextField!
     @IBOutlet weak var firstnameText: UITextField!
@@ -27,12 +28,14 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     let ageArray: [Int] = [Int](18...100)
     var success: Bool = false
     
+    // Go back to StartViewController when Back is pressed
     @IBAction func backDismiss(sender: AnyObject) {
-        
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
+    // Function to register a new user using signup button
     @IBAction func signupButton(sender: AnyObject) {
+        // Get input from all the text fields
         let email = emailText.text
         let user = userText.text
         let first = firstnameText.text
@@ -40,13 +43,18 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         let age = ageText.text
         let gender = genderText.text
         let pass = passText.text
-        println("GENDER: \(gender)")
+
+        // Use signup method to register, callback either goes to HomeViewController with success or alerts failed registration
         signup(["email": "\(email)", "username": "\(user)", "password": "\(pass)", "firstname": "\(first)", "lastname": "\(last)", "gender": "\(gender)", "age": "\(age)", "provider": "mobile"], url: "https://thawing-garden-5169.herokuapp.com/users"){
             (result: Bool, msg: String) in
             self.success = result
             println(self.success)
             if(self.success){
                 NSOperationQueue.mainQueue().addOperationWithBlock{
+                    // TODO: add user info to keychain and user info, create cookie
+                    let defaults = NSUserDefaults.standardUserDefaults()
+                    defaults.setValue("\(user)", forKey: "user")
+                    defaults.setValue("\(age)", forKey: "age")
                     self.performSegueWithIdentifier("successfulSignup", sender: self)
                 }
             } else {
@@ -55,6 +63,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         }
     }
     
+    // function to send an alert on the screen when a user cannot be registered
     func alertBadSignup(){
         if(NSClassFromString("UIAlertController") != nil){
             // iOS8 or later, AlertController exists
@@ -72,6 +81,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         }
     }
     
+    /* Picker View Delegate Functions */
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         return 1
@@ -103,7 +113,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         }
     }
     
-    // Facebook Delegate Methods
+    /* Facebook Delegate Methods */
     
     func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
         println("User Logged In")
@@ -123,7 +133,6 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                 // Do work
             }
             signupFromFB()
-//            returnUserData()
         }
     }
     
@@ -131,6 +140,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         println("User Logged Out")
     }
     
+    // Modified registration using signup() and FB profile info, modified from ReturnUserData() with signup() inside
     func signupFromFB()
     {
         let graphRequest : FBSDKGraphRequest = FBSDKGraphRequest(graphPath: "me", parameters: nil)
@@ -168,33 +178,13 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         })
     }
     
-    func returnUserData()
-    {
-        let graphRequest : FBSDKGraphRequest = FBSDKGraphRequest(graphPath: "me", parameters: nil)
-        graphRequest.startWithCompletionHandler({ (connection, result, error) -> Void in
-            
-            if ((error) != nil)
-            {
-                // Process error
-                println("Error: \(error)")
-            }
-            else
-            {
-                println("fetched user: \(result)")
-                let userName : NSString = result.valueForKey("name") as! NSString
-                println("User Name is: \(userName)")
-                let userEmail : NSString = result.valueForKey("email") as! NSString
-                println("User Email is: \(userEmail)")
-            }
-        })
-    }
+    /* Text Field Delegate Functions */
     
     func textFieldDidBeginEditing(textField: UITextField) {
         textField.autocorrectionType = UITextAutocorrectionType.No
         if(textField.tag == 2 || textField.tag == 3){
             textField.autocapitalizationType = UITextAutocapitalizationType.AllCharacters
         }
-        println(textField.autocapitalizationType.rawValue)
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
@@ -205,60 +195,19 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         self.view.endEditing(true)
     }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        FBSDKLoginButton.initialize() // already initialized in appdelegate
-        // check if user already logged in through facebook:
-        if(FBSDKAccessToken.currentAccessToken() != nil){
-            // already logged in
-        } else {
- //           self.fbLogin = FBSDKLoginButton()
-
-        }
-        fbLogin.readPermissions = ["email", "public_profile", "user_friends"]
-        fbLogin.delegate = self
-        
-        
-        agePickerView.delegate = self
-        agePickerView.dataSource = self
-        agePickerView.tag = 0
-        ageText.inputView = agePickerView
-        agePickerView.backgroundColor = UIColor.clearColor()
-        agePickerView.selectRow(7, inComponent: 0, animated: false)
-        
-        genderPickerView.delegate = self
-        genderPickerView.dataSource = self
-        genderPickerView.tag = 1
-        genderText.inputView = genderPickerView
-        genderPickerView.backgroundColor = UIColor.clearColor()
-
-        // Do any additional setup after loading the view.
-//        FBSDKLoginButton.initialize() // already initialized in appdelegate
-        emailText.delegate = self
-        userText.delegate = self
-        firstnameText.delegate = self
-        lastnameText.delegate = self
-        passText.delegate = self
-        ageText.delegate = self
-        genderText.delegate = self
-        
-        passText.secureTextEntry = true
-        
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
+    
+    // Signup function (POST request with proper params)
     func signup(params : Dictionary<String, String>, url : String, postCompleted : (succeeded: Bool, msg: String) -> ()) {
+        
+        // An error is given on UIKeyboard if a text field is first responder during network request
         emailText.resignFirstResponder()
         userText.resignFirstResponder()
         firstnameText.resignFirstResponder()
         lastnameText.resignFirstResponder()
         passText.resignFirstResponder()
         
+        // Create request and format correctly
         var request = NSMutableURLRequest(URL: NSURL(string: url)!)
         var session = NSURLSession.sharedSession()
         request.HTTPMethod = "POST"
@@ -268,6 +217,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
+        // Make request and parse the response
         var task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
             println("Response: \(response)")
             var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
@@ -294,7 +244,69 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         
         task.resume()
     }
-    
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+//        navigationItem.title = "Registration"
+        
+        // Create gradient layer and add to blurEffect
+        view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)
+        var gradient: CAGradientLayer = CAGradientLayer()
+        gradient.frame = view.bounds
+        gradient.colors = [UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor, UIColor.whiteColor().CGColor, UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor]
+        blurEffect.layer.insertSublayer(gradient, atIndex: 1)
+        
+        let blur:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
+        var effectView:UIVisualEffectView = UIVisualEffectView (effect: blur)
+        effectView.frame = view.frame
+        blurEffect.addSubview(effectView)
+        
+        // Set up FB login button
+        
+        FBSDKLoginButton.initialize() // already initialized in appdelegate
+        // check if user already logged in through facebook:
+        if(FBSDKAccessToken.currentAccessToken() != nil){
+            // already logged in
+        } else {
+ //           self.fbLogin = FBSDKLoginButton()
+
+        }
+        fbLogin.readPermissions = ["email", "public_profile", "user_friends"]
+        fbLogin.delegate = self
+        
+        // Set up picker views for input on text fields
+        agePickerView.delegate = self
+        agePickerView.dataSource = self
+        agePickerView.tag = 0
+        ageText.inputView = agePickerView
+        agePickerView.backgroundColor = UIColor.clearColor()
+        agePickerView.selectRow(7, inComponent: 0, animated: false)
+        
+        genderPickerView.delegate = self
+        genderPickerView.dataSource = self
+        genderPickerView.tag = 1
+        genderText.inputView = genderPickerView
+        genderPickerView.backgroundColor = UIColor.clearColor()
+
+        // Set up text field delegates
+        emailText.delegate = self
+        userText.delegate = self
+        firstnameText.delegate = self
+        lastnameText.delegate = self
+        passText.delegate = self
+        ageText.delegate = self
+        genderText.delegate = self
+        
+        // set to obscure password input
+        passText.secureTextEntry = true
+        
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
 
     /*
     // MARK: - Navigation

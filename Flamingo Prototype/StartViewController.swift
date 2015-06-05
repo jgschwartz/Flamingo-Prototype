@@ -19,9 +19,12 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     let groupArray = [Int](1...20)
     var groupPickerView: UIPickerView = UIPickerView()
     
+    @IBOutlet weak var blurEffect: UIVisualEffectView!
     @IBOutlet weak var ageText: UITextField!
     @IBOutlet weak var cityText: UITextField!
     @IBOutlet weak var groupText: UITextField!
+    
+    /* Picker Delegate Functions */
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         return 1
@@ -60,6 +63,9 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         }
     }
     
+    
+    /* Text Field Delegate Functions */
+    
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -71,8 +77,22 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        /* Create gradient layer for background and add it to the blur effect view */
+        
+        view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)
+        var gradient: CAGradientLayer = CAGradientLayer()
+        gradient.frame = view.bounds
+        gradient.colors = [UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor, UIColor.whiteColor().CGColor, UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor]
+        blurEffect.layer.insertSublayer(gradient, atIndex: 1)
+        
+        let blur:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
+        var effectView:UIVisualEffectView = UIVisualEffectView (effect: blur)
+        effectView.frame = view.frame
+        blurEffect.addSubview(effectView)
 
-        // Do any additional setup after loading the view.
+        /* Set up the picker views as input on the text fields */
+        
         agePickerView.delegate = self
         agePickerView.dataSource = self
         agePickerView.tag = 0
