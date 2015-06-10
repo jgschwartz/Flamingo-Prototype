@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FBSDKLoginKit
 
 class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
@@ -16,15 +17,26 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     let groupArray = [Int](1...20)
     var groupPickerView = UIPickerView()
     
+    let defaults = NSUserDefaults.standardUserDefaults()
+    
     @IBAction func go(sender: AnyObject) {
         NSNotificationCenter.defaultCenter().postNotificationName("goToResults", object: self)
     }
     
     @IBAction func signoutButton(sender: AnyObject) {
         signout("https://thawing-garden-5169.herokuapp.com/signout")
+        
+        defaults.setValue(false, forKey: "loggedin")
+        let appDomain = NSBundle.mainBundle().bundleIdentifier
+        defaults.removePersistentDomainForName(appDomain!)
     }
 
     func signout(sUrl: String){
+        if let fbAccessToken = FBSDKAccessToken.currentAccessToken() {
+            let fbLoginManager = FBSDKLoginManager()
+            fbLoginManager.logOut()
+        }
+        
         // just a GET request
         let url = NSURL(string: sUrl)
         
@@ -59,8 +71,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     override func viewDidLoad() {
         super.viewDidLoad()
         
- //       navigationItem.title = "Home"
-
         view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)
         var gradient: CAGradientLayer = CAGradientLayer()
         gradient.frame = view.bounds
@@ -77,6 +87,49 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         groupPickerView.dataSource = self
         groupText.inputView = groupPickerView
         groupPickerView.selectRow(4, inComponent: 0, animated: true)
+        
+        let user = defaults.stringForKey("username")
+        
+//        let url = NSURL(string: "https://thawing-garden-5169.herokuapp.com/users/")
+//        
+//        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+//            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+//            var parseError: NSError?
+//                        let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
+//                        if(json != nil){
+//                            println(json!["username"])
+//                        }
+//        }
+//        task.resume()
+        
+        
+        // How to use Locksmith for Keychain
+        
+//        let service = NSBundle.mainBundle().bundleIdentifier
+//        let saveError = Locksmith.saveData(["username":user!], forUserAccount: user!, inService: service!)
+//        if saveError != nil {
+//            println(saveError)
+//        }
+//        let (dict, loadError) = Locksmith.loadDataForUserAccount(user!, inService: service!)
+//        println(dict)
+//        Locksmith.clearKeychain()
+        
+//        let kSecClassValue = NSString(format: kSecClass)
+//        let kSecAttrAccountValue = NSString(format: kSecAttrAccount)
+//        let kSecValueDataValue = NSString(format: kSecValueData)
+//        let kSecClassGenericPasswordValue = NSString(format: kSecClassGenericPassword)
+//        let kSecAttrServiceValue = NSString(format: kSecAttrService)
+//        let kSecMatchLimitValue = NSString(format: kSecMatchLimit)
+//        let kSecReturnDataValue = NSString(format: kSecReturnData)
+//        let kSecMatchLimitOneValue = NSString(format: kSecMatchLimitOne)
+//        
+//        let password: NSData = "password".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
+//        let service: String = (NSBundle.mainBundle().bundleIdentifier as? String)!
+//        let userr: String = user!
+//        let dict: NSDictionary = [kSecClass: kSecClassGenericPassword, kSecAttrService: service, kSecAttrAccount: userr, kSecValueData: password]
+//        let objects: NSArray = [kSecClassGenericPassword, service, user!, password]
+//        let keys: NSArray = [kSecClass,kSecAttrService, kSecAttrAccount, kSecValueData]
+//        let query = NSDictionary(objects: objects as [AnyObject], forKeys: keys as [AnyObject])
     }
 
     override func didReceiveMemoryWarning() {

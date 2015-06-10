@@ -11,7 +11,9 @@ import UIKit
 class ResultsViewController: UIViewController {
 
     @IBOutlet weak var blurEffect: UIVisualEffectView!
-    var profileButton: UIBarButtonItem!
+    @IBOutlet var profileButton: UIBarButtonItem!
+    
+    let defaults = NSUserDefaults.standardUserDefaults()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,10 +30,8 @@ class ResultsViewController: UIViewController {
         effectView.frame = view.frame
         blurEffect.addSubview(effectView)
         
-        profileButton = UIBarButtonItem(title: "Profile", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
         // Dispose of any resources that can be recreated.
-        let loggedin = false
-        if(loggedin){
+        if let user = defaults.stringForKey("user") {
             navigationItem.rightBarButtonItem = profileButton
         } else {
             self.navigationItem.rightBarButtonItem = nil

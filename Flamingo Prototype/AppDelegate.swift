@@ -19,10 +19,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-//        let viewcontroller: UIViewController = HomeViewController()
-//        self.window?.rootViewController = viewcontroller
+
         let defaults = NSUserDefaults.standardUserDefaults()
-        println(defaults.stringForKey("user"))
+        if let user = defaults.stringForKey("username") {
+            
+            self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+            
+            var storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            var initialViewController = storyboard.instantiateViewControllerWithIdentifier("HomeNavigationController") as! UINavigationController
+            
+            self.window?.rootViewController = initialViewController
+            self.window?.makeKeyAndVisible()
+        }
         FBSDKLoginButton.initialize()
         return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
     }

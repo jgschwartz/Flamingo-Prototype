@@ -23,6 +23,11 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     @IBOutlet weak var ageText: UITextField!
     @IBOutlet weak var cityText: UITextField!
     @IBOutlet weak var groupText: UITextField!
+    @IBOutlet weak var locationSegment: UISegmentedControl!
+    
+    @IBAction func go(sender: AnyObject) {
+        if(ageText.text.isEmpty || cityText.text.isEmpty || groupText.text.isEmpty || !locationSegment.highlighted)
+    }
     
     /* Picker Delegate Functions */
     

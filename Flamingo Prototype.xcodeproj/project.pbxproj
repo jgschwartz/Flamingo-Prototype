@@ -23,6 +23,7 @@
 		A9A637451B19D6B50049D46F /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A637441B19D6B50049D46F /* StartViewController.swift */; };
 		A9A637471B19D6C50049D46F /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A637461B19D6C50049D46F /* SignupViewController.swift */; };
 		A9A637491B19DB280049D46F /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A637481B19DB280049D46F /* HomeViewController.swift */; };
+		A9E963F01B218D0A00160629 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9E963EF1B218D0A00160629 /* Security.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		A9A637441B19D6B50049D46F /* StartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
 		A9A637461B19D6C50049D46F /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
 		A9A637481B19DB280049D46F /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		A9E963EF1B218D0A00160629 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9E963F01B218D0A00160629 /* Security.framework in Frameworks */,
 				A90283831B1C5DD500FCF8D3 /* FBSDKLoginKit.framework in Frameworks */,
 				A90283811B1C547E00FCF8D3 /* FBSDKCoreKit.framework in Frameworks */,
 				A90283851B1C5DF400FCF8D3 /* FBSDKShareKit.framework in Frameworks */,
@@ -82,6 +85,7 @@
 		A9110A7F1B15FC7B00DE37C9 = {
 			isa = PBXGroup;
 			children = (
+				A9E963EF1B218D0A00160629 /* Security.framework */,
 				A9959C871B2065E2006224B4 /* LocksmithRequest.swift */,
 				A9959C851B2065C2006224B4 /* Locksmith.swift */,
 				A90283841B1C5DF400FCF8D3 /* FBSDKShareKit.framework */,
