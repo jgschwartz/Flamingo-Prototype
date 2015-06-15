@@ -13,8 +13,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     @IBOutlet weak var userText: UITextField!
     @IBOutlet weak var passText: UITextField!
     @IBOutlet weak var blurEffect: UIVisualEffectView!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var fbLogin: FBSDKLoginButton!
+    let activityIndicator = UIActivityIndicatorView()
     
     let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     var success = false
@@ -30,7 +30,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
 //        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
         activityIndicator.startAnimating()
-        activityIndicator.hidden = false
             login(username, password: password) {
                 (result: Bool, id: String) in
                 println("Login successful: \(result)")
@@ -290,6 +289,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // set up activity indicator to be gray and fill screen
+        activityIndicator.frame = self.view.frame
+        activityIndicator.layer.backgroundColor = UIColor(white: 0.0, alpha: 0.30).CGColor
+        activityIndicator.opaque = false
+        activityIndicator.center = self.view.center
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+        self.view.addSubview(activityIndicator)
         
         // Create gradient and add to blurEffect
         view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)

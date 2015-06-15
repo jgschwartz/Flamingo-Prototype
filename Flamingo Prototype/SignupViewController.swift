@@ -21,7 +21,8 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     @IBOutlet weak var fbLogin: FBSDKLoginButton!
     @IBOutlet weak var ageText: UITextField!
     @IBOutlet weak var genderText: UITextField!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+
+    let activityIndicator = UIActivityIndicatorView()
     
     var genderPickerView: UIPickerView = UIPickerView()
     let genderArray: [String] = ["Male", "Female", "Other"]
@@ -340,6 +341,14 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // set up activity indicator to be gray and fill screen
+        activityIndicator.frame = self.view.frame
+        activityIndicator.layer.backgroundColor = UIColor(white: 0.0, alpha: 0.30).CGColor
+        activityIndicator.opaque = false
+        activityIndicator.center = self.view.center
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+        self.view.addSubview(activityIndicator)
         
         // Create gradient layer and add to blurEffect
         view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)

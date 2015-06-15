@@ -13,18 +13,49 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
 
     @IBOutlet weak var blurEffect: UIVisualEffectView!
     @IBOutlet weak var groupText: UITextField!
+    @IBOutlet weak var locationSegment: UISegmentedControl!
     
     let groupArray = [Int](1...20)
     var groupPickerView = UIPickerView()
     
+    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     let defaults = NSUserDefaults.standardUserDefaults()
     
     @IBAction func go(sender: AnyObject) {
+        if(groupText.text.isEmpty){
+            let alertTitle = "Incomplete Form"
+            var alertMessage = "You must fill out all sections to proceed."
+            
+            if(NSClassFromString("UIAlertController") != nil){
+                // iOS8 or later, AlertController exists
+                var alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(alert, animated: true, completion: nil)
+            } else {
+                // iOS7 or earlier, must use AlertView
+                let alert = UIAlertView()
+                alert.title = alertTitle
+                alert.message = alertMessage
+                alert.addButtonWithTitle("Okay")
+                alert.show()
+            }
+        } else {
+            switch locationSegment.selectedSegmentIndex {
+            case 0:
+                performSegueWithIdentifier("barSegue", sender: self)
+            case 1:
+                performSegueWithIdentifier("clubSegue", sender: self)
+            case 2:
+                performSegueWithIdentifier("restaurantSegue", sender: self)
+            default:
+                performSegueWithIdentifier("restaurantSegue", sender: self)
+            }
+        }
         NSNotificationCenter.defaultCenter().postNotificationName("goToResults", object: self)
     }
     
     @IBAction func signoutButton(sender: AnyObject) {
-        signout("https://thawing-garden-5169.herokuapp.com/signout")
+        signout("\(homeURL)signout")
         
         defaults.setValue(false, forKey: "loggedin")
         let appDomain = NSBundle.mainBundle().bundleIdentifier
@@ -90,21 +121,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         
         let user = defaults.stringForKey("username")
         
-//        let url = NSURL(string: "https://thawing-garden-5169.herokuapp.com/users/")
+//        // How to use Locksmith for Keychain
 //        
-//        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
-//            println(NSString(data: data, encoding: NSUTF8StringEncoding))
-//            var parseError: NSError?
-//                        let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
-//                        if(json != nil){
-//                            println(json!["username"])
-//                        }
-//        }
-//        task.resume()
-        
-        
-        // How to use Locksmith for Keychain
-        
 //        let service = NSBundle.mainBundle().bundleIdentifier
 //        let saveError = Locksmith.saveData(["username":user!], forUserAccount: user!, inService: service!)
 //        if saveError != nil {
@@ -113,23 +131,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
 //        let (dict, loadError) = Locksmith.loadDataForUserAccount(user!, inService: service!)
 //        println(dict)
 //        Locksmith.clearKeychain()
-        
-//        let kSecClassValue = NSString(format: kSecClass)
-//        let kSecAttrAccountValue = NSString(format: kSecAttrAccount)
-//        let kSecValueDataValue = NSString(format: kSecValueData)
-//        let kSecClassGenericPasswordValue = NSString(format: kSecClassGenericPassword)
-//        let kSecAttrServiceValue = NSString(format: kSecAttrService)
-//        let kSecMatchLimitValue = NSString(format: kSecMatchLimit)
-//        let kSecReturnDataValue = NSString(format: kSecReturnData)
-//        let kSecMatchLimitOneValue = NSString(format: kSecMatchLimitOne)
-//        
-//        let password: NSData = "password".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-//        let service: String = (NSBundle.mainBundle().bundleIdentifier as? String)!
-//        let userr: String = user!
-//        let dict: NSDictionary = [kSecClass: kSecClassGenericPassword, kSecAttrService: service, kSecAttrAccount: userr, kSecValueData: password]
-//        let objects: NSArray = [kSecClassGenericPassword, service, user!, password]
-//        let keys: NSArray = [kSecClass,kSecAttrService, kSecAttrAccount, kSecValueData]
-//        let query = NSDictionary(objects: objects as [AnyObject], forKeys: keys as [AnyObject])
     }
 
     override func didReceiveMemoryWarning() {

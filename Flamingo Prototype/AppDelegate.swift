@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 
         let defaults = NSUserDefaults.standardUserDefaults()
-        if let user = defaults.stringForKey("username") {
+//        if let user = defaults.stringForKey("username") {
             
             self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
             
@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
-        }
+//        }
         FBSDKLoginButton.initialize()
         return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
     }

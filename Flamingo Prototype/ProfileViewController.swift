@@ -208,6 +208,8 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "FlamingoGradientPNG")!)
+        
         // Create gradient layer and add to blurEffect
         view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)
         var gradient: CAGradientLayer = CAGradientLayer()

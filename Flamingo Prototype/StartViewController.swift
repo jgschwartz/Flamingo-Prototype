@@ -26,7 +26,38 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     @IBOutlet weak var locationSegment: UISegmentedControl!
     
     @IBAction func go(sender: AnyObject) {
-        if(ageText.text.isEmpty || cityText.text.isEmpty || groupText.text.isEmpty || !locationSegment.highlighted)
+        println(locationSegment.highlighted)
+        println(locationSegment.selectedSegmentIndex)
+        if(ageText.text.isEmpty || cityText.text.isEmpty || groupText.text.isEmpty){
+            let alertTitle = "Incomplete Form"
+            var alertMessage = "You must fill out all sections to proceed."
+            
+            if(NSClassFromString("UIAlertController") != nil){
+                // iOS8 or later, AlertController exists
+                var alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(alert, animated: true, completion: nil)
+                
+            } else {
+                // iOS7 or earlier, must use AlertView
+                let alert = UIAlertView()
+                alert.title = alertTitle
+                alert.message = alertMessage
+                alert.addButtonWithTitle("Okay")
+                alert.show()
+            }
+        } else {
+            switch locationSegment.selectedSegmentIndex {
+            case 0:
+                performSegueWithIdentifier("barSegue", sender: self)
+            case 1:
+                performSegueWithIdentifier("clubSegue", sender: self)
+            case 2:
+                performSegueWithIdentifier("restaurantSegue", sender: self)
+            default:
+                performSegueWithIdentifier("restaurantSegue", sender: self)
+            }
+        }
     }
     
     /* Picker Delegate Functions */
