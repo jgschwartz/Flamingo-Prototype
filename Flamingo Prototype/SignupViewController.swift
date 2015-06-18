@@ -12,7 +12,6 @@ import FBSDKLoginKit
 
 class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
     
-    @IBOutlet weak var blurEffect: UIVisualEffectView!
     @IBOutlet weak var emailText: UITextField!
     @IBOutlet weak var userText: UITextField!
     @IBOutlet weak var firstnameText: UITextField!
@@ -350,17 +349,12 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
         self.view.addSubview(activityIndicator)
         
-        // Create gradient layer and add to blurEffect
-        view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)
-        var gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = view.bounds
-        gradient.colors = [UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor, UIColor.whiteColor().CGColor, UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor]
-        blurEffect.layer.insertSublayer(gradient, atIndex: 1)
-        
-        let blur:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
-        var effectView:UIVisualEffectView = UIVisualEffectView (effect: blur)
-        effectView.frame = view.frame
-        blurEffect.addSubview(effectView)
+        // Set background to gradient image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        self.view.backgroundColor = UIColor(patternImage: image)
         
         // Set up FB login button
         

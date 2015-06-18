@@ -11,6 +11,7 @@ import Security
 import FBSDKCoreKit
 import FBSDKShareKit
 import FBSDKLoginKit
+import GoogleMaps
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 
         let defaults = NSUserDefaults.standardUserDefaults()
-//        if let user = defaults.stringForKey("username") {
+        if let user = defaults.stringForKey("username") {
             
             self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
             
@@ -31,7 +32,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
-//        }
+        }
+        
+        // Enable Google Maps API
+        GMSServices.provideAPIKey("AIzaSyDQr0xhO8xBQIRCvPdBjuoailLwcipt49M")
+        
+        // Enable Facebook login
         FBSDKLoginButton.initialize()
         return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
     }

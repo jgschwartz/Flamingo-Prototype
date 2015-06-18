@@ -19,7 +19,6 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     let groupArray = [Int](1...20)
     var groupPickerView: UIPickerView = UIPickerView()
     
-    @IBOutlet weak var blurEffect: UIVisualEffectView!
     @IBOutlet weak var ageText: UITextField!
     @IBOutlet weak var cityText: UITextField!
     @IBOutlet weak var groupText: UITextField!
@@ -114,18 +113,12 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        /* Create gradient layer for background and add it to the blur effect view */
-        
-        view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)
-        var gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = view.bounds
-        gradient.colors = [UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor, UIColor.whiteColor().CGColor, UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor]
-        blurEffect.layer.insertSublayer(gradient, atIndex: 1)
-        
-        let blur:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
-        var effectView:UIVisualEffectView = UIVisualEffectView (effect: blur)
-        effectView.frame = view.frame
-        blurEffect.addSubview(effectView)
+        // Set background to gradient image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        self.view.backgroundColor = UIColor(patternImage: image)
 
         /* Set up the picker views as input on the text fields */
         
@@ -154,6 +147,15 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier != nil ? contains(["barSegue", "clubSegue", "restaurantSegue"], segue.identifier!) : false {
+            let locVC = segue.destinationViewController as! LocationViewController
+            locVC.groupSize = groupText.text.toInt()
+            locVC.age = ageText.text.toInt()
+            locVC.city = cityText.text
+        }
     }
     
 

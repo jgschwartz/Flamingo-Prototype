@@ -11,7 +11,6 @@ import FBSDKLoginKit
 
 class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
-    @IBOutlet weak var blurEffect: UIVisualEffectView!
     @IBOutlet weak var groupText: UITextField!
     @IBOutlet weak var locationSegment: UISegmentedControl!
     
@@ -102,16 +101,12 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)
-        var gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = view.bounds
-        gradient.colors = [UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor, UIColor.whiteColor().CGColor, UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor]
-        blurEffect.layer.insertSublayer(gradient, atIndex: 1)
-        
-        let blur:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
-        var effectView:UIVisualEffectView = UIVisualEffectView (effect: blur)
-        effectView.frame = view.frame
-        blurEffect.addSubview(effectView)
+        // Set background to gradient image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        self.view.backgroundColor = UIColor(patternImage: image)
 
         // Do any additional setup after loading the view.
         groupPickerView.delegate = self
@@ -138,6 +133,17 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         // Dispose of any resources that can be recreated.
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier != nil ? contains(["barSegue", "clubSegue", "restaurantSegue"], segue.identifier!) : false {
+            println("Segueing to LocationViewer")
+            let locVC = segue.destinationViewController as! LocationViewController
+            locVC.groupSize = groupText.text.toInt()
+            locVC.age = 23
+            locVC.city = "Basel"
+            //        locVC.age = defaults.integerForKey("age")
+            //        locVC.city = defaults.stringForKey("city")
+        }
+    }
 
     /*
     // MARK: - Navigation

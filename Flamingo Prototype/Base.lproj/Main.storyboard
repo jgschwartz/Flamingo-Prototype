@@ -17,14 +17,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FgS-uH-Y91">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="556"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="dLz-ak-BpF">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="556"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                                <blurEffect style="light"/>
-                            </visualEffectView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8kN-7c-k4p">
                                 <rect key="frame" x="169.5" y="79" width="73" height="48"/>
                                 <constraints>
@@ -43,7 +35,7 @@
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <segue destination="KCc-Tw-sWq" kind="show" id="bI2-Dq-3Oi"/>
+                                    <segue destination="KCc-Tw-sWq" kind="show" identifier="loginSegue" id="bI2-Dq-3Oi"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FhR-M3-KJu">
@@ -57,7 +49,7 @@
                                     <color key="titleColor" red="0.91372549020000005" green="0.66274509800000003" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
-                                    <segue destination="yfL-yG-GFx" kind="show" id="Zn9-Fr-D6Y"/>
+                                    <segue destination="yfL-yG-GFx" kind="show" identifier="signupSegue" id="Zn9-Fr-D6Y"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Age:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HZu-Re-chk">
@@ -332,7 +324,6 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="ageText" destination="dxg-gD-5fq" id="BIt-eB-tB4"/>
-                        <outlet property="blurEffect" destination="FgS-uH-Y91" id="bou-9v-ZKA"/>
                         <outlet property="cityText" destination="Fde-yC-K9K" id="JWZ-5n-yFI"/>
                         <outlet property="groupText" destination="XBv-F9-i6F" id="vge-fi-KFm"/>
                         <outlet property="locationSegment" destination="Epo-N6-FTb" id="D0e-0M-Kqh"/>
@@ -357,14 +348,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LiM-yW-xqm">
-                                <rect key="frame" x="0.0" y="0.0" width="605" height="608"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="cBw-Sh-P1b">
-                                    <rect key="frame" x="0.0" y="0.0" width="605" height="608"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                                <blurEffect style="light"/>
-                            </visualEffectView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Username:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ecd-sS-gbv">
                                 <rect key="frame" x="166.5" y="126" width="84" height="21"/>
                                 <constraints>
@@ -596,7 +579,6 @@
                     <navigationItem key="navigationItem" title="Registration" id="ZoA-iz-T6J"/>
                     <connections>
                         <outlet property="ageText" destination="hc9-Rk-zB5" id="4xd-gM-hmE"/>
-                        <outlet property="blurEffect" destination="LiM-yW-xqm" id="KTO-uy-70g"/>
                         <outlet property="emailText" destination="Y1u-jZ-qIV" id="ngf-vr-Pgx"/>
                         <outlet property="fbLogin" destination="lay-PW-c4u" id="07d-Vc-vOB"/>
                         <outlet property="firstnameText" destination="hgT-8i-yPj" id="Wm1-bc-Uzo"/>
@@ -623,14 +605,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <visualEffectView hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jNM-UK-fQe">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="4dT-mW-sPT">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                                <blurEffect style="light"/>
-                            </visualEffectView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JEN-ZI-ksq">
                                 <rect key="frame" x="378" y="388" width="44" height="30"/>
                                 <state key="normal" title="Delete">
@@ -842,7 +816,6 @@
                     </view>
                     <connections>
                         <outlet property="ageText" destination="kPl-ex-iLo" id="W8E-d9-PXc"/>
-                        <outlet property="blurEffect" destination="jNM-UK-fQe" id="nKh-DU-p7x"/>
                         <outlet property="deleteButton" destination="JEN-ZI-ksq" id="662-fL-sBn"/>
                         <outlet property="emailText" destination="e1V-1q-6Q6" id="m42-ds-2d9"/>
                         <outlet property="firstnameText" destination="Pv2-mf-pHm" id="mDD-Tb-1Oy"/>
@@ -869,38 +842,52 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wcq-RZ-Ufx">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="uLU-aF-VlC">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                                <blurEffect style="light"/>
-                            </visualEffectView>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Restaurant Page" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="675-UA-MiW">
                                 <rect key="frame" x="191" y="140" width="218" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gbA-Tc-HvI" customClass="GMSMapView">
+                                <rect key="frame" x="0.0" y="326" width="600" height="222"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="600" id="C92-Ju-62m"/>
+                                    <constraint firstAttribute="height" constant="222" id="UoD-kf-5fC"/>
+                                </constraints>
+                            </view>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lP0-q9-R6r">
+                                <rect key="frame" x="202" y="230" width="197" height="30"/>
+                                <state key="normal" title="See What People Are Saying">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="WTS-6k-VS6" kind="show" identifier="messageSegue" id="2hV-xD-lYH"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="centerX" secondItem="675-UA-MiW" secondAttribute="centerX" id="3Zk-o5-nfT"/>
+                            <constraint firstItem="7Ht-7V-THV" firstAttribute="top" secondItem="gbA-Tc-HvI" secondAttribute="bottom" constant="8" id="62I-8G-ZOZ"/>
+                            <constraint firstAttribute="centerX" secondItem="gbA-Tc-HvI" secondAttribute="centerX" id="8g1-sH-Roh"/>
+                            <constraint firstItem="gbA-Tc-HvI" firstAttribute="top" secondItem="lP0-q9-R6r" secondAttribute="bottom" constant="66" id="Osp-Y9-an9"/>
                             <constraint firstItem="675-UA-MiW" firstAttribute="top" secondItem="eJv-Um-05e" secondAttribute="bottom" constant="120" id="nf1-ZZ-G9M"/>
+                            <constraint firstAttribute="centerX" secondItem="lP0-q9-R6r" secondAttribute="centerX" id="ydA-X1-aeu"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Restaurants" id="3ee-iI-YmP">
                         <barButtonItem key="rightBarButtonItem" title="Profile" id="3Re-5h-Nyh">
                             <connections>
-                                <segue destination="Xaz-nO-EaX" kind="show" id="VfF-jx-4kB"/>
+                                <segue destination="Xaz-nO-EaX" kind="show" identifier="profileSegue" id="VfF-jx-4kB"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="blurEffect" destination="wcq-RZ-Ufx" id="XIE-Sd-2fE"/>
+                        <outlet property="chatButton" destination="lP0-q9-R6r" id="jYH-VY-47F"/>
+                        <outlet property="mapView" destination="gbA-Tc-HvI" id="GsI-BM-isS"/>
                         <outlet property="profileButton" destination="3Re-5h-Nyh" id="SeI-4V-ssf"/>
                         <outlet property="restaurantHeader" destination="675-UA-MiW" id="3eY-v1-LgH"/>
                     </connections>
@@ -921,17 +908,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zqt-Ub-dee">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="TAr-GD-kL0">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                                <blurEffect style="light"/>
-                                <variation key="heightClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="0.0" height="0.0"/>
-                                </variation>
-                            </visualEffectView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Username:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OPA-oq-Dho">
                                 <rect key="frame" x="178" y="176" width="84" height="21"/>
                                 <constraints>
@@ -1060,7 +1036,6 @@
                     </view>
                     <navigationItem key="navigationItem" title="Login" id="1yi-dy-I6v"/>
                     <connections>
-                        <outlet property="blurEffect" destination="Zqt-Ub-dee" id="oXH-sm-NCz"/>
                         <outlet property="fbLogin" destination="pjf-3k-SiT" id="DQY-pg-TpB"/>
                         <outlet property="passText" destination="8XS-KS-Dnq" id="XOb-yh-yth"/>
                         <outlet property="userText" destination="x2O-w0-OAe" id="xmR-zW-6py"/>
@@ -1083,14 +1058,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UIr-x6-tO6">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Mv0-Xb-O3T">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                                <blurEffect style="light"/>
-                            </visualEffectView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="752" text="Ready to Start!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k6Z-M9-kmQ">
                                 <rect key="frame" x="202" y="95" width="196" height="36"/>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -1106,7 +1073,7 @@
                                 </state>
                                 <connections>
                                     <action selector="signoutButton:" destination="eYu-Au-RLE" eventType="touchUpInside" id="DUp-66-Zbo"/>
-                                    <segue destination="LTk-hX-x2M" kind="showDetail" id="kkC-Xg-FWK"/>
+                                    <segue destination="LTk-hX-x2M" kind="showDetail" identifier="startSegue" id="kkC-Xg-FWK"/>
                                 </connections>
                             </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="wiw-9j-dfO">
@@ -1193,12 +1160,11 @@
                     <navigationItem key="navigationItem" title="Home" id="02d-Gr-qlp">
                         <barButtonItem key="rightBarButtonItem" title="Profile" id="3tN-k3-30E">
                             <connections>
-                                <segue destination="Xaz-nO-EaX" kind="show" id="r9T-ag-woq"/>
+                                <segue destination="Xaz-nO-EaX" kind="show" identifier="profileSegue" id="r9T-ag-woq"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="blurEffect" destination="UIr-x6-tO6" id="ddB-dg-aXF"/>
                         <outlet property="groupText" destination="Yyk-l9-GPU" id="HIq-fi-Hyu"/>
                         <outlet property="locationSegment" destination="wiw-9j-dfO" id="WGL-b6-JcW"/>
                         <segue destination="Td2-fY-aio" kind="show" identifier="barSegue" id="yQg-fj-AKQ"/>
@@ -1258,36 +1224,40 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qvp-73-Iwb">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="6PF-8V-ocu">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                                <blurEffect style="light"/>
-                            </visualEffectView>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bar Page" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WAC-sG-WNG">
                                 <rect key="frame" x="240" y="140" width="121" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="XLc-Od-FNm">
-                                <rect key="frame" x="-0.5" y="288" width="599" height="260"/>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vL2-5i-Td8">
+                                <rect key="frame" x="201" y="230" width="197" height="30"/>
+                                <state key="normal" title="See What People Are Saying">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="WTS-6k-VS6" kind="show" identifier="messageSegue" id="bSF-vx-BOH"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="e4Y-Cl-ltb" customClass="GMSMapView">
+                                <rect key="frame" x="0.0" y="326" width="600" height="222"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="260" id="fQQ-so-Mdo"/>
+                                    <constraint firstAttribute="height" constant="222" id="PuW-fO-Jbe"/>
+                                    <constraint firstAttribute="width" constant="600" id="f4R-fU-frJ"/>
                                 </constraints>
-                            </mapView>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="kPO-PF-KeE" firstAttribute="top" secondItem="XLc-Od-FNm" secondAttribute="bottom" constant="8" id="Ngz-PP-wcw"/>
+                            <constraint firstItem="kPO-PF-KeE" firstAttribute="top" secondItem="e4Y-Cl-ltb" secondAttribute="bottom" constant="8" id="7rK-5F-cRK"/>
+                            <constraint firstAttribute="centerX" secondItem="vL2-5i-Td8" secondAttribute="centerX" id="Qf3-xJ-0rH"/>
+                            <constraint firstItem="e4Y-Cl-ltb" firstAttribute="top" secondItem="vL2-5i-Td8" secondAttribute="bottom" constant="66" id="ay0-8d-Z0z"/>
                             <constraint firstAttribute="centerX" secondItem="WAC-sG-WNG" secondAttribute="centerX" id="cWO-Wf-scP"/>
                             <constraint firstAttribute="centerX" secondItem="WAC-sG-WNG" secondAttribute="centerX" id="dLx-uJ-rxm"/>
-                            <constraint firstItem="XLc-Od-FNm" firstAttribute="leading" secondItem="XOS-6q-Q1V" secondAttribute="leadingMargin" constant="-16.5" id="gLO-Ix-wB6"/>
-                            <constraint firstAttribute="centerX" secondItem="XLc-Od-FNm" secondAttribute="centerX" constant="1" id="hWb-w9-BET"/>
+                            <constraint firstAttribute="centerX" secondItem="e4Y-Cl-ltb" secondAttribute="centerX" id="dfV-Wt-cIP"/>
                             <constraint firstItem="WAC-sG-WNG" firstAttribute="top" secondItem="p5c-c7-dfr" secondAttribute="bottom" constant="76" id="lYh-9F-2GR"/>
-                            <constraint firstItem="kPO-PF-KeE" firstAttribute="top" secondItem="XLc-Od-FNm" secondAttribute="bottom" constant="8" id="ysB-gL-VC6"/>
+                            <constraint firstItem="e4Y-Cl-ltb" firstAttribute="leading" secondItem="XOS-6q-Q1V" secondAttribute="leadingMargin" constant="-16" id="nsV-1F-GT8"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
@@ -1295,16 +1265,16 @@
                         <barButtonItem key="rightBarButtonItem" title="Profile" id="OKr-ap-b4G">
                             <color key="tintColor" red="0.89019607840000003" green="0.3803921569" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
-                                <segue destination="Xaz-nO-EaX" kind="show" id="O5j-ok-LYI"/>
+                                <segue destination="Xaz-nO-EaX" kind="show" identifier="profileSegue" id="O5j-ok-LYI"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="barHeader" destination="WAC-sG-WNG" id="CAF-hr-1mJ"/>
-                        <outlet property="blurEffect" destination="Qvp-73-Iwb" id="9kF-HM-gaH"/>
-                        <outlet property="mapView" destination="XLc-Od-FNm" id="DNX-SC-tNG"/>
+                        <outlet property="barHeader" destination="WAC-sG-WNG" id="g7i-9S-S6X"/>
+                        <outlet property="chatButton" destination="vL2-5i-Td8" id="Rj1-Pw-PN4"/>
+                        <outlet property="mapView" destination="e4Y-Cl-ltb" id="ODI-2m-gVj"/>
                         <outlet property="profileButton" destination="OKr-ap-b4G" id="Mj6-Qq-lcV"/>
                     </connections>
                 </viewController>
@@ -1324,18 +1294,27 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RwX-W7-fcE">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="BBU-vN-u4R">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                                <blurEffect style="light"/>
-                            </visualEffectView>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Club Page" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VHA-6S-n9S">
-                                <rect key="frame" x="230" y="140" width="140.5" height="265"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fGH-2b-WdB" customClass="GMSMapView">
+                                <rect key="frame" x="0.0" y="334" width="600" height="222"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="265" id="nXh-Em-Gvv"/>
+                                    <constraint firstAttribute="width" constant="600" id="hms-fL-xJJ"/>
+                                    <constraint firstAttribute="height" constant="222" id="qNz-hk-C18"/>
+                                </constraints>
+                            </view>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ETH-fA-W47">
+                                <rect key="frame" x="202" y="238" width="197" height="30"/>
+                                <state key="normal" title="See What People Are Saying">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="WTS-6k-VS6" kind="show" identifier="messageSegue" id="Tu5-qN-HgX"/>
+                                </connections>
+                            </button>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Club Page" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VHA-6S-n9S">
+                                <rect key="frame" x="230" y="140" width="140.5" height="37"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="37" id="nXh-Em-Gvv"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="30"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -1344,7 +1323,11 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="fGH-2b-WdB" firstAttribute="top" secondItem="ETH-fA-W47" secondAttribute="bottom" constant="66" id="DUA-Qo-8Wg"/>
+                            <constraint firstAttribute="centerX" secondItem="ETH-fA-W47" secondAttribute="centerX" id="Fpc-n0-z9C"/>
                             <constraint firstItem="VHA-6S-n9S" firstAttribute="top" secondItem="aJx-KS-FG2" secondAttribute="bottom" constant="76" id="Sbo-tc-oqg"/>
+                            <constraint firstItem="do9-Gp-j6f" firstAttribute="top" secondItem="fGH-2b-WdB" secondAttribute="bottom" id="izu-CV-h5A"/>
+                            <constraint firstAttribute="centerX" secondItem="fGH-2b-WdB" secondAttribute="centerX" id="lWr-WL-ukV"/>
                             <constraint firstAttribute="centerX" secondItem="VHA-6S-n9S" secondAttribute="centerX" id="nSW-H3-R7J"/>
                         </constraints>
                     </view>
@@ -1353,15 +1336,16 @@
                         <barButtonItem key="rightBarButtonItem" title="Profile" id="cX1-sr-GeE">
                             <color key="tintColor" red="0.89019607840000003" green="0.3803921569" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
-                                <segue destination="Xaz-nO-EaX" kind="show" id="Bby-wM-RJq"/>
+                                <segue destination="Xaz-nO-EaX" kind="show" identifier="profileSegue" id="Bby-wM-RJq"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="blurEffect" destination="RwX-W7-fcE" id="oLC-jz-kXU"/>
+                        <outlet property="chatButton" destination="ETH-fA-W47" id="EUD-29-6on"/>
                         <outlet property="clubHeader" destination="VHA-6S-n9S" id="wRa-F7-JIq"/>
+                        <outlet property="mapView" destination="fGH-2b-WdB" id="6po-y4-tb5"/>
                         <outlet property="profileButton" destination="cX1-sr-GeE" id="MdC-8T-QbZ"/>
                     </connections>
                 </viewController>
@@ -1369,14 +1353,33 @@
             </objects>
             <point key="canvasLocation" x="4923" y="2052"/>
         </scene>
+        <!--Messages View Controller-->
+        <scene sceneID="ZNu-uD-IGq">
+            <objects>
+                <viewController id="WTS-6k-VS6" customClass="MessagesViewController" customModule="Flamingo_Prototype" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="bbI-dp-71H"/>
+                        <viewControllerLayoutGuide type="bottom" id="foD-b1-kzl"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="qE2-9j-bMi">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pRZ-3r-bb6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4923" y="3019"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="Tu5-qN-HgX"/>
+        <segue reference="T6g-1f-usp"/>
         <segue reference="bLu-TY-ECG"/>
-        <segue reference="r9T-ag-woq"/>
+        <segue reference="VfF-jx-4kB"/>
+        <segue reference="PIA-RS-UxP"/>
         <segue reference="CPw-i6-QoJ"/>
-        <segue reference="5jo-8r-gr9"/>
         <segue reference="yQg-fj-AKQ"/>
-        <segue reference="btH-Kl-6kP"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.89019607840000003" green="0.3803921569" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

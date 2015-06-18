@@ -1,0 +1,13 @@
+PODS:
+  - Firebase (2.3.1)
+  - GoogleMaps (1.10.1)
+
+DEPENDENCIES:
+  - Firebase (>= 2.3.1)
+  - GoogleMaps
+
+SPEC CHECKSUMS:
+  Firebase: 462795adf92029ddb97777660627f5dd4fd59876
+  GoogleMaps: ebf08677f181d9c2dcdbd1721d206f02beccc9b1
+
+COCOAPODS: 0.37.1

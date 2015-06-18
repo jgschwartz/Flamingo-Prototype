@@ -7,95 +7,28 @@
 //
 
 import UIKit
-import MapKit
+import GoogleMaps
 
-class BarViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
+class BarViewController: LocationViewController, GMSMapViewDelegate {
 
-    @IBOutlet weak var blurEffect: UIVisualEffectView!
     @IBOutlet weak var profileButton: UIBarButtonItem!
     @IBOutlet weak var barHeader: UILabel!
-    let activityIndicator = UIActivityIndicatorView()
-    @IBOutlet weak var mapView: MKMapView!
+    let activityIndicator = UIActivityIndicatorView()    
+    @IBOutlet weak var mapView: GMSMapView!
+    @IBOutlet weak var chatButton: UIButton!
     
-    let locationManager = CLLocationManager()
-    
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     let defaults = NSUserDefaults.standardUserDefaults()
     
-    let regionRadius: CLLocationDistance = 1000
-    
-    func getAllBars(completion: (result: NSDictionary)->Void) -> Void{
-        // just a GET request
-        let url = NSURL(string: "\(homeURL)api/bars")
-        var allBars = NSArray()
-        var bar = NSDictionary()
-        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
-            println(NSString(data: data, encoding: NSUTF8StringEncoding))
-            var parseError: NSError?
-            let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
-            println("All Bars: \(json)")
-            if(json != nil){
-                allBars = json as! NSArray
-                bar = self.chooseABar(allBars)
-                completion(result: bar)
-            } else {
-                completion(result: bar)
-            }
-
-        }
-        task.resume()
-    }
-    
-    func chooseABar(allBars: NSArray) -> NSDictionary{
-        return allBars[1] as! NSDictionary
-    }
-    
-    func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        switch status {
-        case CLAuthorizationStatus.AuthorizedAlways, CLAuthorizationStatus.AuthorizedWhenInUse:
-            manager.startUpdatingLocation()
-            self.mapView.showsUserLocation = true
-//            centerMapOnLocation(mapView.userLocation.location)
-        default: break
-        }
-    }
-    
-    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-        let location = locations.last as! CLLocation
-        centerMapOnLocation(location)
-    }
-    
-    func centerMapOnLocation(location: CLLocation) {
-        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,
-            regionRadius * 2.0, regionRadius * 2.0)
-        mapView.setRegion(coordinateRegion, animated: true)
-    }
-    
-    func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
-        let identifier = "pin"
-        var view: MKPinAnnotationView
-        if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
-            as? MKPinAnnotationView {
-                dequeuedView.annotation = annotation
-                view = dequeuedView
-        } else {
-            view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-            view.canShowCallout = true
-            view.calloutOffset = CGPoint(x: -5, y: 5)
-            view.rightCalloutAccessoryView = UIButton.buttonWithType(.DetailDisclosure) as! UIView
-        }
-        return view
+    func mapView(mapView: GMSMapView!, didTapInfoWindowOfMarker marker: GMSMarker!) {
+        UIApplication.sharedApplication().openURL(NSURL(string: marker.userData as! String)!)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization()
+        self.type = "bars"
         
         mapView.delegate = self
-
         
         // set up activity indicator to be gray and fill screen
         activityIndicator.frame = self.view.frame
@@ -106,48 +39,63 @@ class BarViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         self.view.addSubview(activityIndicator)
         activityIndicator.startAnimating()
         
-        // Create gradient layer and add to blurEffect
-        view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)
-        var gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = view.bounds
-        gradient.colors = [UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor, UIColor.whiteColor().CGColor, UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor]
-        blurEffect.layer.insertSublayer(gradient, atIndex: 1)
+        // Set background to gradient image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        self.view.backgroundColor = UIColor(patternImage: image)
         
-        let blur:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
-        var effectView:UIVisualEffectView = UIVisualEffectView (effect: blur)
-        effectView.frame = view.frame
-        blurEffect.addSubview(effectView)
-        
-        getAllBars({
+        getAllLocations({
             (result: NSDictionary) in
             NSOperationQueue.mainQueue().addOperationWithBlock{
                 if(result.count == 0){
+                    // Algorithm failed, no connection, etc
                     self.navigationItem.title = "Error"
                     self.barHeader.text = "Your search returned no results."
                     self.barHeader.hidden = false
                     self.activityIndicator.stopAnimating()
                 } else {
-                    let barName = result["name"] as! String
-                    let address = (result["address"] as! String) + (result["city"] as! String)
+                    self.locationName = result["name"] as! String
+                    println(self.city)
+                    let address = (result["address"] as! String) + ", " + self.city
+                    let query = (self.locationName + " " + self.city).stringByReplacingOccurrencesOfString(" ", withString: "+")
+                    println("ADDRESS: \(address)")
+                    
+                    // Look up address and set map position
                     var geocoder = CLGeocoder()
                     geocoder.geocodeAddressString(address, completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
                         if let placemark = placemarks?[0] as? CLPlacemark {
-                            self.mapView.addAnnotation(MKPlacemark(placemark: placemark))
+                            let newLat = placemark.location.coordinate.latitude
+                            let newLong = placemark.location.coordinate.longitude
+                            println("LAT: \(newLat), LONG: \(newLong)")
+                            let position = CLLocationCoordinate2DMake(newLat, newLong)
+                            let camera = GMSCameraPosition.cameraWithLatitude(newLat, longitude: newLong, zoom: 15)
+                            self.mapView.camera = camera
+                            let marker = GMSMarker(position: position)
+
+                            marker.snippet = "Get Directions"
+                            marker.userData = self.setURLScheme(newLat, destLong: newLong, query: query)
+                            
+                            
+                            marker.title = self.locationName
+                            marker.groundAnchor = CGPointMake(0.5, 0.5)
+                            marker.map = self.mapView
                         }
                     })
-                    println("We're going to \(barName)!")
-                    self.barHeader.text = barName
+                    
+                    // Set text for bar result
+                    println("We're going to \(self.locationName)!")
+                    self.barHeader.text = self.locationName
                     self.barHeader.hidden = false
+                    self.chatButton.hidden = false
+                    
                     self.activityIndicator.stopAnimating()
                 }
             }
-            })
+        })
         
-//        mapView.showsUserLocation = true
-//        println(mapView.userLocation.coordinate.latitude)
-//        println(mapView.userLocation.coordinate.longitude)
-//        centerMapOnLocation(mapView.userLocation.location)
-        // Dispose of any resources that can be recreated.
+        // Set link to profile page if user is logged in
         if let user = defaults.stringForKey("username") {
             navigationItem.rightBarButtonItem = profileButton
         } else {
@@ -157,9 +105,7 @@ class BarViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-    
 
     /*
     // MARK: - Navigation

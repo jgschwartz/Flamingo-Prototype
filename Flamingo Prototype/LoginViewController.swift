@@ -10,9 +10,9 @@ import UIKit
 import FBSDKLoginKit
 
 class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate {
+    
     @IBOutlet weak var userText: UITextField!
     @IBOutlet weak var passText: UITextField!
-    @IBOutlet weak var blurEffect: UIVisualEffectView!
     @IBOutlet weak var fbLogin: FBSDKLoginButton!
     let activityIndicator = UIActivityIndicatorView()
     
@@ -59,7 +59,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 } else {
                     self.alertBadLogin("")
                     NSOperationQueue.mainQueue().addOperationWithBlock{
-                        self.userText.text = nil
                         self.passText.text = nil
                         self.activityIndicator.stopAnimating()
                     }
@@ -297,17 +296,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
         self.view.addSubview(activityIndicator)
         
-        // Create gradient and add to blurEffect
-        view.frame = CGRectMake(0.0, 0.0, view.bounds.width * 2, view.bounds.height * 2)
-        var gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = view.bounds
-        gradient.colors = [UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor, UIColor.whiteColor().CGColor, UIColor(red: 255/255, green: 192/255, blue: 203/255, alpha: 1).CGColor]
-        blurEffect.layer.insertSublayer(gradient, atIndex: 1)
-        
-        let blur:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
-        var effectView:UIVisualEffectView = UIVisualEffectView (effect: blur)
-        effectView.frame = view.frame
-        blurEffect.addSubview(effectView)
+        // Set background to gradient image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        self.view.backgroundColor = UIColor(patternImage: image)
         
         fbLogin.delegate = self
         userText.delegate = self
