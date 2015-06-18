@@ -56,7 +56,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBAction func signoutButton(sender: AnyObject) {
         signout("\(homeURL)signout")
         
-        defaults.setValue(false, forKey: "loggedin")
         let appDomain = NSBundle.mainBundle().bundleIdentifier
         defaults.removePersistentDomainForName(appDomain!)
     }

@@ -26,6 +26,20 @@ class MessagesViewController: JSQMessagesViewController {
     var senderImageUrl: String!
     var batchMessages = true
     var ref: Firebase!
+    var colorArray: [UIColor] = [
+    UIColor(red: 0/255, green: 0/255, blue: 255/255, alpha: 1), // blue
+    UIColor(red: 153/255, green: 51/255, blue: 255/255, alpha: 1), // purple
+    UIColor(red: 204/255, green: 0/255, blue: 102/255, alpha: 1), // dark magenta
+    UIColor(red: 0/255, green: 102/255, blue: 204/255, alpha: 1), // lighter blue
+    UIColor(red: 153/255, green: 0/255, blue: 51/255, alpha: 1), // reddish-brown
+    UIColor(red: 0/255, green: 102/255, blue: 0/255, alpha: 1), // forest green
+    UIColor(red: 0/255, green: 102/255, blue: 102/255, alpha: 1), // sea blue
+    UIColor(red: 102/255, green: 0/255, blue: 102/255, alpha: 1), // royal purple
+    UIColor(red: 0/255, green: 0/255, blue: 153/255, alpha: 1), // royal blue
+    UIColor(red: 153/255, green: 0/255, blue: 102/255, alpha: 1), // magenta
+    UIColor(red: 102/255, green: 0/255, blue: 204/255, alpha: 1), // violet
+    UIColor(red: 204/255, green: 51/255, blue: 0/255, alpha: 1) // burnt orange
+    ]
     
     let defaults = NSUserDefaults.standardUserDefaults()
     
@@ -112,6 +126,12 @@ class MessagesViewController: JSQMessagesViewController {
         avatars[name] = userImage
     }
     
+    func setSessionID() -> String{
+        let id = String(NSDate().hashValue)
+        defaults.setValue(id, forKey: "session")
+        return id
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         inputToolbar.contentView.leftBarButtonItem = nil
@@ -119,60 +139,46 @@ class MessagesViewController: JSQMessagesViewController {
         navigationItem.title = "\(locationName)"
         groupsRef = Firebase(url: "https://startup-stuff.firebaseio.com/chatrooms/\(chatroom)/groups")
         
-        // A way to track the accounts behind each message
-        sender = defaults.stringForKey("username")
-        sender = (sender != nil) ? sender : groupsRef.childByAutoId().key
-        
-        // See active groups and assign next number
-//        println(groupsRef.parent)
-//        println(groupsRef.parent.queryLimitedToLast(1).observeSingleEventOfType(FEventType.Value, withBlock: { (snapshot) in
-//            
-//            })
-//        let lastGroup = groupsRef.valueForKey("Group 1")
-//        if let lastGroup = groupsRef.queryOrderedByKey().queryLimitedToLast(1) {
-//            // If no groups exist, groupName will default to Group 1
-//            let lastArr = split(lastGroup) {$0 == " "} // Groups named as Group 1, Group 2, etc
-//            let lastNum: Int = lastArr[1].toInt()!
-//            groupName = "Group \(lastNum+1)"
-//        }
-        
-        groupsRef.queryLimitedToLast(1).observeSingleEventOfType(FEventType.Value, withBlock: { (snapshot) in
-            println("SNAPSHOT : \(snapshot)")
+//        // A way to track the accounts behind each message
+//        sender = defaults.stringForKey("username")
+//        sender = (sender != nil) ? sender : setSessionID()
 
-            if snapshot.childrenCount > 0 {
-                println("CHILDREN: \(snapshot.children)")
+        var userName = ""
+        if (defaults.stringForKey("username") != nil){
+            sender = defaults.stringForKey("username")
+            userName = defaults.stringForKey("username")!
+        } else if (defaults.stringForKey("session") != nil){
+            sender = defaults.stringForKey("session")
+            userName = defaults.stringForKey("session")!
+        } else {
+            sender = setSessionID()
+        }
+        colorArray = sorted(colorArray) {_, _ in arc4random() % 2 == 0} // shuffle array
+        
+        groupsRef.observeSingleEventOfType(FEventType.Value, withBlock: { (snapshot) in
+            println("SNAPSHOT : \(snapshot)")
+            let childrenCount = snapshot.childrenCount
+            var curChild: UInt = 1
+            if childrenCount > 0 {
                 let enumerator = snapshot.children
                 while let child = enumerator.nextObject() as? FDataSnapshot {
-                    let lastGroup = child.value.valueForKey("group") as! String
-                    println("LASTGROUP: \(lastGroup)")
-                    let lastArr = split(lastGroup) {$0 == " "} // Groups named as Group 1, Group 2, etc
-                    println("LASTARR: \(lastArr)")
-                    let lastNum: Int = lastArr[1].toInt()!
-                    println("Group \(lastNum+1)")
-                    self.groupName = "Group \(lastNum+1)"
-                    println(self.groupName)
-                    println("lastgroup: \(lastGroup)")
+                    let tempSender = child.value.valueForKey("sender") as! String
+                    if userName == tempSender {
+                        self.groupName = child.value.valueForKey("group") as! String
+                        break
+                    } else if curChild == childrenCount { // NSEnumerator has no hasNext() function...
+                        let lastGroup = child.value.valueForKey("group") as! String
+                        let lastArr = split(lastGroup) {$0 == " "} // Groups named as Group 1, Group 2, etc
+                        let lastNum: Int = lastArr[1].toInt()!
+                        self.groupName = "Group \(lastNum+1)"
+                        self.addGroup()
+                    }
+                    curChild += 1
                 }
-                
-                // If no groups exist, groupName will default to Group 1
-//                for child in snapshot.children {
-//                    let lastGroup = child.valueForKey("group") as! String
-//                    let lastArr = split(lastGroup) {$0 == " "} // Groups named as Group 1, Group 2, etc
-//                    let lastNum: Int = lastArr[1].toInt()!
-//                    println("Group \(lastNum+1)")
-//                    self.groupName = "Group \(lastNum+1)"
-//                    println(self.groupName)
-//                    println("lastgroup: \(lastGroup)")
-//                }
+            } else {
+                self.addGroup()
             }
-            self.addGroup()
-
-            //            let message = Message(text: text, sender: sender, imageUrl: imageUrl)
-            //            self.messages.append(message)
-//            self.finishReceivingMessage()
         })
-
-        
         setupFirebase()
     }
     
@@ -220,6 +226,15 @@ class MessagesViewController: JSQMessagesViewController {
             return UIImageView(image: outgoingBubbleImageView.image, highlightedImage: outgoingBubbleImageView.highlightedImage)
         }
         
+        let groupArray = split(message.groupName) {$0 == " "} // Groups named as Group 1, Group 2, etc
+        let groupNum: Int = groupArray[1].toInt()!
+        
+        var color = colorArray[groupNum % colorArray.count] // mod to make sure no groupNum is outside of range
+        let cicolor = CIColor(color: color)
+        println("\(message.groupName), \(groupNum)")
+        println("red: \(cicolor!.red() * 255), green: \(cicolor!.green() * 255), blue: \(cicolor!.blue() * 255)")
+        
+        incomingBubbleImageView = JSQMessagesBubbleImageFactory.incomingMessageBubbleImageViewWithColor(color)
         return UIImageView(image: incomingBubbleImageView.image, highlightedImage: incomingBubbleImageView.highlightedImage)
     }
     

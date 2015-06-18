@@ -143,6 +143,13 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         groupPickerView.backgroundColor = UIColor.clearColor()
         groupPickerView.selectRow(4, inComponent: 0, animated: false)
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        // clear user defaults; will clear the session ID from an anonymous search
+        let appDomain = NSBundle.mainBundle().bundleIdentifier
+        NSUserDefaults.standardUserDefaults().removePersistentDomainForName(appDomain!)
+        println("ATTN: defaults cleared")
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
