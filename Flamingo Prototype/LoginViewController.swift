@@ -39,22 +39,18 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         let sURL = "\(self.homeURL)users/\(id)"
                         self.getUserData(sURL){
                             (dict: NSDictionary) in
-//                            dict.setValue("", forKey: "password")
                             self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
                             self.defaults.setValue("", forKey: "password")
                             println(dict)
+                            // Save password to Keychain for future authentifications
+                            let service = NSBundle.mainBundle().bundleIdentifier
+                            let saveError = Locksmith.saveData(["password":password], forUserAccount: username, inService: service!)
+                            if saveError != nil {
+                                println("Keychain save error: \(saveError)")
+                            }
+                            self.activityIndicator.stopAnimating()
+                            self.performSegueWithIdentifier("successfulLogin", sender: self)
                         }
-//                        if let user = defaults.stringForKey("username"){
-//                            println(user)
-                        println("user data FOUND")
-//                        } else {
-//                            defaults.setValue(username, forKey: "username")
-//                            println("new user set")
-//                        }
-                        self.defaults.setValue(true, forKey: "loggedin")
-                        self.defaults.setValue(id, forKey: "id")
-                        self.activityIndicator.stopAnimating()
-                        self.performSegueWithIdentifier("successfulLogin", sender: self)
                     }
                 } else {
                     self.alertBadLogin("")
@@ -63,7 +59,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         self.activityIndicator.stopAnimating()
                     }
                 }
-            }
+        }
 //        })
     }
     
@@ -118,7 +114,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 println("ERROR IS: \(error)")
             } else {
                 
-                println("Body: \(strData)")
+//                println("Body: \(strData)")
                 
                 println("\n")
                 
@@ -229,38 +225,53 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     println(self.success)
                     if(self.success){
                         NSOperationQueue.mainQueue().addOperationWithBlock{
-                            self.defaults.setValue("\(email)", forKey: "email")
-                            self.defaults.setValue("\(username)", forKey: "username")
-                            self.defaults.setValue(true, forKey: "loggedin")
-                            self.defaults.setValue(id, forKey: "id")
-                            self.defaults.setValue("\(first)", forKey: "firstname")
-                            self.defaults.setValue("\(last)", forKey: "lastname")
-                            self.defaults.setValue("\(gender)", forKey: "gender")
-                            self.defaults.setValue("\(birthday)", forKey: "age")
-                            self.activityIndicator.stopAnimating()
-                            self.performSegueWithIdentifier("successfulLogin", sender: self)
+                            let sURL = "\(self.homeURL)users/\(id)"
+                            self.getUserData(sURL){
+                                (dict: NSDictionary) in
+                                self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                                self.defaults.setValue("", forKey: "password")
+                                println(dict)
+                                // Save password to Keychain for future authentifications
+                                let service = NSBundle.mainBundle().bundleIdentifier
+                                let saveError = Locksmith.saveData(["password":pass], forUserAccount: username, inService: service!)
+                                if saveError != nil {
+                                    println("Keychain save error: \(saveError)")
+                                }
+                                self.activityIndicator.stopAnimating()
+                                self.performSegueWithIdentifier("successfulLogin", sender: self)
+                            }
                         }
                     } else {
                         // instantiate new SignupViewController to use its signup method so it doesn't need to be duplicated
                         let signupVC = SignupViewController()
-                        signupVC.signup(["email": "\(email)", "username": "\(username)", "password": "\(pass)", "firstname": "\(first)", "lastname": "\(last)", "provider": "facebook", "providerId": "\(providerId)", "providerCheck": "facebook"], url: "https://thawing-garden-5169.herokuapp.com/register"){
+                        signupVC.signup(["email": "\(email)", "username": "\(username)", "password": "\(pass)", "firstname": "\(first)", "lastname": "\(last)", "birthday": "\(birthday)", "provider": "facebook", "providerId": "\(providerId)", "providerCheck": "facebook"], url: "https://thawing-garden-5169.herokuapp.com/register"){
                             (result: Bool, msg: String, id: String) in
                             self.success = result
                             println(self.success)
                             if(self.success){
                                 NSOperationQueue.mainQueue().addOperationWithBlock{
-                                    self.defaults.setValue("\(username)", forKey: "username")
-                                    self.defaults.setValue("\(email)", forKey: "email")
-                                    self.defaults.setValue(true, forKey: "loggedin")
-                                    self.defaults.setValue(id, forKey: "id")
-                                    self.defaults.setValue("\(first)", forKey: "firstname")
-                                    self.defaults.setValue("\(last)", forKey: "lastname")
-                                    self.defaults.setValue("\(gender)", forKey: "gender")
-                                    self.defaults.setValue("\(birthday)", forKey: "age")
-                                    self.performSegueWithIdentifier("successfulLogin", sender: self)
+                                    let sURL = "\(self.homeURL)users/\(id)"
+                                    self.getUserData(sURL){
+                                        (dict: NSDictionary) in
+                                        self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                                        self.defaults.setValue("", forKey: "password")
+                                        println(dict)
+                                        // Save password to Keychain for future authentifications
+                                        let service = NSBundle.mainBundle().bundleIdentifier
+                                        let saveError = Locksmith.saveData(["password":pass], forUserAccount: username, inService: service!)
+                                        if saveError != nil {
+                                            println("Keychain save error: \(saveError)")
+                                        }
+                                        self.activityIndicator.stopAnimating()
+                                        self.performSegueWithIdentifier("successfulLogin", sender: self)
+                                    }
                                 }
                             } else {
                                 self.alertBadLogin("")
+                                NSOperationQueue.mainQueue().addOperationWithBlock{
+                                    self.passText.text = nil
+                                    self.activityIndicator.stopAnimating()
+                                }
                             }
                         }
                     }
@@ -303,6 +314,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
         
+        fbLogin.readPermissions = ["email", "public_profile", "user_friends", "user_birthday"]
         fbLogin.delegate = self
         userText.delegate = self
         passText.delegate = self

@@ -16,11 +16,33 @@ class BarViewController: LocationViewController, GMSMapViewDelegate {
     let activityIndicator = UIActivityIndicatorView()    
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var chatButton: UIButton!
+    @IBOutlet weak var taggedFriendsButton: UIButton!
     
     let defaults = NSUserDefaults.standardUserDefaults()
     
     func mapView(mapView: GMSMapView!, didTapInfoWindowOfMarker marker: GMSMarker!) {
         UIApplication.sharedApplication().openURL(NSURL(string: marker.userData as! String)!)
+    }
+    
+    @IBAction func showTaggedFriends(sender: AnyObject) {
+        // Add the view as a subview and position it offscreen just below the current view
+//        var myHalfView = UITextView(frame: CGRect(x: 0.5, y: 0.5, width: self.view.frame.width/2, height: self.view.frame.height + 64))
+//        myHalfView.backgroundColor = self.view.backgroundColor
+//        self.view.addSubview(myHalfView)
+//        var offScreenFrame = myHalfView.bounds
+//        offScreenFrame.origin = CGPointMake(0.5, CGRectGetMaxY(self.view.frame))
+//        var label = "Your friends attending are:\n"
+//        for friend in friendsArray {
+//            label += "\(friend)\n"
+//        }
+//        println(label)
+//        myHalfView.text = label
+//        
+//        UIView.beginAnimations(nil, context: nil)
+//        myHalfView.center = CGPointMake(myHalfView.center.x, myHalfView.center.y - myHalfView.bounds.size.height)
+//        UIView.commitAnimations()
+        
+        
     }
     
     override func viewDidLoad() {
@@ -39,13 +61,6 @@ class BarViewController: LocationViewController, GMSMapViewDelegate {
         self.view.addSubview(activityIndicator)
         activityIndicator.startAnimating()
         
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
-        
         getAllLocations({
             (result: NSDictionary) in
             NSOperationQueue.mainQueue().addOperationWithBlock{
@@ -57,7 +72,7 @@ class BarViewController: LocationViewController, GMSMapViewDelegate {
                     self.activityIndicator.stopAnimating()
                 } else {
                     self.locationName = result["name"] as! String
-                    println(self.city)
+                    self.id = result["_id"] as! String
                     let address = (result["address"] as! String) + ", " + self.city
                     let query = (self.locationName + " " + self.city).stringByReplacingOccurrencesOfString(" ", withString: "+")
                     println("ADDRESS: \(address)")
@@ -73,11 +88,8 @@ class BarViewController: LocationViewController, GMSMapViewDelegate {
                             let camera = GMSCameraPosition.cameraWithLatitude(newLat, longitude: newLong, zoom: 15)
                             self.mapView.camera = camera
                             let marker = GMSMarker(position: position)
-
                             marker.snippet = "Get Directions"
                             marker.userData = self.setURLScheme(newLat, destLong: newLong, query: query)
-                            
-                            
                             marker.title = self.locationName
                             marker.groundAnchor = CGPointMake(0.5, 0.5)
                             marker.map = self.mapView
@@ -100,6 +112,18 @@ class BarViewController: LocationViewController, GMSMapViewDelegate {
             navigationItem.rightBarButtonItem = profileButton
         } else {
             self.navigationItem.rightBarButtonItem = nil
+        }
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        if let taggedData = defaults.objectForKey("taggedFriends") as? NSData {            
+            taggedFriends = (NSKeyedUnarchiver.unarchiveObjectWithData(taggedData) as? Dictionary<String, UIImage>)!
+            let count = taggedFriends.count
+            let friendsPlural = count > 1 ? "Friends" : "Friend"
+            taggedFriendsButton.setTitle("\(count) \(friendsPlural)", forState: UIControlState.Normal)
+            taggedFriendsButton.hidden = false
+        } else {
+            taggedFriendsButton.hidden = true
         }
     }
 

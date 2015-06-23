@@ -13,6 +13,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
 
     @IBOutlet weak var groupText: UITextField!
     @IBOutlet weak var locationSegment: UISegmentedControl!
+    @IBOutlet weak var priceSegment: UISegmentedControl!
     
     let groupArray = [Int](1...20)
     var groupPickerView = UIPickerView()
@@ -70,7 +71,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         let url = NSURL(string: sUrl)
         
         let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
-            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+//            println(NSString(data: data, encoding: NSUTF8StringEncoding))
             var parseError: NSError?
 //            let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
 //            if(json != nil){
@@ -97,6 +98,11 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         groupText.resignFirstResponder()
     }
     
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        view.endEditing(true)
+        super.touchesBegan(touches, withEvent: event)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -113,18 +119,46 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         groupText.inputView = groupPickerView
         groupPickerView.selectRow(4, inComponent: 0, animated: true)
         
-        let user = defaults.stringForKey("username")
-        
-//        // How to use Locksmith for Keychain
-//        
-//        let service = NSBundle.mainBundle().bundleIdentifier
-//        let saveError = Locksmith.saveData(["username":user!], forUserAccount: user!, inService: service!)
-//        if saveError != nil {
-//            println(saveError)
-//        }
-//        let (dict, loadError) = Locksmith.loadDataForUserAccount(user!, inService: service!)
-//        println(dict)
-//        Locksmith.clearKeychain()
+        // Get password from Keychain to authenticate session
+        var user = ""
+        if let username = defaults.stringForKey("username") {
+            user = username
+        } else {
+            user = defaults.stringForKey("email")!
+        }
+        let service = NSBundle.mainBundle().bundleIdentifier
+        let (dict, loadError) = Locksmith.loadDataForUserAccount(user, inService: service!)
+        // instantiate login view controller to control login and start session with server
+        let loginVC = LoginViewController()
+        if let pass: AnyObject = dict?.valueForKey("password") {
+            let password  = pass as! String
+            loginVC.login(user, password: password){
+                (result: Bool, id: String) in
+                println("Logged in successfully. Welcome!")
+            }
+        }
+    }
+    
+    func getUserData(sUrl: String, completion: (dict: NSDictionary) -> Void) {
+        // just a GET request
+        let url = NSURL(string: sUrl)
+        var userData = NSDictionary()
+        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+            var parseError: NSError?
+            let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
+            println("User data: \(json)")
+            println("Response: \((response as! NSHTTPURLResponse).statusCode)")
+            println(json.dynamicType)
+            if(json != nil){
+                userData = json as! NSDictionary
+                completion(dict: userData)
+            } else {
+                completion(dict: userData)
+            }
+        }
+        task.resume()
+        println(userData)
     }
 
     override func didReceiveMemoryWarning() {
@@ -137,9 +171,9 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             println("Segueing to LocationViewer")
             let locVC = segue.destinationViewController as! LocationViewController
             locVC.groupSize = groupText.text.toInt()
-            locVC.age = 23
+            locVC.age = defaults.integerForKey("age")
             locVC.city = "Basel"
-            //        locVC.age = defaults.integerForKey("age")
+            locVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
             //        locVC.city = defaults.stringForKey("city")
         }
     }

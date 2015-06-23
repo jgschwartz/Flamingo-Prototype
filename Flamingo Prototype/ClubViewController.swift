@@ -16,6 +16,7 @@ class ClubViewController: LocationViewController, GMSMapViewDelegate {
     let activityIndicator = UIActivityIndicatorView()
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var chatButton: UIButton!
+    @IBOutlet weak var taggedFriendsButton: UIButton!
 
     let defaults = NSUserDefaults.standardUserDefaults()
     
@@ -37,14 +38,6 @@ class ClubViewController: LocationViewController, GMSMapViewDelegate {
         activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
         self.view.addSubview(activityIndicator)
         activityIndicator.startAnimating()
-
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
-        
         
         getAllLocations({
             (result: NSDictionary) in
@@ -60,21 +53,24 @@ class ClubViewController: LocationViewController, GMSMapViewDelegate {
                 } else {
                     
                     self.locationName = result["name"] as! String
-                    self.city = result["city"] as! String
+                    self.id = result["_id"] as! String
                     let address = (result["address"] as! String) + ", " + self.city
+                    let query = (self.locationName + " " + self.city).stringByReplacingOccurrencesOfString(" ", withString: "+")
                     println("ADDRESS: \(address)")
 
-                    // Find coordinates for address and set map to those coordinates
+                    // Look up address and set map position
                     var geocoder = CLGeocoder()
                     geocoder.geocodeAddressString(address, completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
                         if let placemark = placemarks?[0] as? CLPlacemark {
-                            let lat = placemark.location.coordinate.latitude
-                            let long = placemark.location.coordinate.longitude
-                            println("LAT: \(lat), LONG: \(long)")
-                            let position = CLLocationCoordinate2DMake(lat, long)
-                            let camera = GMSCameraPosition.cameraWithLatitude(lat, longitude: long, zoom: 15)
+                            let newLat = placemark.location.coordinate.latitude
+                            let newLong = placemark.location.coordinate.longitude
+                            println("LAT: \(newLat), LONG: \(newLong)")
+                            let position = CLLocationCoordinate2DMake(newLat, newLong)
+                            let camera = GMSCameraPosition.cameraWithLatitude(newLat, longitude: newLong, zoom: 15)
                             self.mapView.camera = camera
                             let marker = GMSMarker(position: position)
+                            marker.snippet = "Get Directions"
+                            marker.userData = self.setURLScheme(newLat, destLong: newLong, query: query)
                             marker.title = self.locationName
                             marker.groundAnchor = CGPointMake(0.5, 0.5)
                             marker.map = self.mapView
@@ -102,6 +98,18 @@ class ClubViewController: LocationViewController, GMSMapViewDelegate {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        if let taggedData = defaults.objectForKey("taggedFriends") as? NSData {
+            taggedFriends = (NSKeyedUnarchiver.unarchiveObjectWithData(taggedData) as? Dictionary<String, UIImage>)!
+            let count = taggedFriends.count
+            let friendsPlural = count > 1 ? "Friends" : "Friend"
+            taggedFriendsButton.setTitle("\(count) \(friendsPlural)", forState: UIControlState.Normal)
+            taggedFriendsButton.hidden = false
+        } else {
+            taggedFriendsButton.hidden = true
+        }
     }
     
     /*

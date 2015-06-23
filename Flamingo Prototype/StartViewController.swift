@@ -23,6 +23,7 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     @IBOutlet weak var cityText: UITextField!
     @IBOutlet weak var groupText: UITextField!
     @IBOutlet weak var locationSegment: UISegmentedControl!
+    @IBOutlet weak var priceSegment: UISegmentedControl!
     
     @IBAction func go(sender: AnyObject) {
         println(locationSegment.highlighted)
@@ -148,7 +149,6 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         // clear user defaults; will clear the session ID from an anonymous search
         let appDomain = NSBundle.mainBundle().bundleIdentifier
         NSUserDefaults.standardUserDefaults().removePersistentDomainForName(appDomain!)
-        println("ATTN: defaults cleared")
     }
 
     override func didReceiveMemoryWarning() {
@@ -162,6 +162,7 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
             locVC.groupSize = groupText.text.toInt()
             locVC.age = ageText.text.toInt()
             locVC.city = cityText.text
+            locVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
         }
     }
     

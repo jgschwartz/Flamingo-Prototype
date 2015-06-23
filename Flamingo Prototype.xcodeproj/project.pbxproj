@@ -12,11 +12,15 @@
 		A90283851B1C5DF400FCF8D3 /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90283841B1C5DF400FCF8D3 /* FBSDKShareKit.framework */; };
 		A904A4211B2841C8006571F7 /* BarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A904A4201B2841C8006571F7 /* BarViewController.swift */; };
 		A904A4231B2841DD006571F7 /* ClubViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A904A4221B2841DD006571F7 /* ClubViewController.swift */; };
+		A905EE301B38048000D65B53 /* UpdateProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */; };
+		A905EE321B39745500D65B53 /* ReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE311B39745500D65B53 /* ReviewViewController.swift */; };
 		A9110A8E1B15FC7B00DE37C9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9110A8D1B15FC7B00DE37C9 /* AppDelegate.swift */; };
 		A9110A931B15FC7B00DE37C9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A9110A911B15FC7B00DE37C9 /* Main.storyboard */; };
 		A9110A951B15FC7B00DE37C9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9110A941B15FC7B00DE37C9 /* Images.xcassets */; };
 		A9110A981B15FC7B00DE37C9 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9110A961B15FC7B00DE37C9 /* LaunchScreen.xib */; };
 		A9110AA41B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9110AA31B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift */; };
+		A959CF251B34057500A47FB0 /* FriendsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A959CF241B34057500A47FB0 /* FriendsViewController.swift */; };
+		A959CF291B34341100A47FB0 /* TaggedFriendsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */; };
 		A9959C821B1F4BA6006224B4 /* RestaurantViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C811B1F4BA6006224B4 /* RestaurantViewController.swift */; };
 		A9959C841B205A71006224B4 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C831B205A70006224B4 /* ProfileViewController.swift */; };
 		A9959C861B2065C2006224B4 /* Locksmith.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C851B2065C2006224B4 /* Locksmith.swift */; };
@@ -107,6 +111,8 @@
 		A90283841B1C5DF400FCF8D3 /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKShareKit.framework; path = ../../FacebookSDK/FBSDKShareKit.framework; sourceTree = "<group>"; };
 		A904A4201B2841C8006571F7 /* BarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarViewController.swift; sourceTree = "<group>"; };
 		A904A4221B2841DD006571F7 /* ClubViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClubViewController.swift; sourceTree = "<group>"; };
+		A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateProfileViewController.swift; sourceTree = "<group>"; };
+		A905EE311B39745500D65B53 /* ReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewController.swift; sourceTree = "<group>"; };
 		A9110A881B15FC7B00DE37C9 /* Flamingo Prototype.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Flamingo Prototype.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9110A8C1B15FC7B00DE37C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A9110A8D1B15FC7B00DE37C9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -116,6 +122,8 @@
 		A9110A9D1B15FC7B00DE37C9 /* Flamingo PrototypeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Flamingo PrototypeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9110AA21B15FC7B00DE37C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A9110AA31B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flamingo_PrototypeTests.swift; sourceTree = "<group>"; };
+		A959CF241B34057500A47FB0 /* FriendsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendsViewController.swift; sourceTree = "<group>"; };
+		A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaggedFriendsTableViewController.swift; sourceTree = "<group>"; };
 		A9959C811B1F4BA6006224B4 /* RestaurantViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestaurantViewController.swift; sourceTree = "<group>"; };
 		A9959C831B205A70006224B4 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		A9959C851B2065C2006224B4 /* Locksmith.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Locksmith.swift; sourceTree = "<group>"; };
@@ -298,11 +306,15 @@
 				A9110A911B15FC7B00DE37C9 /* Main.storyboard */,
 				A9A637481B19DB280049D46F /* HomeViewController.swift */,
 				A9959C831B205A70006224B4 /* ProfileViewController.swift */,
+				A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */,
 				A904A4201B2841C8006571F7 /* BarViewController.swift */,
 				A904A4221B2841DD006571F7 /* ClubViewController.swift */,
 				A9959C811B1F4BA6006224B4 /* RestaurantViewController.swift */,
 				A9D342691B31590B0060B119 /* LocationViewController.swift */,
 				A9BAF6E31B304C4E00734507 /* MessagesViewController.swift */,
+				A959CF241B34057500A47FB0 /* FriendsViewController.swift */,
+				A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */,
+				A905EE311B39745500D65B53 /* ReviewViewController.swift */,
 				A9110A941B15FC7B00DE37C9 /* Images.xcassets */,
 				A9110A961B15FC7B00DE37C9 /* LaunchScreen.xib */,
 				A9110A8B1B15FC7B00DE37C9 /* Supporting Files */,
@@ -687,6 +699,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9959C861B2065C2006224B4 /* Locksmith.swift in Sources */,
+				A959CF291B34341100A47FB0 /* TaggedFriendsTableViewController.swift in Sources */,
 				A9D3424F1B305EA90060B119 /* JSQMessagesTimestampFormatter.m in Sources */,
 				A9D342531B305EA90060B119 /* JSQMessagesCollectionViewLayoutAttributes.m in Sources */,
 				A9D3424A1B305EA90060B119 /* JSQMessagesKeyboardController.m in Sources */,
@@ -703,13 +716,16 @@
 				A904A4231B2841DD006571F7 /* ClubViewController.swift in Sources */,
 				A9D3426A1B31590B0060B119 /* LocationViewController.swift in Sources */,
 				A9959C881B2065E2006224B4 /* LocksmithRequest.swift in Sources */,
+				A905EE321B39745500D65B53 /* ReviewViewController.swift in Sources */,
 				A9D3425E1B305EA90060B119 /* JSQMessagesLoadEarlierHeaderView.m in Sources */,
 				A9D342481B305EA90060B119 /* UIImage+JSQMessages.m in Sources */,
 				A9BAF6E41B304C4E00734507 /* MessagesViewController.swift in Sources */,
 				A9110A8E1B15FC7B00DE37C9 /* AppDelegate.swift in Sources */,
+				A905EE301B38048000D65B53 /* UpdateProfileViewController.swift in Sources */,
 				A9D342551B305EA90060B119 /* JSQMessagesCollectionView.m in Sources */,
 				A9D3425B1B305EA90060B119 /* JSQMessagesComposerTextView.m in Sources */,
 				A9D3424D1B305EA90060B119 /* JSQMessagesAvatarFactory.m in Sources */,
+				A959CF251B34057500A47FB0 /* FriendsViewController.swift in Sources */,
 				A9D342461B305EA90060B119 /* NSString+JSQMessages.m in Sources */,
 				A9D342571B305EA90060B119 /* JSQMessagesCollectionViewCellIncoming.m in Sources */,
 				A9D3424B1B305EA90060B119 /* JSQMessagesViewController.m in Sources */,

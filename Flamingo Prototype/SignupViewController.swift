@@ -20,17 +20,22 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     @IBOutlet weak var fbLogin: FBSDKLoginButton!
     @IBOutlet weak var ageText: UITextField!
     @IBOutlet weak var genderText: UITextField!
+    @IBOutlet weak var cityText: UITextField!
 
     let activityIndicator = UIActivityIndicatorView()
     
+    var cityPickerView: UIPickerView = UIPickerView()
+    let cityArray = ["Basel"]
     var genderPickerView: UIPickerView = UIPickerView()
     let genderArray: [String] = ["Male", "Female", "Other"]
-    var agePickerView: UIPickerView = UIPickerView()
+    var datePickerView: UIDatePicker = UIDatePicker()
     let ageArray: [Int] = [Int](18...100)
     var success: Bool = false
     
     let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     let defaults = NSUserDefaults.standardUserDefaults()
+    
+
     
     // Function to register a new user using signup button
     @IBAction func signupButton(sender: AnyObject) {
@@ -41,6 +46,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         let last = lastnameText.text
         let age = ageText.text
         let gender = genderText.text
+        let city = cityText.text
         let pass = passText.text
         
         // Check to see that all forms are filled correctly
@@ -72,26 +78,36 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
             alertBadSignup("Password must be at least 8 characters.")
             return
         }
+        if city.isEmpty {
+            alertBadSignup("Please input a gender and try again.")
+            return
+        }
         
         activityIndicator.startAnimating()
         
         // Use signup method to register, callback either goes to HomeViewController with success or alerts failed registration
-        signup(["provider": "mobile", "email": "\(email)", "username": "\(user)", "password": "\(pass)", "firstname": "\(first)", "lastname": "\(last)", "gender": "\(gender)", "age": "\(age)"], url: "\(homeURL)register"){
+        signup(["provider": "mobile", "email": "\(email)", "username": "\(user)", "password": "\(pass)", "firstname": "\(first)", "lastname": "\(last)", "gender": "\(gender)", "birthday": "\(age)", "city": "\(city)"], url: "\(homeURL)register"){
             (result: Bool, msg: String, id: String) in
             self.success = result
             println(self.success)
             if(self.success){
                 NSOperationQueue.mainQueue().addOperationWithBlock{
-                    // TODO: add user info to keychain and user info, create cookie
-                    self.defaults.setValue("\(user)", forKey: "username")
-                    self.defaults.setValue(true, forKey: "loggedin")
-                    self.defaults.setValue(id, forKey: "id")
-                    self.defaults.setValue("\(first)", forKey: "firstname")
-                    self.defaults.setValue("\(last)", forKey: "lastname")
-                    self.defaults.setValue("\(gender)", forKey: "gender")
-                    self.defaults.setValue("\(age)", forKey: "age")
-                    self.activityIndicator.stopAnimating()
-                    self.performSegueWithIdentifier("successfulSignup", sender: self)
+                    let sURL = "\(self.homeURL)users/\(id)"
+                    println("GETTING USER")
+                    self.getUserData(sURL){
+                        (dict: NSDictionary) in
+                        self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                        self.defaults.setValue("", forKey: "password")
+                        println("User data fetched frpom getuserdata: \(dict)")
+                        // Save password to Keychain for future authentifications
+                        let service = NSBundle.mainBundle().bundleIdentifier
+                        let saveError = Locksmith.saveData(["password":pass], forUserAccount: user, inService: service!)
+                        if saveError != nil {
+                            println("Keychain save error: \(saveError)")
+                        }
+                        self.activityIndicator.stopAnimating()
+                        self.performSegueWithIdentifier("successfulSignup", sender: self)
+                    }
                 }
             } else {
                 NSOperationQueue.mainQueue().addOperationWithBlock{
@@ -126,6 +142,28 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         }
     }
     
+    func getUserData(sUrl: String, completion: (dict: NSDictionary) -> Void) {
+        // just a GET request
+        let url = NSURL(string: sUrl)
+        var userData = NSDictionary()
+        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+            var parseError: NSError?
+            let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
+            println("User data: \(json)")
+            println("Response: \((response as! NSHTTPURLResponse).statusCode)")
+            println(json.dynamicType)
+            if(json != nil){
+                userData = json as! NSDictionary
+                completion(dict: userData)
+            } else {
+                completion(dict: userData)
+            }
+        }
+        task.resume()
+        println(userData)
+    }
+    
     // Signup function (POST request with proper params)
     func signup(params : Dictionary<String, String>, url : String, postCompleted : (succeeded: Bool, msg: String, id: String) -> ()) {
         
@@ -153,7 +191,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         var task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
             println("Response: \(response)")
             var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
-            println("Body: \(strData)")
+//            println("Body: \(strData)")
             var err: NSError?
             let json = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments,  error: &err) as? NSDictionary
             
@@ -171,7 +209,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                 println(err!)
                 println()
                 let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
-                println("Error could not parse JSON: '\(jsonStr)'")
+//                println("Error could not parse JSON: '\(jsonStr)'")
                 postCompleted(succeeded: succeeded, msg: "Error", id: httpResponse.allHeaderFields["id"] as! String)
             }
             else {
@@ -188,33 +226,45 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     
     /* Picker View Delegate Functions */
     
+    // Functions for birthday picker, don't use picker delegate
+    @IBAction func datePickerEditing(sender: UITextField) {
+        sender.inputView = datePickerView
+        datePickerView.addTarget(self, action: Selector("datePickerValueChanged:"), forControlEvents: UIControlEvents.ValueChanged)
+    }
+    
+    func datePickerValueChanged(sender: UIDatePicker) {
+        var dateformatter = NSDateFormatter()
+        dateformatter.dateFormat = "MM/dd/yyyy"
+        ageText.text = dateformatter.stringFromDate(sender.date)
+    }
+    
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         return 1
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if(pickerView.tag == 0){
-            return ageArray.count
-        } else {
+        if(pickerView.tag == 1){
             return genderArray.count
+        } else {
+            return cityArray.count
         }
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-        if(pickerView.tag == 0){
-            return String(ageArray[row])
+        if(pickerView.tag == 1){
+            return String(genderArray[row])
         } else {
-            return genderArray[row]
+            return cityArray[row]
         }
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if(pickerView.tag == 0){
-            ageText.text = String(ageArray[row])
-            ageText.resignFirstResponder()
-        } else {
+        if(pickerView.tag == 1){
             genderText.text = genderArray[row]
             genderText.resignFirstResponder()
+        } else {
+            cityText.text = cityArray[row]
+            cityText.resignFirstResponder()
         }
     }
     
@@ -274,21 +324,28 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                 
                 println("FB Credentials: \(email), \(username), \(pass), \(first), \(last), \(gender), \(birthday)")
                 
-                self.signup(["email": "\(email)", "username": "\(username)", "password": "\(pass)", "firstname": "\(first)", "lastname": "\(last)", "provider": "facebook", "providerId": "\(providerId)", "providerCheck": "facebook"], url: "\(self.homeURL)register"){
+                self.signup(["email": "\(email)", "username": "\(username)", "password": "\(pass)", "gender": "\(gender)", "firstname": "\(first)", "lastname": "\(last)", "birthday": "\(birthday)", "provider": "facebook", "providerId": "\(providerId)", "providerCheck": "facebook"], url: "\(self.homeURL)register"){
                     (result: Bool, msg: String, id: String) in
                     self.success = result
                     println(self.success)
                     if(self.success){
                         NSOperationQueue.mainQueue().addOperationWithBlock{
-                            self.defaults.setValue("\(username)", forKey: "username")
-                            self.defaults.setValue("\(email)", forKey: "email")
-                            self.defaults.setValue(true, forKey: "loggedin")
-                            self.defaults.setValue(id, forKey: "id")
-                            self.defaults.setValue("\(first)", forKey: "firstname")
-                            self.defaults.setValue("\(last)", forKey: "lastname")
-                            self.defaults.setValue("\(gender)", forKey: "gender")
-                            self.defaults.setValue("\(birthday)", forKey: "age")
-                            self.performSegueWithIdentifier("successfulSignup", sender: self)
+                            let sURL = "\(self.homeURL)users/\(id)"
+                            println("GETTING USER")
+                            self.getUserData(sURL){
+                                (dict: NSDictionary) in
+                                self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                                self.defaults.setValue("", forKey: "password")
+                                println("User data fetched frpom getuserdata: \(dict)")
+                                // Save password to Keychain for future authentifications
+                                let service = NSBundle.mainBundle().bundleIdentifier
+                                let saveError = Locksmith.saveData(["password":pass], forUserAccount: username, inService: service!)
+                                if saveError != nil {
+                                    println("Keychain save error: \(saveError)")
+                                }
+                                self.activityIndicator.stopAnimating()
+                                self.performSegueWithIdentifier("successfulSignup", sender: self)
+                            }
                         }
                     } else {
                         let loginVC = LoginViewController()
@@ -299,19 +356,29 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                             println(self.success)
                             if(self.success){
                                 NSOperationQueue.mainQueue().addOperationWithBlock{
-                                    self.defaults.setValue("\(email)", forKey: "email")
-                                    self.defaults.setValue("\(username)", forKey: "username")
-                                    self.defaults.setValue(true, forKey: "loggedin")
-                                    self.defaults.setValue(id, forKey: "id")
-                                    self.defaults.setValue("\(first)", forKey: "firstname")
-                                    self.defaults.setValue("\(last)", forKey: "lastname")
-                                    self.defaults.setValue("\(gender)", forKey: "gender")
-                                    self.defaults.setValue("\(birthday)", forKey: "age")
-                                    self.activityIndicator.stopAnimating()
-                                    self.performSegueWithIdentifier("successfulSignup", sender: self)
+                                    let sURL = "\(self.homeURL)users/\(id)"
+                                    println("GETTING USER")
+                                    self.getUserData(sURL){
+                                        (dict: NSDictionary) in
+                                        self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                                        self.defaults.setValue("", forKey: "password")
+                                        println("User data fetched frpom getuserdata: \(dict)")
+                                        // Save password to Keychain for future authentifications
+                                        let service = NSBundle.mainBundle().bundleIdentifier
+                                        let saveError = Locksmith.saveData(["password":pass], forUserAccount: username, inService: service!)
+                                        if saveError != nil {
+                                            println("Keychain save error: \(saveError)")
+                                        }
+                                        self.activityIndicator.stopAnimating()
+                                        self.performSegueWithIdentifier("successfulSignup", sender: self)
+                                    }
                                 }
                             } else {
                                 self.alertBadSignup("")
+                                NSOperationQueue.mainQueue().addOperationWithBlock{
+                                    self.activityIndicator.stopAnimating()
+                                    self.alertBadSignup("")
+                                }
                             }
                         }
                     }
@@ -368,18 +435,19 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         fbLogin.delegate = self
         
         // Set up picker views for input on text fields
-        agePickerView.delegate = self
-        agePickerView.dataSource = self
-        agePickerView.tag = 0
-        ageText.inputView = agePickerView
-        agePickerView.backgroundColor = UIColor.clearColor()
-        agePickerView.selectRow(7, inComponent: 0, animated: false)
+        datePickerView.datePickerMode = UIDatePickerMode.Date
         
         genderPickerView.delegate = self
         genderPickerView.dataSource = self
         genderPickerView.tag = 1
         genderText.inputView = genderPickerView
         genderPickerView.backgroundColor = UIColor.clearColor()
+        
+        cityPickerView.delegate = self
+        cityPickerView.dataSource = self
+        cityPickerView.tag = 2
+        cityText.inputView = cityPickerView
+        cityPickerView.backgroundColor = UIColor.clearColor()
         
         // Set up text field delegates
         emailText.delegate = self
@@ -389,6 +457,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         passText.delegate = self
         ageText.delegate = self
         genderText.delegate = self
+        cityText.delegate = self
         
         // set to obscure password input
         passText.secureTextEntry = true

@@ -14,10 +14,13 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
     let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     var type: String = ""
     var city: String!
+    var id: String!
     var locationName: String!
     let locationManager = CLLocationManager()
     var groupSize: Int!
     var age: Int!
+    var price: Int!
+    var taggedFriends = Dictionary<String, UIImage>()
 
     func getAllLocations(completion: (result: NSDictionary)->Void) -> Void{
         // just a GET request
@@ -48,9 +51,10 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
 //            let locCity = loc["city"] as! String
 //            let ageMin = loc["ageMin"] as! Int
 //            let ageMax = loc["ageMax"] as! Int
+//              let priceRange = loc["price"]
 //            // TODO: make sure all ages are ints
 //            // TODO: add groupsize, price
-//            if(locCity == city && ageMin < age && ageMax > age) {
+//            if(locCity == city && ageMin < age && ageMax > age && priceRange < price) {
 //                possibles.append(loc as! NSDictionary)
 //                if(loc["featured"] as! String == "true") {
 //                    featured.append(loc as! NSDictionary)
@@ -81,6 +85,13 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set background to gradient image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        self.view.backgroundColor = UIColor(patternImage: image)
+        
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
@@ -93,6 +104,16 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
             messagesVC.city = self.city
             messagesVC.groupSize = self.groupSize
             messagesVC.chatroom = (self.city + "-" + self.locationName).stringByReplacingOccurrencesOfString(" ", withString: "-")
+        }
+        if(segue.identifier == "taggedFriendsSegue"){
+            let taggedVC = segue.destinationViewController as! TaggedFriendsTableViewController
+            taggedVC.taggedFriends = taggedFriends
+        }
+        if(segue.identifier == "reviewSegue"){
+            let reviewVC = segue.destinationViewController as! ReviewViewController
+            reviewVC.type = type
+            reviewVC.locationName = locationName
+            reviewVC.id = id
         }
     }
     
