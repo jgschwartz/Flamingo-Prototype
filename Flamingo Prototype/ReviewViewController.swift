@@ -14,11 +14,33 @@ class ReviewViewController: UIViewController {
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var titleText: UITextField!
     @IBOutlet weak var reviewText: UITextView!
-    
+    @IBOutlet weak var diceView: UIImageView!
+    @IBOutlet weak var ratingSlider: UISlider!
+
     var type : String!
     var locationName : String!
     var id : String!
     let homeURL = "https://thawing-garden-5169.herokuapp.com/"
+    
+    @IBAction func sliderAction(sender: UISlider) {
+        let fVal = round(sender.value)
+        ratingSlider.setValue(fVal, animated: true)
+        
+        let value = Int(round(sender.value))
+        if value == 0 {
+            diceView.image = UIImage(named: "Dice 0")
+        } else if value == 1 {
+            diceView.image = UIImage(named: "Dice 1")
+        } else if value == 2 {
+            diceView.image = UIImage(named: "Dice 2")
+        } else if value == 3 {
+            diceView.image = UIImage(named: "Dice 3")
+        } else if value == 4 {
+            diceView.image = UIImage(named: "Dice 4")
+        } else if value == 5 {
+            diceView.image = UIImage(named: "Dice 5")
+        }
+    }
     
     @IBAction func submitButton(sender: AnyObject) {
         let title = titleText.text

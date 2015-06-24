@@ -2117,7 +2117,7 @@
                                 </variation>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ONk-o8-sHJ">
-                                <rect key="frame" x="248" y="319" width="103" height="30"/>
+                                <rect key="frame" x="248" y="509" width="103" height="30"/>
                                 <state key="normal" title="Submit Review">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -2136,25 +2136,47 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" enablesReturnKeyAutomatically="YES"/>
                             </textView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Dice 4" translatesAutoresizingMaskIntoConstraints="NO" id="07H-5m-aFx">
+                                <rect key="frame" x="250" y="319" width="100" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="7A3-ho-cMa"/>
+                                    <constraint firstAttribute="width" constant="100" id="imP-4F-pCY"/>
+                                </constraints>
+                            </imageView>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="4" minValue="0.0" maxValue="5" translatesAutoresizingMaskIntoConstraints="NO" id="6AU-lF-LY1">
+                                <rect key="frame" x="171" y="427" width="258" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="254" id="chH-ng-KO0"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="sliderAction:" destination="U87-xW-1s1" eventType="valueChanged" id="Umg-dj-g2n"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="centerX" secondItem="07H-5m-aFx" secondAttribute="centerX" id="1Ha-jz-8MY"/>
+                            <constraint firstAttribute="centerX" secondItem="6AU-lF-LY1" secondAttribute="centerX" id="2hm-4E-35O"/>
                             <constraint firstAttribute="centerX" secondItem="mvC-v6-TPc" secondAttribute="centerX" id="5am-9e-FNh"/>
                             <constraint firstAttribute="centerX" secondItem="K7m-Id-mgd" secondAttribute="centerX" id="BW5-sg-NaN"/>
+                            <constraint firstItem="6AU-lF-LY1" firstAttribute="top" secondItem="07H-5m-aFx" secondAttribute="bottom" constant="8" id="HU4-te-MOu"/>
+                            <constraint firstItem="07H-5m-aFx" firstAttribute="top" secondItem="K7m-Id-mgd" secondAttribute="bottom" constant="8" id="KqM-9t-g8K"/>
                             <constraint firstItem="PBO-bT-HEd" firstAttribute="leading" secondItem="rbb-57-jJB" secondAttribute="leadingMargin" constant="50" id="Pg4-g8-OwM"/>
                             <constraint firstItem="K7m-Id-mgd" firstAttribute="top" secondItem="PBO-bT-HEd" secondAttribute="bottom" constant="8" id="RLZ-QS-dxW"/>
                             <constraint firstItem="PBO-bT-HEd" firstAttribute="width" secondItem="K7m-Id-mgd" secondAttribute="width" id="Uk3-9o-dyW"/>
                             <constraint firstItem="PBO-bT-HEd" firstAttribute="top" secondItem="mvC-v6-TPc" secondAttribute="bottom" constant="31.5" id="VUM-FO-LUb"/>
                             <constraint firstAttribute="centerX" secondItem="PBO-bT-HEd" secondAttribute="centerX" id="Vp2-Tc-ekg"/>
                             <constraint firstAttribute="centerX" secondItem="ONk-o8-sHJ" secondAttribute="centerX" id="WUS-a5-5wX"/>
-                            <constraint firstItem="ONk-o8-sHJ" firstAttribute="top" secondItem="K7m-Id-mgd" secondAttribute="bottom" constant="8" id="Wgk-qm-sa5"/>
+                            <constraint firstItem="Ty1-GX-sWd" firstAttribute="top" secondItem="ONk-o8-sHJ" secondAttribute="bottom" constant="61" id="aQD-R4-Xbx"/>
                             <constraint firstItem="mvC-v6-TPc" firstAttribute="top" secondItem="TEj-Cz-D66" secondAttribute="bottom" constant="22.5" id="vbU-FL-kRD"/>
                             <constraint firstAttribute="centerX" secondItem="TEj-Cz-D66" secondAttribute="centerX" id="ygD-df-NiX"/>
                             <constraint firstItem="TEj-Cz-D66" firstAttribute="top" secondItem="DR6-Ph-YAD" secondAttribute="bottom" constant="8" id="zxN-sW-9ZZ"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="diceView" destination="07H-5m-aFx" id="rye-6K-yoo"/>
                         <outlet property="locationLabel" destination="mvC-v6-TPc" id="Oaz-AL-SuV"/>
+                        <outlet property="ratingSlider" destination="6AU-lF-LY1" id="eFU-ar-mfc"/>
                         <outlet property="reviewText" destination="K7m-Id-mgd" id="I3k-61-XQ1"/>
                         <outlet property="titleText" destination="PBO-bT-HEd" id="XdV-D6-ivt"/>
                     </connections>
@@ -2182,8 +2204,11 @@
             <point key="canvasLocation" x="4923" y="3019"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Dice 4" width="39" height="39"/>
+    </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="bLu-TY-ECG"/>
+        <segue reference="vOg-Qi-kJs"/>
         <segue reference="VfF-jx-4kB"/>
         <segue reference="PIA-RS-UxP"/>
         <segue reference="6M0-AN-BVz"/>
