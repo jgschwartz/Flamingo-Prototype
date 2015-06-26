@@ -175,6 +175,9 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
             self.firstnameText.resignFirstResponder()
             self.lastnameText.resignFirstResponder()
             self.passText.resignFirstResponder()
+            cityText.resignFirstResponder()
+            ageText.resignFirstResponder()
+            genderText.resignFirstResponder()
         }
         
         // Create request and format correctly
@@ -272,6 +275,15 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     
     func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
         println("User Logged In")
+        
+        self.emailText.resignFirstResponder()
+        self.userText.resignFirstResponder()
+        self.firstnameText.resignFirstResponder()
+        self.lastnameText.resignFirstResponder()
+        self.passText.resignFirstResponder()
+        cityText.resignFirstResponder()
+        ageText.resignFirstResponder()
+        genderText.resignFirstResponder()
         
         if ((error) != nil)
         {

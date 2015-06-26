@@ -13,15 +13,14 @@ class TaggedFriendsTableViewController: UITableViewController {
     var taggedFriends = Dictionary<String, UIImage>()
     var taggedArray = [String]()
     let defaults = NSUserDefaults.standardUserDefaults()
+    var parentVC: TabBarController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         navigationItem.title = "Friends Attending"
         
-        if let taggedData = defaults.objectForKey("taggedFriends") as? NSData {
-            taggedFriends = (NSKeyedUnarchiver.unarchiveObjectWithData(taggedData) as? Dictionary<String, UIImage>)!
-        }
+        taggedFriends = parentVC.taggedFriends
         
         taggedArray = [String](taggedFriends.keys)
 

@@ -9,48 +9,98 @@
 import UIKit
 import GoogleMaps
 
-class BarViewController: LocationViewController, GMSMapViewDelegate {
+class BarViewController: UIViewController {
 
+    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
+    var type: String = ""
+    var city: String!
+    var locationID: String!
+    var locationName: String!
+    var groupSize: Int!
+    var age: Int!
+    var price: Int!
+    var taggedFriends = Dictionary<String, UIImage>()
+    
     @IBOutlet weak var profileButton: UIBarButtonItem!
     @IBOutlet weak var barHeader: UILabel!
     let activityIndicator = UIActivityIndicatorView()    
-    @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var chatButton: UIButton!
     @IBOutlet weak var taggedFriendsButton: UIButton!
-    
     let defaults = NSUserDefaults.standardUserDefaults()
+    var parentVC : TabBarController!
     
-    func mapView(mapView: GMSMapView!, didTapInfoWindowOfMarker marker: GMSMarker!) {
-        UIApplication.sharedApplication().openURL(NSURL(string: marker.userData as! String)!)
+    func getAllLocations(completion: (result: NSDictionary)->Void) -> Void{
+        // just a GET request
+        let url = NSURL(string: "\(homeURL)api/\(type)")
+        var allLocations = NSArray()
+        var location = NSDictionary()
+        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+            var parseError: NSError?
+            let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
+            println("All Locations: \(json)")
+            if(json != nil){
+                allLocations = json as! NSArray
+                location = self.chooseALocation(allLocations)
+                completion(result: location)
+            } else {
+                completion(result: location)
+            }
+            
+        }
+        task.resume()
     }
     
-    @IBAction func showTaggedFriends(sender: AnyObject) {
-        // Add the view as a subview and position it offscreen just below the current view
-//        var myHalfView = UITextView(frame: CGRect(x: 0.5, y: 0.5, width: self.view.frame.width/2, height: self.view.frame.height + 64))
-//        myHalfView.backgroundColor = self.view.backgroundColor
-//        self.view.addSubview(myHalfView)
-//        var offScreenFrame = myHalfView.bounds
-//        offScreenFrame.origin = CGPointMake(0.5, CGRectGetMaxY(self.view.frame))
-//        var label = "Your friends attending are:\n"
-//        for friend in friendsArray {
-//            label += "\(friend)\n"
-//        }
-//        println(label)
-//        myHalfView.text = label
-//        
-//        UIView.beginAnimations(nil, context: nil)
-//        myHalfView.center = CGPointMake(myHalfView.center.x, myHalfView.center.y - myHalfView.bounds.size.height)
-//        UIView.commitAnimations()
-        
-        
+    func chooseALocation(allLocations: NSArray) -> NSDictionary{
+        //        var possibles = [NSDictionary]()
+        //        var featured = [NSDictionary]()
+        //        for loc in allLocations {
+        //            let locCity = loc["city"] as! String
+        //            let ageMin = loc["ageMin"] as! Int
+        //            let ageMax = loc["ageMax"] as! Int
+        //              let priceRange = loc["price"]
+        //            // TODO: make sure all ages are ints
+        //            // TODO: add groupsize, price
+        //            if(locCity == city && ageMin < age && ageMax > age && priceRange < price) {
+        //                possibles.append(loc as! NSDictionary)
+        //                if(loc["featured"] as! String == "true") {
+        //                    featured.append(loc as! NSDictionary)
+        //                }
+        //            }
+        //        }
+        //        if(featured.count > 0){
+        //            return featured[0]
+        //        } else {
+        //            return possibles[0]
+        //        }
+        return allLocations[1] as! NSDictionary
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.type = "bars"
+        parentVC = parentViewController as! TabBarController
+        self.type = parentVC.type
         
-        mapView.delegate = self
+//            locationName = parentVC.locationName
+        city = parentVC.city
+        age = parentVC.age
+        groupSize = parentVC.groupSize
+        price = parentVC.price
+        
+        
+        // Set background to gradient image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        self.view.backgroundColor = UIColor(patternImage: image)
+        
+        // disable tab bar until location is retrieved and loaded
+        let tabItems = parentVC.tabBar.items as! [UITabBarItem]
+        for item in tabItems {
+            item.enabled = false
+        }
         
         // set up activity indicator to be gray and fill screen
         activityIndicator.frame = self.view.frame
@@ -59,8 +109,8 @@ class BarViewController: LocationViewController, GMSMapViewDelegate {
         activityIndicator.center = self.view.center
         activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
         self.view.addSubview(activityIndicator)
-        activityIndicator.startAnimating()
         
+        activityIndicator.startAnimating()
         getAllLocations({
             (result: NSDictionary) in
             NSOperationQueue.mainQueue().addOperationWithBlock{
@@ -72,36 +122,36 @@ class BarViewController: LocationViewController, GMSMapViewDelegate {
                     self.activityIndicator.stopAnimating()
                 } else {
                     self.locationName = result["name"] as! String
-                    self.id = result["_id"] as! String
+                    let parent = self.parentViewController as! TabBarController
+                    parent.locationName = self.locationName
+                    self.locationID = result["_id"] as! String
                     let address = (result["address"] as! String) + ", " + self.city
                     let query = (self.locationName + " " + self.city).stringByReplacingOccurrencesOfString(" ", withString: "+")
                     println("ADDRESS: \(address)")
                     
-                    // Look up address and set map position
+                    // Look up address and get map coordinates
                     var geocoder = CLGeocoder()
                     geocoder.geocodeAddressString(address, completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
                         if let placemark = placemarks?[0] as? CLPlacemark {
                             let newLat = placemark.location.coordinate.latitude
                             let newLong = placemark.location.coordinate.longitude
                             println("LAT: \(newLat), LONG: \(newLong)")
-                            let position = CLLocationCoordinate2DMake(newLat, newLong)
-                            let camera = GMSCameraPosition.cameraWithLatitude(newLat, longitude: newLong, zoom: 15)
-                            self.mapView.camera = camera
-                            let marker = GMSMarker(position: position)
-                            marker.snippet = "Get Directions"
-                            marker.userData = self.setURLScheme(newLat, destLong: newLong, query: query)
-                            marker.title = self.locationName
-                            marker.groundAnchor = CGPointMake(0.5, 0.5)
-                            marker.map = self.mapView
+                            self.parentVC.lat = newLat
+                            self.parentVC.long = newLong
                         }
                     })
                     
                     // Set text for bar result
                     println("We're going to \(self.locationName)!")
+                    self.parentVC.locationName = self.locationName
                     self.barHeader.text = self.locationName
                     self.barHeader.hidden = false
                     self.chatButton.hidden = false
                     
+                    for item in tabItems {
+                        item.enabled = true
+                    }
+
                     self.activityIndicator.stopAnimating()
                 }
             }
@@ -116,14 +166,14 @@ class BarViewController: LocationViewController, GMSMapViewDelegate {
     }
     
     override func viewWillAppear(animated: Bool) {
-        if let taggedData = defaults.objectForKey("taggedFriends") as? NSData {            
-            taggedFriends = (NSKeyedUnarchiver.unarchiveObjectWithData(taggedData) as? Dictionary<String, UIImage>)!
+        taggedFriends = parentVC.taggedFriends
+        if taggedFriends.count > 0 {
             let count = taggedFriends.count
             let friendsPlural = count > 1 ? "Friends" : "Friend"
             taggedFriendsButton.setTitle("\(count) \(friendsPlural)", forState: UIControlState.Normal)
             taggedFriendsButton.hidden = false
         } else {
-            taggedFriendsButton.hidden = true
+            self.taggedFriendsButton.hidden = true
         }
     }
 
@@ -131,6 +181,15 @@ class BarViewController: LocationViewController, GMSMapViewDelegate {
         super.didReceiveMemoryWarning()
     }
 
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        super.prepareForSegue(segue, sender: sender)
+        if(segue.identifier == "taggedFriendsSegue"){
+            let taggedVC = segue.destinationViewController as! TaggedFriendsTableViewController
+            taggedVC.taggedFriends = taggedFriends
+            taggedVC.parentVC = parentVC
+        }
+    }
+    
     /*
     // MARK: - Navigation
 

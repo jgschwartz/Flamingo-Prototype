@@ -18,6 +18,7 @@ class MessagesViewController: JSQMessagesViewController {
     var city: String!
     var groupName = "Group 1"
     var groupSize: Int!
+    var sessionID: String!
     
     var messages = [Message]()
     var avatars = Dictionary<String, UIImage>()
@@ -126,32 +127,23 @@ class MessagesViewController: JSQMessagesViewController {
         avatars[name] = userImage
     }
     
-    func setSessionID() -> String{
-        let id = String(NSDate().hashValue)
-        defaults.setValue(id, forKey: "session")
-        return id
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        chatroom = (self.city + "-" + self.locationName).stringByReplacingOccurrencesOfString(" ", withString: "-")
+
         inputToolbar.contentView.leftBarButtonItem = nil
         automaticallyScrollsToMostRecentMessage = true
         navigationItem.title = "\(locationName)"
         groupsRef = Firebase(url: "https://startup-stuff.firebaseio.com/chatrooms/\(chatroom)/groups")
         
-//        // A way to track the accounts behind each message
-//        sender = defaults.stringForKey("username")
-//        sender = (sender != nil) ? sender : setSessionID()
-
-        var userName = ""
         if (defaults.stringForKey("username") != nil){
             sender = defaults.stringForKey("username")
-            userName = defaults.stringForKey("username")!
-        } else if (defaults.stringForKey("session") != nil){
-            sender = defaults.stringForKey("session")
-            userName = defaults.stringForKey("session")!
+        } else if sessionID != nil {
+            sender = sessionID
         } else {
-            sender = setSessionID()
+            sessionID = String(NSDate().hashValue)
+            sender = sessionID
         }
         colorArray = sorted(colorArray) {_, _ in arc4random() % 2 == 0} // shuffle array
         
@@ -163,7 +155,7 @@ class MessagesViewController: JSQMessagesViewController {
                 let enumerator = snapshot.children
                 while let child = enumerator.nextObject() as? FDataSnapshot {
                     let tempSender = child.value.valueForKey("sender") as! String
-                    if userName == tempSender {
+                    if self.sender == tempSender {
                         self.groupName = child.value.valueForKey("group") as! String
                         break
                     } else if curChild == childrenCount { // NSEnumerator has no hasNext() function...
@@ -231,8 +223,8 @@ class MessagesViewController: JSQMessagesViewController {
         
         var color = colorArray[groupNum % colorArray.count] // mod to make sure no groupNum is outside of range
         let cicolor = CIColor(color: color)
-        println("\(message.groupName), \(groupNum)")
-        println("red: \(cicolor!.red() * 255), green: \(cicolor!.green() * 255), blue: \(cicolor!.blue() * 255)")
+//        println("\(message.groupName), \(groupNum)")
+//        println("red: \(cicolor!.red() * 255), green: \(cicolor!.green() * 255), blue: \(cicolor!.blue() * 255)")
         
         incomingBubbleImageView = JSQMessagesBubbleImageFactory.incomingMessageBubbleImageViewWithColor(color)
         return UIImageView(image: incomingBubbleImageView.image, highlightedImage: incomingBubbleImageView.highlightedImage)

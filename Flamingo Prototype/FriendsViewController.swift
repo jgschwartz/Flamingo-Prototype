@@ -18,13 +18,13 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var autoCompleteTableView: UITableView!
     var autoCompleteArray = [String]()
-    var taggedFriends = Dictionary<String, UIImage>()
     var selected = Dictionary<String, UIImage?>()
+    var parentVC: TabBarController!
     
     @IBAction func tagButton(sender: AnyObject) {
         if !selected.isEmpty {
             filteredFriendsArray = filteredFriendsArray.filter({$0 != self.textField.text})
-            taggedFriends.updateValue(selected.values.first!!, forKey: selected.keys.first!)
+            parentVC.taggedFriends.updateValue(selected.values.first!!, forKey: selected.keys.first!)
             selected.removeAll(keepCapacity: true)
         }
         autoCompleteArray.removeAll(keepCapacity: false)
@@ -33,10 +33,8 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
     }
     
     @IBAction func removeTags(sender: AnyObject) {
-        defaults.removeObjectForKey("taggedFriends")
+        parentVC.taggedFriends.removeAll(keepCapacity: false)
         filteredFriendsArray = [String](nameidDict.keys)
-        taggedFriends.removeAll(keepCapacity: false)
-        println("Tagged Friends Cleared")
     }
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool
@@ -112,14 +110,11 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
         
-        if let taggedData = defaults.objectForKey("taggedFriends") as? NSData {
-            println("not empty")
-            taggedFriends = (NSKeyedUnarchiver.unarchiveObjectWithData(taggedData) as? Dictionary<String, UIImage>)!
-            println("tagged friends: \(taggedFriends.keys))")
-
-        }
+        parentVC = parentViewController as! TabBarController
         
         let params = ["fields": "context.fields(mutual_friends)"]
+//        let params = ["fields": "friends"]
+
         
         var friendID = ""
         let graphRequest : FBSDKGraphRequest = FBSDKGraphRequest(graphPath: "me", parameters: params)
@@ -132,9 +127,12 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
             }
             else
             {
-//                println("fetched data: \(result)")
+                println("fetched data: \(result)")
                 let context: NSDictionary = result.valueForKey("context") as! NSDictionary
                 let friends = context.valueForKey("mutual_friends") as! NSDictionary
+                
+//                let friends = result.valueForKey("friends") as! NSDictionary
+                
                 let data = friends.valueForKey("data") as! [NSDictionary]
                 for friend in data {
                     if let friendName: String = friend["name"] as? String {
@@ -144,7 +142,7 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
                 }
             }
             // restrict choices to those not already tagged
-            self.filteredFriendsArray = [String](self.nameidDict.keys).filter({!contains(self.taggedFriends.keys, $0)})
+            self.filteredFriendsArray = [String](self.nameidDict.keys).filter({!contains(self.parentVC.taggedFriends.keys, $0)})
             self.graphForPicture()
         })
 
@@ -179,13 +177,6 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        if !taggedFriends.isEmpty {
-            let encodedTaggedFriends = NSKeyedArchiver.archivedDataWithRootObject(taggedFriends)
-            defaults.setObject(encodedTaggedFriends, forKey: "taggedFriends")
-        }
     }
     
     /*

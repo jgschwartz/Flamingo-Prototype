@@ -166,6 +166,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
         println("User Logged In")
         
+        userText.resignFirstResponder()
+        passText.resignFirstResponder()
+        
         if ((error) != nil)
         {
             // Process error
@@ -269,7 +272,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                             } else {
                                 self.alertBadLogin("")
                                 NSOperationQueue.mainQueue().addOperationWithBlock{
-                                    self.passText.text = nil
                                     self.activityIndicator.stopAnimating()
                                 }
                             }

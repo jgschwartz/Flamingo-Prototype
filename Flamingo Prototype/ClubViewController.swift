@@ -53,7 +53,7 @@ class ClubViewController: LocationViewController, GMSMapViewDelegate {
                 } else {
                     
                     self.locationName = result["name"] as! String
-                    self.id = result["_id"] as! String
+                    self.locationID = result["_id"] as! String
                     let address = (result["address"] as! String) + ", " + self.city
                     let query = (self.locationName + " " + self.city).stringByReplacingOccurrencesOfString(" ", withString: "+")
                     println("ADDRESS: \(address)")

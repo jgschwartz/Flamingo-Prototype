@@ -17,9 +17,7 @@ class ReviewViewController: UIViewController {
     @IBOutlet weak var diceView: UIImageView!
     @IBOutlet weak var ratingSlider: UISlider!
 
-    var type : String!
-    var locationName : String!
-    var id : String!
+    var parentVC: TabBarController!
     let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     
     @IBAction func sliderAction(sender: UISlider) {
@@ -45,29 +43,40 @@ class ReviewViewController: UIViewController {
     @IBAction func submitButton(sender: AnyObject) {
         let title = titleText.text
         let review = reviewText.text
-        if title.isEmpty {
-            alertSubmit("Missing Title", message: "Your review must have a title to be submitted.")
-        } else if review.isEmpty {
-            alertSubmit("Missing Content", message: "You must leave some kind of message reviewing the location.")
+        let emptyTitle = title.isEmpty
+        let emptyReview = review.isEmpty
+        if emptyTitle != emptyReview {
+            alertSubmit("Invalid Content", message: "Both title and review must be filled out or left blank.")
         }
-        submitReview(title, review: review, rating: nil, completion: {
+//        else if review.isEmpty {
+//            alertSubmit("Missing Content", message: "You must leave some kind of message reviewing the location.")
+//        }
+        submitReview(title, review: review, rating: Int(round(ratingSlider.value)), completion: {
             (result: Bool, id: String) in
-            println("SUCCESSFUL REVIEW")
+            if result {
+                println("SUCCESSFUL REVIEW")
+                self.reviewText.text = nil
+                self.titleText.text = nil
+                self.alertSubmit("Review Submitted", message: "Thanks for helping us make this place better for users like you!")
+            } else {
+                println("Failed to post review")
+                self.alertSubmit("Error", message: "Sorry, there was a problem processing your review. Please try again.")
+            }
         })
     }
     
     // Login function uses a POST request with username and password to confirm correct credentials
-    func submitReview(title: String, review: String, rating: Int?, completion: (result: Bool, id: String) -> Void){
+    func submitReview(title: String, review: String, rating: Int, completion: (result: Bool, id: String) -> Void){
         var err: NSError?
         var json: NSJSONSerialization?
         
         // Must be formatted as x-www-form-urlencoded and not JSON
-        var params = "title=\(title)&content=\(review)"
+        var params = "title=\(title)&content=\(review)&rating=\(rating)"
         var paramsLength = "\(count(params))"
         var requestBodyData = (params as NSString).dataUsingEncoding(NSUTF8StringEncoding)
         
         // Create request and parameters
-        var url = NSURL(string: "\(self.homeURL)api/\(type)/\(id)/reviews")
+        var url = NSURL(string: "\(self.homeURL)api/\(parentVC.type)/\(parentVC.locationID)/reviews")
         var request = NSMutableURLRequest(URL: url!)
         var session = NSURLSession.sharedSession()
         request.HTTPMethod = "POST"
@@ -132,6 +141,8 @@ class ReviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        parentVC = parentViewController as! TabBarController
+        
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
         UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
@@ -139,7 +150,7 @@ class ReviewViewController: UIViewController {
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
         
-        locationLabel.text = locationName
+        locationLabel.text = parentVC.locationName
         // Do any additional setup after loading the view.
     }
 

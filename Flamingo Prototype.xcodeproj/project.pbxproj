@@ -11,9 +11,12 @@
 		A90283831B1C5DD500FCF8D3 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90283821B1C5DD500FCF8D3 /* FBSDKLoginKit.framework */; };
 		A90283851B1C5DF400FCF8D3 /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90283841B1C5DF400FCF8D3 /* FBSDKShareKit.framework */; };
 		A904A4211B2841C8006571F7 /* BarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A904A4201B2841C8006571F7 /* BarViewController.swift */; };
-		A904A4231B2841DD006571F7 /* ClubViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A904A4221B2841DD006571F7 /* ClubViewController.swift */; };
 		A905EE301B38048000D65B53 /* UpdateProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */; };
 		A905EE321B39745500D65B53 /* ReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE311B39745500D65B53 /* ReviewViewController.swift */; };
+		A905EE341B3AF56300D65B53 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE331B3AF56300D65B53 /* TabBarController.swift */; };
+		A905EE361B3C092E00D65B53 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE351B3C092E00D65B53 /* ContainerViewController.swift */; };
+		A905EE381B3C314C00D65B53 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE371B3C314C00D65B53 /* MapViewController.swift */; };
+		A905EE3A1B3DA06500D65B53 /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE391B3DA06500D65B53 /* ChangePasswordViewController.swift */; };
 		A9110A8E1B15FC7B00DE37C9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9110A8D1B15FC7B00DE37C9 /* AppDelegate.swift */; };
 		A9110A931B15FC7B00DE37C9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A9110A911B15FC7B00DE37C9 /* Main.storyboard */; };
 		A9110A951B15FC7B00DE37C9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9110A941B15FC7B00DE37C9 /* Images.xcassets */; };
@@ -21,7 +24,6 @@
 		A9110AA41B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9110AA31B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift */; };
 		A959CF251B34057500A47FB0 /* FriendsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A959CF241B34057500A47FB0 /* FriendsViewController.swift */; };
 		A959CF291B34341100A47FB0 /* TaggedFriendsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */; };
-		A9959C821B1F4BA6006224B4 /* RestaurantViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C811B1F4BA6006224B4 /* RestaurantViewController.swift */; };
 		A9959C841B205A71006224B4 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C831B205A70006224B4 /* ProfileViewController.swift */; };
 		A9959C861B2065C2006224B4 /* Locksmith.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C851B2065C2006224B4 /* Locksmith.swift */; };
 		A9959C881B2065E2006224B4 /* LocksmithRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C871B2065E2006224B4 /* LocksmithRequest.swift */; };
@@ -89,7 +91,6 @@
 		A9D342621B305EA90060B119 /* JSQMessagesTypingIndicatorFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = A9D342311B305EA90060B119 /* JSQMessagesTypingIndicatorFooterView.m */; };
 		A9D342631B305EA90060B119 /* JSQMessagesTypingIndicatorFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9D342321B305EA90060B119 /* JSQMessagesTypingIndicatorFooterView.xib */; };
 		A9D342681B305EB60060B119 /* JSQSystemSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A9D342671B305EB60060B119 /* JSQSystemSoundPlayer.m */; };
-		A9D3426A1B31590B0060B119 /* LocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D342691B31590B0060B119 /* LocationViewController.swift */; };
 		A9E963F01B218D0A00160629 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9E963EF1B218D0A00160629 /* Security.framework */; };
 /* End PBXBuildFile section */
 
@@ -110,9 +111,12 @@
 		A90283821B1C5DD500FCF8D3 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../../FacebookSDK/FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		A90283841B1C5DF400FCF8D3 /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKShareKit.framework; path = ../../FacebookSDK/FBSDKShareKit.framework; sourceTree = "<group>"; };
 		A904A4201B2841C8006571F7 /* BarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarViewController.swift; sourceTree = "<group>"; };
-		A904A4221B2841DD006571F7 /* ClubViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClubViewController.swift; sourceTree = "<group>"; };
 		A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateProfileViewController.swift; sourceTree = "<group>"; };
 		A905EE311B39745500D65B53 /* ReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewController.swift; sourceTree = "<group>"; };
+		A905EE331B3AF56300D65B53 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		A905EE351B3C092E00D65B53 /* ContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
+		A905EE371B3C314C00D65B53 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		A905EE391B3DA06500D65B53 /* ChangePasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewController.swift; sourceTree = "<group>"; };
 		A9110A881B15FC7B00DE37C9 /* Flamingo Prototype.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Flamingo Prototype.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9110A8C1B15FC7B00DE37C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A9110A8D1B15FC7B00DE37C9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -124,7 +128,6 @@
 		A9110AA31B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flamingo_PrototypeTests.swift; sourceTree = "<group>"; };
 		A959CF241B34057500A47FB0 /* FriendsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendsViewController.swift; sourceTree = "<group>"; };
 		A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaggedFriendsTableViewController.swift; sourceTree = "<group>"; };
-		A9959C811B1F4BA6006224B4 /* RestaurantViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestaurantViewController.swift; sourceTree = "<group>"; };
 		A9959C831B205A70006224B4 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		A9959C851B2065C2006224B4 /* Locksmith.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Locksmith.swift; sourceTree = "<group>"; };
 		A9959C871B2065E2006224B4 /* LocksmithRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocksmithRequest.swift; sourceTree = "<group>"; };
@@ -221,7 +224,6 @@
 		A9D342321B305EA90060B119 /* JSQMessagesTypingIndicatorFooterView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JSQMessagesTypingIndicatorFooterView.xib; sourceTree = "<group>"; };
 		A9D342661B305EB60060B119 /* JSQSystemSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQSystemSoundPlayer.h; sourceTree = "<group>"; };
 		A9D342671B305EB60060B119 /* JSQSystemSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQSystemSoundPlayer.m; sourceTree = "<group>"; };
-		A9D342691B31590B0060B119 /* LocationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationViewController.swift; sourceTree = "<group>"; };
 		A9E963EF1B218D0A00160629 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -307,14 +309,15 @@
 				A9A637481B19DB280049D46F /* HomeViewController.swift */,
 				A9959C831B205A70006224B4 /* ProfileViewController.swift */,
 				A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */,
+				A905EE391B3DA06500D65B53 /* ChangePasswordViewController.swift */,
 				A904A4201B2841C8006571F7 /* BarViewController.swift */,
-				A904A4221B2841DD006571F7 /* ClubViewController.swift */,
-				A9959C811B1F4BA6006224B4 /* RestaurantViewController.swift */,
-				A9D342691B31590B0060B119 /* LocationViewController.swift */,
 				A9BAF6E31B304C4E00734507 /* MessagesViewController.swift */,
+				A905EE351B3C092E00D65B53 /* ContainerViewController.swift */,
 				A959CF241B34057500A47FB0 /* FriendsViewController.swift */,
 				A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */,
 				A905EE311B39745500D65B53 /* ReviewViewController.swift */,
+				A905EE371B3C314C00D65B53 /* MapViewController.swift */,
+				A905EE331B3AF56300D65B53 /* TabBarController.swift */,
 				A9110A941B15FC7B00DE37C9 /* Images.xcassets */,
 				A9110A961B15FC7B00DE37C9 /* LaunchScreen.xib */,
 				A9110A8B1B15FC7B00DE37C9 /* Supporting Files */,
@@ -701,6 +704,8 @@
 				A9959C861B2065C2006224B4 /* Locksmith.swift in Sources */,
 				A959CF291B34341100A47FB0 /* TaggedFriendsTableViewController.swift in Sources */,
 				A9D3424F1B305EA90060B119 /* JSQMessagesTimestampFormatter.m in Sources */,
+				A905EE3A1B3DA06500D65B53 /* ChangePasswordViewController.swift in Sources */,
+				A905EE341B3AF56300D65B53 /* TabBarController.swift in Sources */,
 				A9D342531B305EA90060B119 /* JSQMessagesCollectionViewLayoutAttributes.m in Sources */,
 				A9D3424A1B305EA90060B119 /* JSQMessagesKeyboardController.m in Sources */,
 				A9D342521B305EA90060B119 /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m in Sources */,
@@ -711,10 +716,9 @@
 				A9A637431B19D67A0049D46F /* LoginViewController.swift in Sources */,
 				A9A637471B19D6C50049D46F /* SignupViewController.swift in Sources */,
 				A9A637491B19DB280049D46F /* HomeViewController.swift in Sources */,
+				A905EE361B3C092E00D65B53 /* ContainerViewController.swift in Sources */,
 				A9D342541B305EA90060B119 /* JSQMessage.m in Sources */,
 				A9D342561B305EA90060B119 /* JSQMessagesCollectionViewCell.m in Sources */,
-				A904A4231B2841DD006571F7 /* ClubViewController.swift in Sources */,
-				A9D3426A1B31590B0060B119 /* LocationViewController.swift in Sources */,
 				A9959C881B2065E2006224B4 /* LocksmithRequest.swift in Sources */,
 				A905EE321B39745500D65B53 /* ReviewViewController.swift in Sources */,
 				A9D3425E1B305EA90060B119 /* JSQMessagesLoadEarlierHeaderView.m in Sources */,
@@ -737,9 +741,9 @@
 				A9A637451B19D6B50049D46F /* StartViewController.swift in Sources */,
 				A9D340571B3057B00060B119 /* Message.swift in Sources */,
 				A9D342591B305EA90060B119 /* JSQMessagesCollectionViewCellOutgoing.m in Sources */,
-				A9959C821B1F4BA6006224B4 /* RestaurantViewController.swift in Sources */,
 				A9D342471B305EA90060B119 /* UIColor+JSQMessages.m in Sources */,
 				A9D342601B305EA90060B119 /* JSQMessagesToolbarContentView.m in Sources */,
+				A905EE381B3C314C00D65B53 /* MapViewController.swift in Sources */,
 				A9D342451B305EA90060B119 /* JSQSystemSoundPlayer+JSQMessages.m in Sources */,
 				A9D342491B305EA90060B119 /* UIView+JSQMessages.m in Sources */,
 			);

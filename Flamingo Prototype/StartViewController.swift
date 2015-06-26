@@ -19,6 +19,8 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     let groupArray = [Int](1...20)
     var groupPickerView: UIPickerView = UIPickerView()
     
+    var type: String!
+    
     @IBOutlet weak var ageText: UITextField!
     @IBOutlet weak var cityText: UITextField!
     @IBOutlet weak var groupText: UITextField!
@@ -49,13 +51,17 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         } else {
             switch locationSegment.selectedSegmentIndex {
             case 0:
-                performSegueWithIdentifier("barSegue", sender: self)
+                type = "bars"
+                performSegueWithIdentifier("tabSegue", sender: self)
             case 1:
-                performSegueWithIdentifier("clubSegue", sender: self)
+                type = "clubs"
+                performSegueWithIdentifier("tabSegue", sender: self)
             case 2:
-                performSegueWithIdentifier("restaurantSegue", sender: self)
+                type = "restaurants"
+                performSegueWithIdentifier("tabSegue", sender: self)
             default:
-                performSegueWithIdentifier("restaurantSegue", sender: self)
+                type = "restaurants"
+                performSegueWithIdentifier("tabSegue", sender: self)
             }
         }
     }
@@ -157,12 +163,13 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier != nil ? contains(["barSegue", "clubSegue", "restaurantSegue"], segue.identifier!) : false {
-            let locVC = segue.destinationViewController as! LocationViewController
-            locVC.groupSize = groupText.text.toInt()
-            locVC.age = ageText.text.toInt()
-            locVC.city = cityText.text
-            locVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
+        if segue.identifier == "tabSegue" {
+            let tabVC = segue.destinationViewController as! TabBarController
+            tabVC.groupSize = groupText.text.toInt()
+            tabVC.age = ageText.text.toInt()
+            tabVC.city = cityText.text
+            tabVC.type = type
+            tabVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
         }
     }
     

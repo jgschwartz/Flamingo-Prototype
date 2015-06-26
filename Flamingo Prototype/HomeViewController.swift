@@ -15,6 +15,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBOutlet weak var locationSegment: UISegmentedControl!
     @IBOutlet weak var priceSegment: UISegmentedControl!
     
+    var type: String!
     let groupArray = [Int](1...20)
     var groupPickerView = UIPickerView()
     
@@ -42,43 +43,20 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         } else {
             switch locationSegment.selectedSegmentIndex {
             case 0:
-                performSegueWithIdentifier("barSegue", sender: self)
+                type = "bars"
+                performSegueWithIdentifier("tabSegue", sender: self)
             case 1:
-                performSegueWithIdentifier("clubSegue", sender: self)
+                type = "clubs"
+                performSegueWithIdentifier("tabSegue", sender: self)
             case 2:
-                performSegueWithIdentifier("restaurantSegue", sender: self)
+                type = "restaurants"
+                performSegueWithIdentifier("tabSegue", sender: self)
             default:
-                performSegueWithIdentifier("restaurantSegue", sender: self)
+                type = "restaurants"
+                performSegueWithIdentifier("tabSegue", sender: self)
             }
         }
         NSNotificationCenter.defaultCenter().postNotificationName("goToResults", object: self)
-    }
-    
-    @IBAction func signoutButton(sender: AnyObject) {
-        signout("\(homeURL)signout")
-        
-        let appDomain = NSBundle.mainBundle().bundleIdentifier
-        defaults.removePersistentDomainForName(appDomain!)
-    }
-
-    func signout(sUrl: String){
-        if let fbAccessToken = FBSDKAccessToken.currentAccessToken() {
-            let fbLoginManager = FBSDKLoginManager()
-            fbLoginManager.logOut()
-        }
-        
-        // just a GET request
-        let url = NSURL(string: sUrl)
-        
-        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
-//            println(NSString(data: data, encoding: NSUTF8StringEncoding))
-            var parseError: NSError?
-//            let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
-//            if(json != nil){
-//                println(json)
-//            }
-        }
-        task.resume()
     }
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
@@ -134,7 +112,12 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             let password  = pass as! String
             loginVC.login(user, password: password){
                 (result: Bool, id: String) in
-                println("Logged in successfully. Welcome!")
+                if result {
+                    println("Logged in successfully. Welcome!")
+                } else {
+                    println("Login failed from Home VC")
+                    self.performSegueWithIdentifier("startSegue", sender: self)
+                }
             }
         }
     }
@@ -167,14 +150,18 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier != nil ? contains(["barSegue", "clubSegue", "restaurantSegue"], segue.identifier!) : false {
-            println("Segueing to LocationViewer")
-            let locVC = segue.destinationViewController as! LocationViewController
-            locVC.groupSize = groupText.text.toInt()
-            locVC.age = defaults.integerForKey("age")
-            locVC.city = "Basel"
-            locVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
-            //        locVC.city = defaults.stringForKey("city")
+        if segue.identifier == "tabSegue" {
+            
+            let tabVC = segue.destinationViewController as! TabBarController
+            tabVC.groupSize = groupText.text.toInt()
+            tabVC.age = defaults.integerForKey("age")
+            if let city = defaults.stringForKey("city") {
+                tabVC.city = city
+            } else {
+                tabVC.city = "Basel"
+            }
+            tabVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
+            tabVC.type = type
         }
     }
 
