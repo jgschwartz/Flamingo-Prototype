@@ -24,22 +24,54 @@ class ChangePasswordViewController: UIViewController, UITextFieldDelegate {
         confirmPassText.resignFirstResponder()
         
         if(!oldPassText.text.isEmpty && !newPassText.text.isEmpty && !confirmPassText.text.isEmpty){
+            let username = defaults.stringForKey("username")!
+            let service = NSBundle.mainBundle().bundleIdentifier
+            let (dict, loadError) = Locksmith.loadDataForUserAccount(username, inService: service!)
+            if loadError != nil {
+                println("Keychain load error: \(loadError)")
+            }
+            var password = "password"
+            if let pass: AnyObject = dict?.valueForKey("password") as? String {
+                password  = pass as! String
+            }
+            
             if newPassText.text != confirmPassText.text {
                 alertUpdate("Mismatched Passwords", message: "New password and confirm password fields must match.")
                 return
             } else if count(newPassText.text) < 8 {
                 alertUpdate("Invalid Password", message: "Passwords must be greater than 8 characters.")
                 return
+            } else if password != oldPassText.text {
+                alertUpdate("Incorrect Password", message: "The inputted password does not match your current password.")
+                return
             } else {
                 let id = defaults.stringForKey("id")!
-                updateUser(["password": newPassText.text], url: "\(homeURL)users/\(id)") {
-                    (succeeded: Bool, json: String) in
-                    println("Succeeded? \(succeeded)")
+                let email = defaults.stringForKey("email")!
+                let firstname = defaults.stringForKey("firstname")!
+                let lastname = defaults.stringForKey("lastname")!
+                let provider = defaults.stringForKey("provider")!
+                let gender = defaults.stringForKey("gender")!
+                let birthday = defaults.stringForKey("birthday")!
+                
+                updateUser(["email": "\(email)", "username": "\(username)", "firstname": "\(firstname)", "lastname": "\(lastname)", "provider": "\(provider)", "gender": "\(gender)", "birthday": "\(birthday)", "password": newPassText.text], url: "\(homeURL)users/\(id)") {
+                    (succeeded: Bool, msg: String) in
                     if succeeded {
+                        // Replace password in Keychain with new one
+                        let service = NSBundle.mainBundle().bundleIdentifier
+                        Locksmith.deleteDataForUserAccount(username, inService: service!)
+                        let saveError = Locksmith.saveData(["password":self.newPassText.text], forUserAccount: username, inService: service!)
+                        if saveError != nil {
+                            println("Keychain save error: \(saveError)")
+                        }
+
                         self.alertUpdate("Update Successful!", message: "Password successfully updated!")
                     } else {
-                        self.alertUpdate("Update Failed", message:
-                            "Sorry, your password could not be updated.")
+                        if msg != "" {
+                            self.alertUpdate("Update Failed", message: msg)
+                        } else {
+                            self.alertUpdate("Update Failed", message:
+                                "Sorry, your password could not be updated.")
+                        }
                     }
                 }
             }
@@ -64,19 +96,36 @@ class ChangePasswordViewController: UIViewController, UITextFieldDelegate {
             var json = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments,  error: &err) as? NSDictionary
             
             // Did the JSONObjectWithData constructor return an error? If so, log the error to the console
-            if(err != nil) {
-                println()
-                println(err!)
-                println()
-                let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
-                println("Error could not parse JSON: '\(jsonStr)'")
-                postCompleted(succeeded: false, msg: "Error")
-            }
-            else {
-                // The JSONObjectWithData constructor didn't return an error. But, we should still
-                // check and make sure that json has a value using optional binding.
-                println(json)
-                postCompleted(succeeded: true, msg: "Updated")
+//            if(err != nil) {
+//                println()
+//                println(err!)
+//                println()
+//                let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
+//                println("Error could not parse JSON: '\(jsonStr)'")
+//                postCompleted(succeeded: false, msg: "")
+//            } else
+            if response == nil {
+                
+            } else
+            if let httpResponse = response as? NSHTTPURLResponse {
+                let statusCode = httpResponse.statusCode
+                let id = httpResponse.allHeaderFields["id"] as? String
+                
+                if statusCode == 200 && id != nil{
+                    // The JSONObjectWithData constructor didn't return an error. But, we should still
+                    // check and make sure that json has a value using optional binding.
+                    println(json)
+                    postCompleted(succeeded: true, msg: "Updated")
+                } else {
+                    var msg = ""
+                    if let message = json!.valueForKey("message") as? String {
+                        println("Failed: \(message)")
+                        msg = message
+                    }
+                    postCompleted(succeeded: false, msg: msg)
+                }
+            } else {
+                postCompleted(succeeded: false, msg: "Could not connect to the server. Please check your internet connection and try again later.")
             }
         })
         

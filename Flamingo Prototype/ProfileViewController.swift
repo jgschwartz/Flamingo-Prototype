@@ -11,9 +11,10 @@ import FBSDKLoginKit
 
 class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewDelegate, UITableViewDataSource {
     
-    var pink : UIColor! //UIColor(red: 227/255, green: 97/255, blue: 250/255, alpha: 1)
+    var mainColor : UIColor! //UIColor(red: 227/255, green: 97/255, blue: 250/255, alpha: 1)
     var sectionArray = [String]()
     var sectionDict = Dictionary<String, [String]>()
+    @IBOutlet weak var profileTableView: UITableView!
     
     let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     let defaults = NSUserDefaults.standardUserDefaults()
@@ -60,12 +61,14 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
         
         task.resume()
         
+        // clear keychain
+        let service = NSBundle.mainBundle().bundleIdentifier
+        let username = defaults.stringForKey("username")
+        Locksmith.deleteDataForUserAccount(username!, inService: service!)
+        
         // clear user defaults
         let appDomain = NSBundle.mainBundle().bundleIdentifier
         defaults.removePersistentDomainForName(appDomain!)
-        
-        // clear keychain
-        Locksmith.clearKeychain()
         
         // go to main logged-out scene
         self.performSegueWithIdentifier("startSegue", sender: self)
@@ -101,7 +104,6 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
             var alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: UIAlertControllerStyle.Alert)
             alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default, handler: {
                 (action: UIAlertAction!) in
-                println("handler reached")
                 completion()
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: nil))
@@ -145,14 +147,18 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
         
-        pink = view.tintColor
+        mainColor = view.tintColor
         
         let firstname = defaults.stringForKey("firstname")!
         let lastname = defaults.stringForKey("lastname")!
         navigationItem.title = "\(firstname) \(lastname)"
         
         sectionArray = ["Details", "Options"]
-        sectionDict.updateValue(["email","username","age","gender"], forKey: "Details")
+        var detailsArray = ["email","username","age","gender"]
+        if let city = defaults.stringForKey("city") {
+            detailsArray.append("city")
+        }
+        sectionDict.updateValue(detailsArray, forKey: "Details")
         sectionDict.updateValue(["Change Preferences", "Change Password", "Sign Out", "Delete Account"], forKey: "Options")
     }
     
@@ -241,7 +247,7 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
             if title == "Delete Account" {
                 cell?.textLabel?.textColor = UIColor.redColor()
             } else {
-                cell?.textLabel?.textColor = pink
+                cell?.textLabel?.textColor = mainColor
             }
             return cell!
 
@@ -257,6 +263,7 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
         let firstname = defaults.stringForKey("firstname")!
         let lastname = defaults.stringForKey("lastname")!
         navigationItem.title = "\(firstname) \(lastname)"
+        profileTableView.reloadData()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

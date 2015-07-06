@@ -12,7 +12,10 @@ import GoogleMaps
 class MapViewController: UIViewController, GMSMapViewDelegate {
     
     @IBOutlet weak var mapView: GMSMapView!
-    
+    @IBOutlet weak var directionsButton: UIButton!
+    var urlScheme: String!
+    let defaults = NSUserDefaults.standardUserDefaults()
+    @IBOutlet weak var profileButton: UIBarButtonItem!
     
     func mapView(mapView: GMSMapView!, didTapInfoWindowOfMarker marker: GMSMarker!) {
         UIApplication.sharedApplication().openURL(NSURL(string: marker.userData as! String)!)
@@ -30,24 +33,37 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
         return urlScheme
     }
     
+    @IBAction func getDirectionsButton(sender: AnyObject) {
+        UIApplication.sharedApplication().openURL(NSURL(string: urlScheme)!)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         mapView.delegate = self
-
+        
+        directionsButton.backgroundColor = mapView.backgroundColor
+        //(UIDeviceRGBColorSpace 0.929412 0.917647 0.886275 1)
+        
+        if let username = defaults.stringForKey("username") {
+            navigationItem.rightBarButtonItem = profileButton
+        } else {
+            navigationItem.rightBarButtonItem = nil
+        }
+        
         let parentVC = parentViewController as! TabBarController
         let lat = parentVC.lat
         let long = parentVC.long
         let query = (parentVC.locationName + " " + parentVC.city).stringByReplacingOccurrencesOfString(" ", withString: "+")
         
-        println("query: \(query)")
+        urlScheme = setURLScheme(lat, destLong: long, query: query)
         
         let position = CLLocationCoordinate2DMake(lat, long)
         let camera = GMSCameraPosition.cameraWithLatitude(lat, longitude: long, zoom: 15)
         self.mapView.camera = camera
         let marker = GMSMarker(position: position)
         marker.snippet = "Get Directions"
-        marker.userData = self.setURLScheme(lat, destLong: long, query: query)
+        marker.userData = urlScheme
         marker.title = parentVC.locationName
         marker.groundAnchor = CGPointMake(0.5, 0.5)
         marker.map = self.mapView

@@ -10,9 +10,17 @@ import UIKit
 
 class ContainerViewController: UIViewController {
     
+    let defaults = NSUserDefaults.standardUserDefaults()
+    @IBOutlet weak var profileButton: UIBarButtonItem!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if let username = defaults.stringForKey("username") {
+            navigationItem.rightBarButtonItem = profileButton
+        } else {
+            navigationItem.rightBarButtonItem = nil
+        }
     }
 
     override func didReceiveMemoryWarning() {

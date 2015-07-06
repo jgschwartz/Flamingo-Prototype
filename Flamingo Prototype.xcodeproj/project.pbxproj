@@ -18,12 +18,13 @@
 		A905EE381B3C314C00D65B53 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE371B3C314C00D65B53 /* MapViewController.swift */; };
 		A905EE3A1B3DA06500D65B53 /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE391B3DA06500D65B53 /* ChangePasswordViewController.swift */; };
 		A9110A8E1B15FC7B00DE37C9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9110A8D1B15FC7B00DE37C9 /* AppDelegate.swift */; };
-		A9110A931B15FC7B00DE37C9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A9110A911B15FC7B00DE37C9 /* Main.storyboard */; };
 		A9110A951B15FC7B00DE37C9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9110A941B15FC7B00DE37C9 /* Images.xcassets */; };
 		A9110A981B15FC7B00DE37C9 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9110A961B15FC7B00DE37C9 /* LaunchScreen.xib */; };
 		A9110AA41B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9110AA31B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift */; };
 		A959CF251B34057500A47FB0 /* FriendsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A959CF241B34057500A47FB0 /* FriendsViewController.swift */; };
 		A959CF291B34341100A47FB0 /* TaggedFriendsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */; };
+		A98B08B31B4408E300298724 /* SelectedReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98B08B21B4408E300298724 /* SelectedReviewViewController.swift */; };
+		A98B08B61B44184200298724 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A98B08B41B44184200298724 /* Main.storyboard */; };
 		A9959C841B205A71006224B4 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C831B205A70006224B4 /* ProfileViewController.swift */; };
 		A9959C861B2065C2006224B4 /* Locksmith.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C851B2065C2006224B4 /* Locksmith.swift */; };
 		A9959C881B2065E2006224B4 /* LocksmithRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9959C871B2065E2006224B4 /* LocksmithRequest.swift */; };
@@ -120,7 +121,6 @@
 		A9110A881B15FC7B00DE37C9 /* Flamingo Prototype.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Flamingo Prototype.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9110A8C1B15FC7B00DE37C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A9110A8D1B15FC7B00DE37C9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A9110A921B15FC7B00DE37C9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A9110A941B15FC7B00DE37C9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		A9110A971B15FC7B00DE37C9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		A9110A9D1B15FC7B00DE37C9 /* Flamingo PrototypeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Flamingo PrototypeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -128,6 +128,8 @@
 		A9110AA31B15FC7B00DE37C9 /* Flamingo_PrototypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flamingo_PrototypeTests.swift; sourceTree = "<group>"; };
 		A959CF241B34057500A47FB0 /* FriendsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendsViewController.swift; sourceTree = "<group>"; };
 		A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaggedFriendsTableViewController.swift; sourceTree = "<group>"; };
+		A98B08B21B4408E300298724 /* SelectedReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedReviewViewController.swift; sourceTree = "<group>"; };
+		A98B08B51B44184200298724 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A9959C831B205A70006224B4 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		A9959C851B2065C2006224B4 /* Locksmith.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Locksmith.swift; sourceTree = "<group>"; };
 		A9959C871B2065E2006224B4 /* LocksmithRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocksmithRequest.swift; sourceTree = "<group>"; };
@@ -305,7 +307,7 @@
 				A9A637441B19D6B50049D46F /* StartViewController.swift */,
 				A9A637421B19D67A0049D46F /* LoginViewController.swift */,
 				A9A637461B19D6C50049D46F /* SignupViewController.swift */,
-				A9110A911B15FC7B00DE37C9 /* Main.storyboard */,
+				A98B08B41B44184200298724 /* Main.storyboard */,
 				A9A637481B19DB280049D46F /* HomeViewController.swift */,
 				A9959C831B205A70006224B4 /* ProfileViewController.swift */,
 				A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */,
@@ -315,6 +317,7 @@
 				A905EE351B3C092E00D65B53 /* ContainerViewController.swift */,
 				A959CF241B34057500A47FB0 /* FriendsViewController.swift */,
 				A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */,
+				A98B08B21B4408E300298724 /* SelectedReviewViewController.swift */,
 				A905EE311B39745500D65B53 /* ReviewViewController.swift */,
 				A905EE371B3C314C00D65B53 /* MapViewController.swift */,
 				A905EE331B3AF56300D65B53 /* TabBarController.swift */,
@@ -588,7 +591,7 @@
 						CreatedOnToolsVersion = 6.3.2;
 						SystemCapabilities = {
 							com.apple.Maps.iOS = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -632,7 +635,6 @@
 				A9D3423F1B305EA90060B119 /* camera.png in Resources */,
 				A9D3425F1B305EA90060B119 /* JSQMessagesLoadEarlierHeaderView.xib in Resources */,
 				A9D342351B305EA90060B119 /* bubble_min.png in Resources */,
-				A9110A931B15FC7B00DE37C9 /* Main.storyboard in Resources */,
 				A9D342361B305EA90060B119 /* bubble_min@2x.png in Resources */,
 				A9D3424C1B305EA90060B119 /* JSQMessagesViewController.xib in Resources */,
 				A9D342391B305EA90060B119 /* bubble_stroked.png in Resources */,
@@ -647,6 +649,7 @@
 				A9D342411B305EA90060B119 /* typing.png in Resources */,
 				A9110A951B15FC7B00DE37C9 /* Images.xcassets in Resources */,
 				A9D342581B305EA90060B119 /* JSQMessagesCollectionViewCellIncoming.xib in Resources */,
+				A98B08B61B44184200298724 /* Main.storyboard in Resources */,
 				A9D3425A1B305EA90060B119 /* JSQMessagesCollectionViewCellOutgoing.xib in Resources */,
 				A9D342331B305EA90060B119 /* bubble.png in Resources */,
 				A9D342371B305EA90060B119 /* bubble_min_tailless.png in Resources */,
@@ -702,6 +705,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9959C861B2065C2006224B4 /* Locksmith.swift in Sources */,
+				A98B08B31B4408E300298724 /* SelectedReviewViewController.swift in Sources */,
 				A959CF291B34341100A47FB0 /* TaggedFriendsTableViewController.swift in Sources */,
 				A9D3424F1B305EA90060B119 /* JSQMessagesTimestampFormatter.m in Sources */,
 				A905EE3A1B3DA06500D65B53 /* ChangePasswordViewController.swift in Sources */,
@@ -768,20 +772,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		A9110A911B15FC7B00DE37C9 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A9110A921B15FC7B00DE37C9 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		A9110A961B15FC7B00DE37C9 /* LaunchScreen.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				A9110A971B15FC7B00DE37C9 /* Base */,
 			);
 			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+		A98B08B41B44184200298724 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A98B08B51B44184200298724 /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

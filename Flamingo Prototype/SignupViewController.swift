@@ -109,6 +109,11 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                         self.performSegueWithIdentifier("successfulSignup", sender: self)
                     }
                 }
+            } else if msg == "No Connection" {
+                NSOperationQueue.mainQueue().addOperationWithBlock{
+                    self.activityIndicator.stopAnimating()
+                    self.alertBadSignup("Could not connect to the server. Please check your internet connection and try again later.")
+                }
             } else {
                 NSOperationQueue.mainQueue().addOperationWithBlock{
                     self.activityIndicator.stopAnimating()
@@ -152,7 +157,6 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
             let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
             println("User data: \(json)")
             println("Response: \((response as! NSHTTPURLResponse).statusCode)")
-            println(json.dynamicType)
             if(json != nil){
                 userData = json as! NSDictionary
                 completion(dict: userData)
@@ -194,33 +198,36 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         var task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
             println("Response: \(response)")
             var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
-//            println("Body: \(strData)")
+            //            println("Body: \(strData)")
             var err: NSError?
             let json = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments,  error: &err) as? NSDictionary
             
             var succeeded = false
-            let httpResponse = response as! NSHTTPURLResponse
-            println(httpResponse.statusCode)
-            println(httpResponse.URL)
-            let responseURL = httpResponse.URL?.absoluteString
-            if httpResponse.statusCode == 200 && responseURL == self.homeURL{
-                succeeded = true
-            }
-            // Did the JSONObjectWithData constructor return an error? If so, log the error to the console
-            if(err != nil) {
-                println()
-                println(err!)
-                println()
-                let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
-//                println("Error could not parse JSON: '\(jsonStr)'")
-                postCompleted(succeeded: succeeded, msg: "Error", id: httpResponse.allHeaderFields["id"] as! String)
-            }
-            else {
-                // The JSONObjectWithData constructor didn't return an error. But, we should still
-                // check and make sure that json has a value using optional binding.
-                let newID = json?.valueForKey("id") as! String
-                println("JSON: \(newID)")
-                postCompleted(succeeded: succeeded, msg: "Posted", id: newID)
+            if response == nil {
+                postCompleted(succeeded: false, msg: "No Connection", id: "")
+            } else if let httpResponse = response as? NSHTTPURLResponse {
+                println(httpResponse.statusCode)
+                println(httpResponse.URL)
+                let responseURL = httpResponse.URL?.absoluteString
+                if httpResponse.statusCode == 200 && responseURL == self.homeURL{
+                    succeeded = true
+                }
+                // Did the JSONObjectWithData constructor return an error? If so, log the error to the console
+                if(err != nil) {
+                    println()
+                    println(err!)
+                    println()
+                    let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
+                    //                println("Error could not parse JSON: '\(jsonStr)'")
+                    postCompleted(succeeded: succeeded, msg: "Error", id: httpResponse.allHeaderFields["id"] as! String)
+                }
+                else {
+                    // The JSONObjectWithData constructor didn't return an error. But, we should still
+                    // check and make sure that json has a value using optional binding.
+                    let newID = json?.valueForKey("id") as! String
+                    println("JSON: \(newID)")
+                    postCompleted(succeeded: succeeded, msg: "Posted", id: newID)
+                }
             }
         })
         
@@ -295,11 +302,12 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         else {
             // If you ask for multiple permissions at once, you
             // should check if specific permissions missing
-            if result.grantedPermissions.contains("email")
-            {
-                // Do work
+            
+            if !(result.grantedPermissions.contains("email") && result.grantedPermissions.contains("user_birthday") && result.grantedPermissions.contains("user_friends")) {
+                alertBadSignup("We need all permissions for the app to work properly.\n\nWe need your email to identify you and allow logins from other devices.\nWe need your birthday to provide appropriate, age-related recommendations.\nWe need your friend list to connect you to other friends using the app (we cannot see anyone not using the app).\n\nIf you have any issue with granting these permissions, please sign up through the normal form and not through Facebook.")
+            } else {
+                signupFromFB()
             }
-            signupFromFB()
         }
     }
     
@@ -326,12 +334,20 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                 let emailSplit: [String] = email.componentsSeparatedByString("@")
                 let username: String = emailSplit[0]
                 let last: String = result.valueForKey("last_name") as! String
-                let pass: String = "password"
                 let providerId: String = result.valueForKey("id") as! String
                 let birthday: String = result.valueForKey("birthday") as! String
                 var gender: String = (result.valueForKey("gender") as! String).capitalizedString
                 if gender != "Male" && gender != "Female" {
                     gender = "Other"
+                }
+                
+                var pass = "password"
+                let service = NSBundle.mainBundle().bundleIdentifier
+                let (dict, loadError) = Locksmith.loadDataForUserAccount(username, inService: service!)
+                if loadError != nil {
+                    println("Error loading from keychain: \(loadError)")
+                } else if let password = dict?.valueForKey("password") as? String {
+                    pass = password
                 }
                 
                 println("FB Credentials: \(email), \(username), \(pass), \(first), \(last), \(gender), \(birthday)")
@@ -348,7 +364,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                                 (dict: NSDictionary) in
                                 self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
                                 self.defaults.setValue("", forKey: "password")
-                                println("User data fetched frpom getuserdata: \(dict)")
+                                println("User data fetched from getuserdata: \(dict)")
                                 // Save password to Keychain for future authentifications
                                 let service = NSBundle.mainBundle().bundleIdentifier
                                 let saveError = Locksmith.saveData(["password":pass], forUserAccount: username, inService: service!)
@@ -386,8 +402,12 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                                     }
                                 }
                             } else {
-                                self.alertBadSignup("")
-                                NSOperationQueue.mainQueue().addOperationWithBlock{
+                                 NSOperationQueue.mainQueue().addOperationWithBlock{
+                                    // log user out of facebook on failure
+                                    if let fbAccessToken = FBSDKAccessToken.currentAccessToken() {
+                                        let fbLoginManager = FBSDKLoginManager()
+                                        fbLoginManager.logOut()
+                                    }
                                     self.activityIndicator.stopAnimating()
                                     self.alertBadSignup("")
                                 }
@@ -448,6 +468,9 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         
         // Set up picker views for input on text fields
         datePickerView.datePickerMode = UIDatePickerMode.Date
+        let calendar = NSCalendar.currentCalendar()
+        let legalDrinkingAge = calendar.dateByAddingUnit(NSCalendarUnit.CalendarUnitYear, value: -21, toDate: NSDate(), options: nil)
+        datePickerView.date = legalDrinkingAge!
         
         genderPickerView.delegate = self
         genderPickerView.dataSource = self

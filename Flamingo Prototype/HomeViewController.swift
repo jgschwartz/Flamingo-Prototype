@@ -106,16 +106,53 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
         }
         let service = NSBundle.mainBundle().bundleIdentifier
         let (dict, loadError) = Locksmith.loadDataForUserAccount(user, inService: service!)
+        if loadError != nil {
+            println("Keychain load error: \(loadError)")
+        }
         // instantiate login view controller to control login and start session with server
         let loginVC = LoginViewController()
-        if let pass: AnyObject = dict?.valueForKey("password") {
-            let password  = pass as! String
+        
+//        if let provider = defaults.stringForKey("provider") {
+//            println("Provider: \(provider)")
+//            if provider == "facebook" {
+//                FBSDKLoginManager.renewSystemCredentials({result, error -> Void in
+//                    println("Renew result: \(result)")
+//                    if error != nil {
+//                        println(error)
+//                    }
+//                })
+//            }
+//        }
+        
+        if let fbAccessToken = FBSDKAccessToken.currentAccessToken() {
+            let curDate = NSDate()
+            let expDate = fbAccessToken.expirationDate
+            let calendar = NSCalendar.currentCalendar()
+            let unit = NSCalendarUnit.CalendarUnitDay
+            let time = calendar.components(unit, fromDate: curDate, toDate: expDate, options: nil)
+            if time.day < 30 {
+                FBSDKAccessToken.refreshCurrentAccessToken({connection, result, error in
+                    if error != nil {
+                        println("Token Refresh Error: \(error)")
+                    }
+                })
+            }
+        }
+        
+        if let pass = dict?.valueForKey("password") as? String {
+            let password  = pass as String
+            println("Current password: \(password)")
             loginVC.login(user, password: password){
                 (result: Bool, id: String) in
                 if result {
                     println("Logged in successfully. Welcome!")
                 } else {
                     println("Login failed from Home VC")
+                    // log user out of facebook on failure
+                    if let fbAccessToken = FBSDKAccessToken.currentAccessToken() {
+                        let fbLoginManager = FBSDKLoginManager()
+                        fbLoginManager.logOut()
+                    }
                     self.performSegueWithIdentifier("startSegue", sender: self)
                 }
             }
@@ -132,7 +169,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
             println("User data: \(json)")
             println("Response: \((response as! NSHTTPURLResponse).statusCode)")
-            println(json.dynamicType)
             if(json != nil){
                 userData = json as! NSDictionary
                 completion(dict: userData)

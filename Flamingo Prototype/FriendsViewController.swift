@@ -116,6 +116,8 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
 //        let params = ["fields": "friends"]
 
         
+        println("friends view controller did load")
+        
         var friendID = ""
         let graphRequest : FBSDKGraphRequest = FBSDKGraphRequest(graphPath: "me", parameters: params)
         graphRequest.startWithCompletionHandler({ (connection, result, error) -> Void in

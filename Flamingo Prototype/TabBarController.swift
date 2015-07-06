@@ -39,8 +39,8 @@ class TabBarController: UITabBarController {
         println("provider: \(provider)")
         
         if defaults.stringForKey("username") == nil {
+            tabBarArray.removeObjectAtIndex(4) // remove reviews
             tabBarArray.removeObjectAtIndex(2) // remove friend tagging
-            tabBarArray.removeObjectAtIndex(1) //
         } else if defaults.stringForKey("provider") == nil || defaults.stringForKey("provider") != "facebook"{
             tabBarArray.removeObjectAtIndex(2) // remove friend tagging if not connected through facebook
         }

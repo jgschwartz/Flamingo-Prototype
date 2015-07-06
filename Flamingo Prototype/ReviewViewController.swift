@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ReviewViewController: UIViewController {
+class ReviewViewController: UIViewController, UITextViewDelegate {
 
     
     @IBOutlet weak var locationLabel: UILabel!
@@ -19,6 +19,7 @@ class ReviewViewController: UIViewController {
 
     var parentVC: TabBarController!
     let homeURL = "https://thawing-garden-5169.herokuapp.com/"
+    let placeholder = "Leave your review here."
     
     @IBAction func sliderAction(sender: UISlider) {
         let fVal = round(sender.value)
@@ -41,6 +42,9 @@ class ReviewViewController: UIViewController {
     }
     
     @IBAction func submitButton(sender: AnyObject) {
+        titleText.resignFirstResponder()
+        reviewText.resignFirstResponder()
+        
         let title = titleText.text
         let review = reviewText.text
         let emptyTitle = title.isEmpty
@@ -55,9 +59,11 @@ class ReviewViewController: UIViewController {
             (result: Bool, id: String) in
             if result {
                 println("SUCCESSFUL REVIEW")
-                self.reviewText.text = nil
-                self.titleText.text = nil
-                self.alertSubmit("Review Submitted", message: "Thanks for helping us make this place better for users like you!")
+                NSOperationQueue.mainQueue().addOperationWithBlock {
+                    self.reviewText.text = nil
+                    self.titleText.text = nil
+                    self.alertSubmit("Review Submitted", message: "Thanks for helping us make this place better for users like you!")
+                }
             } else {
                 println("Failed to post review")
                 self.alertSubmit("Error", message: "Sorry, there was a problem processing your review. Please try again.")
@@ -71,7 +77,7 @@ class ReviewViewController: UIViewController {
         var json: NSJSONSerialization?
         
         // Must be formatted as x-www-form-urlencoded and not JSON
-        var params = "title=\(title)&content=\(review)&rating=\(rating)"
+        var params = "title=\(title)&content=\(review)&rating=\(rating)&barNameAndCity=\(parentVC.locationName) \(parentVC.city)"
         var paramsLength = "\(count(params))"
         var requestBodyData = (params as NSString).dataUsingEncoding(NSUTF8StringEncoding)
         
@@ -103,7 +109,7 @@ class ReviewViewController: UIViewController {
                 let responseURL = httpResponse.URL?.absoluteString
                 println(httpResponse.allHeaderFields["id"])
                 let id = httpResponse.allHeaderFields["id"] as! String
-                if httpResponse.statusCode == 200 && responseURL == url {
+                if httpResponse.statusCode == 200 {
                     completion(result: true, id: id)
                 } else {
                     completion(result: false, id: id)
@@ -151,12 +157,28 @@ class ReviewViewController: UIViewController {
         self.view.backgroundColor = UIColor(patternImage: image)
         
         locationLabel.text = parentVC.locationName
-        // Do any additional setup after loading the view.
+        reviewText.text = placeholder
+        reviewText.textColor = UIColor.lightGrayColor()
+        reviewText.delegate = self
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func textViewDidBeginEditing(textView: UITextView) {
+        if textView.textColor == UIColor.lightGrayColor() {
+            textView.text = nil
+            textView.textColor = UIColor.blackColor()
+        }
+    }
+    
+    func textViewDidEndEditing(textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = placeholder
+            textView.textColor = UIColor.lightGrayColor()
+        }
     }
     
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {

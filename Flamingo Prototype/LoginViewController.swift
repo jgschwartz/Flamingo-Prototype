@@ -44,6 +44,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                             println(dict)
                             // Save password to Keychain for future authentifications
                             let service = NSBundle.mainBundle().bundleIdentifier
+                            Locksmith.deleteDataForUserAccount(username, inService: service!)
                             let saveError = Locksmith.saveData(["password":password], forUserAccount: username, inService: service!)
                             if saveError != nil {
                                 println("Keychain save error: \(saveError)")
@@ -52,11 +53,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                             self.performSegueWithIdentifier("successfulLogin", sender: self)
                         }
                     }
-                } else {
-                    self.alertBadLogin("")
+                } else if id == "No Connection" {
                     NSOperationQueue.mainQueue().addOperationWithBlock{
                         self.passText.text = nil
                         self.activityIndicator.stopAnimating()
+                        self.alertBadLogin("Could not connect to the server. Please check your internet connection and try again later.")
+                    }
+                } else {
+                    NSOperationQueue.mainQueue().addOperationWithBlock{
+                        self.passText.text = nil
+                        self.activityIndicator.stopAnimating()
+                        self.alertBadLogin("")
                     }
                 }
         }
@@ -112,6 +119,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
             if(error != nil){
                 println("ERROR IS: \(error)")
+                if response == nil {
+                    completion(result: false, id: "No Connection")
+                } else {
+                    completion(result: false, id: "")
+                }
             } else {
                 
 //                println("Body: \(strData)")
@@ -149,7 +161,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
             println("User data: \(json)")
             println("Response: \((response as! NSHTTPURLResponse).statusCode)")
-            println(json.dynamicType)
             if(json != nil){
                 userData = json as! NSDictionary
                 completion(dict: userData)
@@ -183,6 +194,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             {
                 // Do work
             }
+                    
             loginFromFB()
         }
     }
@@ -211,12 +223,23 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 let emailSplit: [String] = email.componentsSeparatedByString("@")
                 let username: String = emailSplit[0]
                 let last: String = result.valueForKey("last_name") as! String
-                let pass: String = "password"
                 let providerId: String = result.valueForKey("id") as! String
                 let birthday: String = result.valueForKey("birthday") as! String
                 var gender: String = (result.valueForKey("gender") as! String).capitalizedString
                 if gender != "Male" && gender != "Female" {
                     gender = "Other"
+                }
+                
+                var pass = "password"
+                let service = NSBundle.mainBundle().bundleIdentifier
+                println(user)
+                let (dict, loadError) = Locksmith.loadDataForUserAccount(username, inService: service!)
+                println("locksmith dict is: \(dict)")
+                if loadError != nil {
+                    println("Error loading from keychain: \(loadError)")
+                }
+                if let password = dict?.valueForKey("password") as? String {
+                    pass = password
                 }
                 
                 println("FB credentials: \(email), \(username), \(pass), \(first), \(last), \(gender), \(birthday)")
@@ -247,7 +270,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     } else {
                         // instantiate new SignupViewController to use its signup method so it doesn't need to be duplicated
                         let signupVC = SignupViewController()
-                        signupVC.signup(["email": "\(email)", "username": "\(username)", "password": "\(pass)", "firstname": "\(first)", "lastname": "\(last)", "birthday": "\(birthday)", "provider": "facebook", "providerId": "\(providerId)", "providerCheck": "facebook"], url: "https://thawing-garden-5169.herokuapp.com/register"){
+                        signupVC.signup(["email": "\(email)", "username": "\(username)", "password": "\(pass)", "firstname": "\(first)", "lastname": "\(last)", "birthday": "\(birthday)", "gender": "\(gender)", "provider": "facebook", "providerId": "\(providerId)", "providerCheck": "facebook"], url: "https://thawing-garden-5169.herokuapp.com/register"){
                             (result: Bool, msg: String, id: String) in
                             self.success = result
                             println(self.success)
@@ -270,9 +293,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                                     }
                                 }
                             } else {
-                                self.alertBadLogin("")
                                 NSOperationQueue.mainQueue().addOperationWithBlock{
                                     self.activityIndicator.stopAnimating()
+                                    // log user out of facebook on failure
+                                    if let fbAccessToken = FBSDKAccessToken.currentAccessToken() {
+                                        let fbLoginManager = FBSDKLoginManager()
+                                        fbLoginManager.logOut()
+                                    }
+                                    self.alertBadLogin("")
                                 }
                             }
                         }

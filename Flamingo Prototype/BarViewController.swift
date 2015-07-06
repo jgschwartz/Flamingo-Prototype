@@ -9,7 +9,7 @@
 import UIKit
 import GoogleMaps
 
-class BarViewController: UIViewController {
+class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     var type: String = ""
@@ -20,11 +20,17 @@ class BarViewController: UIViewController {
     var age: Int!
     var price: Int!
     var taggedFriends = Dictionary<String, UIImage>()
+    @IBOutlet weak var addressLabel: UILabel!
+    @IBOutlet weak var infoLabel: UILabel!
+    @IBOutlet weak var infoText: UITextView!
+    @IBOutlet weak var reviewLabel: UILabel!
+    @IBOutlet weak var reviewTableView: UITableView!
+    var reviewArray = [NSDictionary]()
+    var selectedPath: NSIndexPath!
     
     @IBOutlet weak var profileButton: UIBarButtonItem!
     @IBOutlet weak var barHeader: UILabel!
     let activityIndicator = UIActivityIndicatorView()    
-    @IBOutlet weak var chatButton: UIButton!
     @IBOutlet weak var taggedFriendsButton: UIButton!
     let defaults = NSUserDefaults.standardUserDefaults()
     var parentVC : TabBarController!
@@ -39,6 +45,9 @@ class BarViewController: UIViewController {
             var parseError: NSError?
             let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
             println("All Locations: \(json)")
+            if response == nil {
+                completion(result: ["Error":"Non Connection"])
+            }
             if(json != nil){
                 allLocations = json as! NSArray
                 location = self.chooseALocation(allLocations)
@@ -46,7 +55,17 @@ class BarViewController: UIViewController {
             } else {
                 completion(result: location)
             }
-            
+            // Set up info fields and reviews
+            let id = location["_id"] as! String
+            println("location id: \(id)")
+            self.getReviews(id, completion: {
+                (result: [NSDictionary]) in
+                self.reviewArray = result
+                println(result)
+                NSOperationQueue.mainQueue().addOperationWithBlock{
+                    self.reviewTableView.reloadData()
+                }
+            })
         }
         task.resume()
     }
@@ -76,13 +95,46 @@ class BarViewController: UIViewController {
         return allLocations[1] as! NSDictionary
     }
     
+    func getReviews(id: String, completion: (result: [NSDictionary])->Void) -> Void{
+        // just a GET request
+        let url = NSURL(string: "\(homeURL)api/\(type)/\(id)/reviews")
+        println("reviews url: \(url)")
+        var allReviews = NSArray()
+        var review = [NSDictionary]()
+        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+            var parseError: NSError?
+            let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
+            println("All Reviews: \(json)")
+            if(json != nil){
+                allReviews = json as! NSArray
+                println("allReviews: \(allReviews.count)")
+                var index = 0
+                var fetched = 0
+                // get only reviews with content, but no more than 5
+                while index < allReviews.count && fetched < 5 {
+                    let rbool = ((allReviews[index] as! NSDictionary).valueForKey("title") as! String) != ""
+                    if rbool {
+                        review.append(allReviews[index] as! NSDictionary)
+                        fetched++
+                    }
+                    index++
+                }
+                completion(result: review)
+            } else {
+                completion(result: review)
+            }
+            
+        }
+        task.resume()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         parentVC = parentViewController as! TabBarController
         self.type = parentVC.type
         
-//            locationName = parentVC.locationName
         city = parentVC.city
         age = parentVC.age
         groupSize = parentVC.groupSize
@@ -102,6 +154,14 @@ class BarViewController: UIViewController {
             item.enabled = false
         }
         
+        barHeader.hidden = true
+        addressLabel.hidden = true
+        infoLabel.hidden = true
+        infoText.hidden = true
+        reviewLabel.hidden = true
+        reviewTableView.hidden = true
+        
+        
         // set up activity indicator to be gray and fill screen
         activityIndicator.frame = self.view.frame
         activityIndicator.layer.backgroundColor = UIColor(white: 0.0, alpha: 0.30).CGColor
@@ -117,21 +177,24 @@ class BarViewController: UIViewController {
                 if(result.count == 0){
                     // Algorithm failed, no connection, etc
                     self.navigationItem.title = "Error"
-                    self.barHeader.text = "Your search returned no results."
+                    self.barHeader.text = "No Connecion."
                     self.barHeader.hidden = false
+                    self.infoLabel.text = "Could not connect to server."
                     self.activityIndicator.stopAnimating()
                 } else {
                     self.locationName = result["name"] as! String
-                    let parent = self.parentViewController as! TabBarController
-                    parent.locationName = self.locationName
+                    self.parentVC.locationName = self.locationName
+                    let firstItem = self.parentVC.tabBar.items?.first as! UITabBarItem
+                    firstItem.title = self.locationName
                     self.locationID = result["_id"] as! String
-                    let address = (result["address"] as! String) + ", " + self.city
+                    self.parentVC.locationID = self.locationID
+                    let address = result["address"] as! String
                     let query = (self.locationName + " " + self.city).stringByReplacingOccurrencesOfString(" ", withString: "+")
                     println("ADDRESS: \(address)")
                     
                     // Look up address and get map coordinates
                     var geocoder = CLGeocoder()
-                    geocoder.geocodeAddressString(address, completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
+                    geocoder.geocodeAddressString("\(address), \(self.city)", completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
                         if let placemark = placemarks?[0] as? CLPlacemark {
                             let newLat = placemark.location.coordinate.latitude
                             let newLong = placemark.location.coordinate.longitude
@@ -143,10 +206,15 @@ class BarViewController: UIViewController {
                     
                     // Set text for bar result
                     println("We're going to \(self.locationName)!")
-                    self.parentVC.locationName = self.locationName
                     self.barHeader.text = self.locationName
                     self.barHeader.hidden = false
-                    self.chatButton.hidden = false
+                    self.addressLabel.text = address
+                    self.addressLabel.hidden = false
+                    
+                    self.infoText.hidden = false
+                    self.infoLabel.hidden = false
+                    self.reviewTableView.hidden = false
+                    self.reviewLabel.hidden = false
                     
                     for item in tabItems {
                         item.enabled = true
@@ -159,9 +227,52 @@ class BarViewController: UIViewController {
         
         // Set link to profile page if user is logged in
         if let user = defaults.stringForKey("username") {
+            println("has username: true")
+            
+            navigationController?.navigationItem.rightBarButtonItem = profileButton
             navigationItem.rightBarButtonItem = profileButton
         } else {
-            self.navigationItem.rightBarButtonItem = nil
+            navigationItem.rightBarButtonItem = nil
+        }
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let cell = tableView.cellForRowAtIndexPath(indexPath)
+        if let image = cell?.imageView?.image {
+            // selected cell is a valid review
+            selectedPath = indexPath
+            performSegueWithIdentifier("selectedReviewSegue", sender: self)
+        }
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        var cell = tableView.dequeueReusableCellWithIdentifier("cell") as? UITableViewCell
+        let row = indexPath.row
+        if !reviewArray.isEmpty {
+            if let temp = cell {
+                cell?.textLabel?.text = reviewArray[row].valueForKey("title") as? String
+                cell?.textLabel?.textColor = view.tintColor
+                let rating = reviewArray[row].valueForKey("rating") as! Int
+                cell?.imageView?.image = UIImage(named: "Dice \(rating)")
+            } else {
+                cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "cell")
+                cell?.textLabel?.text = reviewArray[row].valueForKey("title") as? String
+                cell?.textLabel?.textColor = view.tintColor
+                let rating = reviewArray[row].valueForKey("rating") as! Int
+                cell?.imageView?.image = UIImage(named: "Dice \(rating)")
+            }
+        } else {
+            cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "cell")
+            cell?.textLabel?.text = "No reviews have been posted yet"
+        }
+        return cell!
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if reviewArray.count > 0 {
+            return reviewArray.count
+        } else {
+            return 1
         }
     }
     
@@ -187,6 +298,9 @@ class BarViewController: UIViewController {
             let taggedVC = segue.destinationViewController as! TaggedFriendsTableViewController
             taggedVC.taggedFriends = taggedFriends
             taggedVC.parentVC = parentVC
+        } else if segue.identifier == "selectedReviewSegue" {
+            let selVC = segue.destinationViewController as! SelectedReviewViewController
+            selVC.review = reviewArray[selectedPath.row]
         }
     }
     
