@@ -52,16 +52,16 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
             switch locationSegment.selectedSegmentIndex {
             case 0:
                 type = "bars"
-                performSegueWithIdentifier("tabSegue", sender: self)
+                performSegueWithIdentifier("landingSegue", sender: self)
             case 1:
                 type = "clubs"
-                performSegueWithIdentifier("tabSegue", sender: self)
+                performSegueWithIdentifier("landingSegue", sender: self)
             case 2:
                 type = "restaurants"
-                performSegueWithIdentifier("tabSegue", sender: self)
+                performSegueWithIdentifier("landingSegue", sender: self)
             default:
                 type = "restaurants"
-                performSegueWithIdentifier("tabSegue", sender: self)
+                performSegueWithIdentifier("landingSegue", sender: self)
             }
         }
     }
@@ -122,7 +122,7 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
@@ -163,13 +163,13 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "tabSegue" {
-            let tabVC = segue.destinationViewController as! TabBarController
-            tabVC.groupSize = groupText.text.toInt()
-            tabVC.age = ageText.text.toInt()
-            tabVC.city = cityText.text
-            tabVC.type = type
-            tabVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
+        if segue.identifier == "landingSegue" {
+            let barVC = segue.destinationViewController as! BarViewController
+            barVC.groupSize = groupText.text.toInt()
+            barVC.age = ageText.text.toInt()
+            barVC.city = cityText.text
+            barVC.type = type
+            barVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
         }
     }
     

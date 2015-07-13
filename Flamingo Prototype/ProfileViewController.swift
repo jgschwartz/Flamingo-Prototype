@@ -16,9 +16,6 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
     var sectionDict = Dictionary<String, [String]>()
     @IBOutlet weak var profileTableView: UITableView!
     
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
-    let defaults = NSUserDefaults.standardUserDefaults()
-    
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         view.endEditing(true)
         super.touchesBegan(touches, withEvent: event)
@@ -124,9 +121,9 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
     func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
         if alertView.title == "Sign Out" {
             if alertView.buttonTitleAtIndex(buttonIndex) == "Okay" {
-                self.signout("\(self.homeURL)signout")
+                self.signout("\(homeURL)signout")
                 let appDomain = NSBundle.mainBundle().bundleIdentifier
-                self.defaults.removePersistentDomainForName(appDomain!)
+                defaults.removePersistentDomainForName(appDomain!)
                 
                 self.performSegueWithIdentifier("startSegue", sender: self)
             }
@@ -142,7 +139,7 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
         
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
@@ -179,9 +176,9 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
             else if curTitle == "Sign Out" {
                 showAlert("Sign Out", message: "Are you sure you want to sign out of your account? You will be sent to the start page.",
                     completion: {
-                        self.signout("\(self.homeURL)signout")
+                        self.signout("\(homeURL)signout")
                         let appDomain = NSBundle.mainBundle().bundleIdentifier
-                        self.defaults.removePersistentDomainForName(appDomain!)
+                        defaults.removePersistentDomainForName(appDomain!)
                         
                         self.performSegueWithIdentifier("startSegue", sender: self)
                 })

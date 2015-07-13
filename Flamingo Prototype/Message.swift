@@ -24,7 +24,11 @@ class Message : NSObject, JSQMessageData {
         self.text_ = text!
         self.sender_ = sender!
         self.date_ = NSDate()
-        self.groupSize = groupSize!
+        if groupSize != nil {
+            self.groupSize = groupSize!
+        } else {
+            self.groupSize = 0
+        }
         self.groupName = group!
     }
     

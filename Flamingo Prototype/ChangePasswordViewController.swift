@@ -14,9 +14,6 @@ class ChangePasswordViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var newPassText: UITextField!
     @IBOutlet weak var confirmPassText: UITextField!
     
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
-    let defaults = NSUserDefaults.standardUserDefaults()
-    
     @IBAction func updatePasswordButton(sender: AnyObject) {
         
         oldPassText.resignFirstResponder()
@@ -105,7 +102,7 @@ class ChangePasswordViewController: UIViewController, UITextFieldDelegate {
 //                postCompleted(succeeded: false, msg: "")
 //            } else
             if response == nil {
-                
+                postCompleted(succeeded: false, msg: "Could not connect to the server. Please check your internet connection and try again later.")
             } else
             if let httpResponse = response as? NSHTTPURLResponse {
                 let statusCode = httpResponse.statusCode
@@ -118,9 +115,11 @@ class ChangePasswordViewController: UIViewController, UITextFieldDelegate {
                     postCompleted(succeeded: true, msg: "Updated")
                 } else {
                     var msg = ""
-                    if let message = json!.valueForKey("message") as? String {
-                        println("Failed: \(message)")
-                        msg = message
+                    if let j = json {
+                        if let message = json!.valueForKey("message") as? String {
+                            println("Failed: \(message)")
+                            msg = message
+                        }
                     }
                     postCompleted(succeeded: false, msg: msg)
                 }
@@ -170,7 +169,7 @@ class ChangePasswordViewController: UIViewController, UITextFieldDelegate {
         
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)

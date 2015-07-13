@@ -10,21 +10,22 @@ import UIKit
 
 class TabBarController: UITabBarController {
     
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
-    let defaults = NSUserDefaults.standardUserDefaults()
-    var type: String = ""
+    var type: String!
     var city: String!
     var locationID: String!
     var locationName: String!
     var groupSize: Int!
     var age: Int!
     var price: Int!
-    var taggedFriends = Dictionary<String, UIImage>()
+    var taggedFriends: Dictionary<String, UIImage>!
     var chatroom : String!
     var lat: Double!
     var long: Double!
     let sessionID = String(NSDate().hashValue)
     var tabBarVCs: [AnyObject]!
+    var groupName: String!
+    var groupArray = [String]()
+    var tabBarArray: NSMutableArray!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,20 +33,43 @@ class TabBarController: UITabBarController {
         let locItem = tabBar.items?.first as! UITabBarItem
         locItem.title = type.capitalizedString
         
-        var tabBarArray = NSMutableArray(array: viewControllers!)
-        let user = defaults.stringForKey("username")
-        println("username: \(user)")
-        let provider = defaults.stringForKey("")
-        println("provider: \(provider)")
-        
+        tabBarArray = NSMutableArray(array: viewControllers!)
         if defaults.stringForKey("username") == nil {
-            tabBarArray.removeObjectAtIndex(4) // remove reviews
-            tabBarArray.removeObjectAtIndex(2) // remove friend tagging
-        } else if defaults.stringForKey("provider") == nil || defaults.stringForKey("provider") != "facebook"{
-            tabBarArray.removeObjectAtIndex(2) // remove friend tagging if not connected through facebook
+            tabBarArray.removeObjectAtIndex(5) // remove reviews
         }
+//            tabBarArray.removeObjectAtIndex(1) // remove friend tagging
+//        } else if defaults.stringForKey("provider") == nil || defaults.stringForKey("provider") != "facebook"{
+//            tabBarArray.removeObjectAtIndex(1) // remove friend tagging if not connected through facebook
+//        }
+        tabBarArray.removeObjectAtIndex(1) // should have already tagged friends; remove the option
         self.setViewControllers(tabBarArray as [AnyObject], animated: false)
-        taggedFriends = Dictionary<String, UIImage>()
+        
+        if taggedFriends == nil {
+            taggedFriends = Dictionary<String, UIImage>()
+        }
+        
+        var navStack = NSMutableArray()
+        if let navController = navigationController {
+            navStack.addObject(navController.viewControllers.first!)
+            navStack.addObject(navController.viewControllers.last!)
+            navigationController?.viewControllers = navStack as [AnyObject]
+        }
+        
+//        if defaults.stringForKey("provider") != nil && defaults.stringForKey("provider") == "facebook" {
+//            self.selectedIndex = 3
+//        } else {
+//            self.selectedIndex = 2
+//        }
+        self.selectedIndex = 2
+    }
+    
+    // Remove form to submit reviews after user submits one review
+    func submittedReview(review: NSDictionary){
+        self.selectedIndex = 0
+        tabBarArray.removeObjectAtIndex(tabBarArray.count-1)
+        self.setViewControllers(tabBarArray as [AnyObject], animated: true)
+        let barVC = tabBarArray.firstObject as! BarViewController
+        barVC.addReview(review)
     }
 
     override func didReceiveMemoryWarning() {

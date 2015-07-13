@@ -21,7 +21,7 @@ class SelectedReviewViewController: UIViewController {
         
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
@@ -31,7 +31,14 @@ class SelectedReviewViewController: UIViewController {
         let rating = review["rating"] as! Int
         titleLabel.text = title
         contentView.text = content
-        ratingView.image = UIImage(named: "Dice \(rating)")
+        ratingView.image = UIImage(named: "Trans Star Dice \(rating)")
+        
+        ratingView.layer.cornerRadius = 5
+        ratingView.layer.borderColor = UIColor.blackColor().CGColor
+        ratingView.layer.borderWidth = 1.0
+        
+//        contentView.layer.borderColor = UIColor.blackColor().CGColor
+//        contentView.layer.borderWidth = 1.0
         
         contentView.scrollEnabled = false // this forces the text view to resize to fit the entire text
     }

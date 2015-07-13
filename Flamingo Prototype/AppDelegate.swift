@@ -13,6 +13,10 @@ import FBSDKShareKit
 import FBSDKLoginKit
 import GoogleMaps
 
+let bgImageName = "KOYNBlueGradient.png"
+let homeURL = "http://www.koyn.io/"
+let defaults = NSUserDefaults.standardUserDefaults()
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

@@ -10,12 +10,13 @@ import UIKit
 
 class ContainerViewController: UIViewController {
     
-    let defaults = NSUserDefaults.standardUserDefaults()
     @IBOutlet weak var profileButton: UIBarButtonItem!
+    var parentVC: GroupTableViewController!
+    var parentparent: TabBarController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         if let username = defaults.stringForKey("username") {
             navigationItem.rightBarButtonItem = profileButton
         } else {
@@ -36,7 +37,17 @@ class ContainerViewController: UIViewController {
                 messagesVC.city = parentVC.city
                 messagesVC.groupSize = parentVC.groupSize
                 messagesVC.sessionID = parentVC.sessionID
-//                messagesVC.chatroom = (self.city + "-" + self.locationName).stringByReplacingOccurrencesOfString(" ", withString: "-")
+                messagesVC.parentVC = self
+            }
+        } else if segue.identifier == "groupEmbedSegue" {
+                if let groupVC = segue.destinationViewController as? GroupMessagesViewController {
+                    groupVC.locationName = parentparent.locationName
+                    groupVC.city = parentparent.city
+                    groupVC.groupSize = parentparent.groupSize
+                    groupVC.sessionID = parentparent.sessionID
+                    groupVC.parentVC = self
+                    groupVC.groupOther = parentVC.groupOther
+                    groupVC.groupSelf = parentparent.groupName
             }
         }
     }

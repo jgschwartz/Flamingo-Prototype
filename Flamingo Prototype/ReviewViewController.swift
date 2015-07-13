@@ -18,7 +18,6 @@ class ReviewViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var ratingSlider: UISlider!
 
     var parentVC: TabBarController!
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     let placeholder = "Leave your review here."
     
     @IBAction func sliderAction(sender: UISlider) {
@@ -26,19 +25,7 @@ class ReviewViewController: UIViewController, UITextViewDelegate {
         ratingSlider.setValue(fVal, animated: true)
         
         let value = Int(round(sender.value))
-        if value == 0 {
-            diceView.image = UIImage(named: "Dice 0")
-        } else if value == 1 {
-            diceView.image = UIImage(named: "Dice 1")
-        } else if value == 2 {
-            diceView.image = UIImage(named: "Dice 2")
-        } else if value == 3 {
-            diceView.image = UIImage(named: "Dice 3")
-        } else if value == 4 {
-            diceView.image = UIImage(named: "Dice 4")
-        } else if value == 5 {
-            diceView.image = UIImage(named: "Dice 5")
-        }
+        diceView.image = UIImage(named: "Trans Star Dice \(value)")
     }
     
     @IBAction func submitButton(sender: AnyObject) {
@@ -47,6 +34,7 @@ class ReviewViewController: UIViewController, UITextViewDelegate {
         
         let title = titleText.text
         let review = reviewText.text
+        let rating = Int(round(ratingSlider.value))
         let emptyTitle = title.isEmpty
         let emptyReview = review.isEmpty
         if emptyTitle != emptyReview {
@@ -55,7 +43,7 @@ class ReviewViewController: UIViewController, UITextViewDelegate {
 //        else if review.isEmpty {
 //            alertSubmit("Missing Content", message: "You must leave some kind of message reviewing the location.")
 //        }
-        submitReview(title, review: review, rating: Int(round(ratingSlider.value)), completion: {
+        submitReview(title, review: review, rating: rating, completion: {
             (result: Bool, id: String) in
             if result {
                 println("SUCCESSFUL REVIEW")
@@ -63,6 +51,8 @@ class ReviewViewController: UIViewController, UITextViewDelegate {
                     self.reviewText.text = nil
                     self.titleText.text = nil
                     self.alertSubmit("Review Submitted", message: "Thanks for helping us make this place better for users like you!")
+                    let reviewDict = ["title": title, "content": review, "rating": rating]
+                    self.parentVC.submittedReview(reviewDict)
                 }
             } else {
                 println("Failed to post review")
@@ -78,11 +68,14 @@ class ReviewViewController: UIViewController, UITextViewDelegate {
         
         // Must be formatted as x-www-form-urlencoded and not JSON
         var params = "title=\(title)&content=\(review)&rating=\(rating)&barNameAndCity=\(parentVC.locationName) \(parentVC.city)"
+        if let user = defaults.stringForKey("username") {
+            params += "&user=\(user)"
+        }
         var paramsLength = "\(count(params))"
         var requestBodyData = (params as NSString).dataUsingEncoding(NSUTF8StringEncoding)
         
         // Create request and parameters
-        var url = NSURL(string: "\(self.homeURL)api/\(parentVC.type)/\(parentVC.locationID)/reviews")
+        var url = NSURL(string: "\(homeURL)api/\(parentVC.type)/\(parentVC.locationID)/reviews")
         var request = NSMutableURLRequest(URL: url!)
         var session = NSURLSession.sharedSession()
         request.HTTPMethod = "POST"
@@ -147,19 +140,33 @@ class ReviewViewController: UIViewController, UITextViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+//        if defaults.stringForKey("provider") != nil && defaults.stringForKey("provider") == "facebook" {
+//            parentVC = parentViewController?.parentViewController as! TabBarController
+//        } else {
+//            parentVC = parentViewController as! TabBarController
+//        }
         parentVC = parentViewController as! TabBarController
         
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
+        
+        diceView.layer.cornerRadius = 5
+        diceView.layer.borderColor = UIColor.blackColor().CGColor
+        diceView.layer.borderWidth = 1.0
+        diceView.layer.backgroundColor = UIColor.whiteColor().CGColor
         
         locationLabel.text = parentVC.locationName
         reviewText.text = placeholder
         reviewText.textColor = UIColor.lightGrayColor()
         reviewText.delegate = self
+        reviewText.layer.cornerRadius = 5
+        reviewText.layer.borderWidth = 1.0
+        titleText.layer.cornerRadius = 5
+        titleText.layer.borderWidth = 1.0
     }
 
     override func didReceiveMemoryWarning() {

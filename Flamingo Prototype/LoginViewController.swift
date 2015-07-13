@@ -9,16 +9,20 @@
 import UIKit
 import FBSDKLoginKit
 
-class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate, UIAlertViewDelegate {
     
     @IBOutlet weak var userText: UITextField!
     @IBOutlet weak var passText: UITextField!
     @IBOutlet weak var fbLogin: FBSDKLoginButton!
     let activityIndicator = UIActivityIndicatorView()
     
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     var success = false
-    let defaults = NSUserDefaults.standardUserDefaults()
+    
+    @IBAction func forgotPassword(sender: AnyObject) {
+        userText.resignFirstResponder()
+        passText.resignFirstResponder()
+        alertForgotPassword("")
+    }
     
     // Login with username and password
     @IBAction func loginButton(sender: AnyObject) {
@@ -36,11 +40,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 self.success = result
                 if(self.success){
                     NSOperationQueue.mainQueue().addOperationWithBlock {
-                        let sURL = "\(self.homeURL)users/\(id)"
+                        let sURL = "\(homeURL)users/\(id)"
                         self.getUserData(sURL){
                             (dict: NSDictionary) in
-                            self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
-                            self.defaults.setValue("", forKey: "password")
+                            defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                            defaults.setValue("", forKey: "password")
                             println(dict)
                             // Save password to Keychain for future authentifications
                             let service = NSBundle.mainBundle().bundleIdentifier
@@ -57,23 +61,151 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     NSOperationQueue.mainQueue().addOperationWithBlock{
                         self.passText.text = nil
                         self.activityIndicator.stopAnimating()
-                        self.alertBadLogin("Could not connect to the server. Please check your internet connection and try again later.")
+                        self.alertBadLogin("", message: "Could not connect to the server. Please check your internet connection and try again later.")
                     }
                 } else {
                     NSOperationQueue.mainQueue().addOperationWithBlock{
                         self.passText.text = nil
                         self.activityIndicator.stopAnimating()
-                        self.alertBadLogin("")
+                        self.alertBadLogin("", message: "")
                     }
                 }
         }
 //        })
     }
     
+    func alertForgotPassword(msg: String){
+        let alertTitle = "Password Reset"
+        var alertMessage = "Please enter your email and we will send you a URL to change your password."
+        if msg != "" {
+            alertMessage = msg
+        }
+        if(NSClassFromString("UIAlertController") != nil){
+            // iOS8 or later, AlertController exists
+            var alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addTextFieldWithConfigurationHandler({(textfield: UITextField!) in
+                textfield.autocapitalizationType = UITextAutocapitalizationType.None
+                textfield.keyboardType = UIKeyboardType.EmailAddress
+            })
+            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default, handler: {
+                (action: UIAlertAction!) in
+                let textfield = alert.textFields?.first as! UITextField
+                if let email = textfield.text {
+                    if email.rangeOfString(".+@.+[.].+$", options: NSStringCompareOptions.RegularExpressionSearch) == nil {
+                        self.alertForgotPassword("That email is invalid. Please enter the email address associated with your account and we will send you a URL to change your password.")
+                    } else {
+                        self.resetPassword(email, completion: {
+                            (result: Bool, msg: String) in
+                            if result {
+                                self.alertBadLogin("Email Sent", message: "Thank you! You should receive an email shortly with a link. Follow that link to reset your password.")
+                            }
+                        })
+                    }
+                }
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+            
+        } else {
+            // iOS7 or earlier, must use AlertView
+            let alert = UIAlertView()
+            alert.title = alertTitle
+            alert.message = alertMessage
+            alert.alertViewStyle = UIAlertViewStyle.PlainTextInput
+            alert.delegate = self
+            alert.addButtonWithTitle("Okay")
+            alert.addButtonWithTitle("Cancel")
+            alert.show()
+        }
+    }
+    
+    
+    func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
+        if alertView.title == "Password Reset" {
+            if alertView.buttonTitleAtIndex(buttonIndex) == "Okay" {
+                let textfield = alertView.textFieldAtIndex(0)
+                if let email = textfield?.text {
+                    if email.rangeOfString(".+@.+[.].+$", options: NSStringCompareOptions.RegularExpressionSearch) == nil {
+                        alertForgotPassword("That email is invalid. Please enter the email address associated with your account and we will send you a URL to change your password.")
+                    } else {
+                        resetPassword(email, completion: {
+                            (result: Bool, msg: String) in
+                            if result {
+                                self.alertBadLogin("Email Sent", message: "Thank you! You should receive an email shortly with a link. Follow that link to reset your password.")
+                            }
+                        })
+                    }
+                }
+            }
+        }
+    }
+    
+    func resetPassword(email: String, completion: (result: Bool, msg: String) -> Void){
+        var err: NSError?
+        var json: NSJSONSerialization?
+        
+        // Must be formatted as x-www-form-urlencoded and not JSON
+        var params = "resetpasswordemail=\(email)"
+        var paramsLength = "\(count(params))"
+        var requestBodyData = (params as NSString).dataUsingEncoding(NSUTF8StringEncoding)
+        
+        // Create request and parameters
+        var url = NSURL(string: "\(homeURL)passwordreset")
+        var request = NSMutableURLRequest(URL: url!)
+        var session = NSURLSession.sharedSession()
+        request.HTTPMethod = "POST"
+        request.HTTPBody = requestBodyData
+        request.addValue(paramsLength, forHTTPHeaderField: "Content-Length")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        
+        // Send request and parse response, send result to callback
+        var task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
+            var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
+            if(error != nil){
+                println("ERROR IS: \(error)")
+                if response == nil {
+                    completion(result: false, msg: "No Connection")
+                } else {
+                    completion(result: false, msg: "")
+                }
+            } else {
+                
+                //                println("Body: \(strData)")
+                
+                println("\n")
+                
+                println("Response: \(response)")
+                
+                let httpResponse = response as! NSHTTPURLResponse
+                println(httpResponse.statusCode)
+                let responseURL = httpResponse.URL?.absoluteString
+                println(httpResponse.allHeaderFields["id"])
+                if let id = httpResponse.allHeaderFields["id"] as? String {
+                    if httpResponse.statusCode == 200 && responseURL == "\(homeURL)#!/password" {
+                        completion(result: true, msg: id)
+                    } else {
+                        completion(result: false, msg: id)
+                    }
+                } else {
+                    completion(result: false, msg: "")
+                }
+                
+                var json = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableLeaves,  error: &err) as? NSDictionary
+                println("JSON: \(json)")
+                
+            }
+        })
+        task.resume()
+    }
+    
     // On unsuccessful login, send alert telling them to try again
-    func alertBadLogin(message: String){
-        let alertTitle = "Login Failed"
+    func alertBadLogin(title: String, message: String){
+        var alertTitle = "Login Failed"
         var alertMessage = "Your login failed due to bad credentials. Please try again."
+        if !title.isEmpty {
+            alertTitle = title
+        }
         if !message.isEmpty {
             alertMessage = message
         }
@@ -105,7 +237,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         var requestBodyData = (params as NSString).dataUsingEncoding(NSUTF8StringEncoding)
         
         // Create request and parameters
-        var url = NSURL(string: "\(self.homeURL)login")
+        var url = NSURL(string: "\(homeURL)login")
         var request = NSMutableURLRequest(URL: url!)
         var session = NSURLSession.sharedSession()
         request.HTTPMethod = "POST"
@@ -136,11 +268,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 println(httpResponse.statusCode)
                 let responseURL = httpResponse.URL?.absoluteString
                 println(httpResponse.allHeaderFields["id"])
-                let id = httpResponse.allHeaderFields["id"] as! String
-                if httpResponse.statusCode == 200 && responseURL == self.homeURL {
-                    completion(result: true, id: id)
+                if let id = httpResponse.allHeaderFields["id"] as? String {
+                    if httpResponse.statusCode == 200 && responseURL == homeURL {
+                        completion(result: true, id: id)
+                    } else {
+                        completion(result: false, id: id)
+                    }
                 } else {
-                    completion(result: false, id: id)
+                    completion(result: false, id: "")
                 }
                 
                 var json = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableLeaves,  error: &err) as? NSDictionary
@@ -251,11 +386,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     println(self.success)
                     if(self.success){
                         NSOperationQueue.mainQueue().addOperationWithBlock{
-                            let sURL = "\(self.homeURL)users/\(id)"
+                            let sURL = "\(homeURL)users/\(id)"
                             self.getUserData(sURL){
                                 (dict: NSDictionary) in
-                                self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
-                                self.defaults.setValue("", forKey: "password")
+                                defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                                defaults.setValue("", forKey: "password")
                                 println(dict)
                                 // Save password to Keychain for future authentifications
                                 let service = NSBundle.mainBundle().bundleIdentifier
@@ -276,11 +411,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                             println(self.success)
                             if(self.success){
                                 NSOperationQueue.mainQueue().addOperationWithBlock{
-                                    let sURL = "\(self.homeURL)users/\(id)"
+                                    let sURL = "\(homeURL)users/\(id)"
                                     self.getUserData(sURL){
                                         (dict: NSDictionary) in
-                                        self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
-                                        self.defaults.setValue("", forKey: "password")
+                                        defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                                        defaults.setValue("", forKey: "password")
                                         println(dict)
                                         // Save password to Keychain for future authentifications
                                         let service = NSBundle.mainBundle().bundleIdentifier
@@ -300,7 +435,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                                         let fbLoginManager = FBSDKLoginManager()
                                         fbLoginManager.logOut()
                                     }
-                                    self.alertBadLogin("")
+                                    self.alertBadLogin("", message: "")
                                 }
                             }
                         }
@@ -339,7 +474,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)

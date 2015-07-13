@@ -14,8 +14,19 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var directionsButton: UIButton!
     var urlScheme: String!
-    let defaults = NSUserDefaults.standardUserDefaults()
     @IBOutlet weak var profileButton: UIBarButtonItem!
+    @IBOutlet weak var chatButton: UIButton!
+    var taggedFriends: Dictionary<String, UIImage>!
+    
+    var city: String!
+    var locationID: String!
+    var locationName: String!
+    var groupSize: Int!
+    var lat: CLLocationDegrees!
+    var long: CLLocationDegrees!
+    var age: Int!
+    var price: Int!
+    var type: String!
     
     func mapView(mapView: GMSMapView!, didTapInfoWindowOfMarker marker: GMSMarker!) {
         UIApplication.sharedApplication().openURL(NSURL(string: marker.userData as! String)!)
@@ -39,10 +50,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+            
         mapView.delegate = self
         
         directionsButton.backgroundColor = mapView.backgroundColor
+        chatButton.backgroundColor = mapView.backgroundColor
         //(UIDeviceRGBColorSpace 0.929412 0.917647 0.886275 1)
         
         if let username = defaults.stringForKey("username") {
@@ -51,11 +63,15 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
             navigationItem.rightBarButtonItem = nil
         }
         
-        let parentVC = parentViewController as! TabBarController
-        let lat = parentVC.lat
-        let long = parentVC.long
-        let query = (parentVC.locationName + " " + parentVC.city).stringByReplacingOccurrencesOfString(" ", withString: "+")
+        if let parentVC = parentViewController as? TabBarController {
+            lat = parentVC.lat
+            long = parentVC.long
+            locationName = parentVC.locationName
+            city = parentVC.city
+            chatButton.hidden = true
+        }
         
+        let query = (locationName + " " + city).stringByReplacingOccurrencesOfString(" ", withString: "+")
         urlScheme = setURLScheme(lat, destLong: long, query: query)
         
         let position = CLLocationCoordinate2DMake(lat, long)
@@ -64,7 +80,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
         let marker = GMSMarker(position: position)
         marker.snippet = "Get Directions"
         marker.userData = urlScheme
-        marker.title = parentVC.locationName
+        marker.title = locationName
         marker.groundAnchor = CGPointMake(0.5, 0.5)
         marker.map = self.mapView
     }
@@ -75,14 +91,32 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
     }
     
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if segue.identifier == "tabSegue" {
+            let tabVC = segue.destinationViewController as! TabBarController
+            tabVC.city = city
+            tabVC.locationID = locationID
+            tabVC.locationName = locationName
+            tabVC.groupSize = groupSize
+            tabVC.lat = lat
+            tabVC.long = long
+            tabVC.type = type
+            tabVC.age = age
+            tabVC.price = price
+            tabVC.taggedFriends = taggedFriends
+        }
+        if segue.identifier == "chatSegue" {
+            let chatVC = segue.destinationViewController as! MessagesTabBarControllerViewController
+            chatVC.city = city
+            chatVC.locationID = locationID
+            chatVC.locationName = locationName
+            chatVC.groupSize = groupSize
+        }
     }
-    */
+    
 
 }

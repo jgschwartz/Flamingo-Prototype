@@ -32,11 +32,6 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     let ageArray: [Int] = [Int](18...100)
     var success: Bool = false
     
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
-    let defaults = NSUserDefaults.standardUserDefaults()
-    
-
-    
     // Function to register a new user using signup button
     @IBAction func signupButton(sender: AnyObject) {
         // Get input from all the text fields
@@ -92,12 +87,12 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
             println(self.success)
             if(self.success){
                 NSOperationQueue.mainQueue().addOperationWithBlock{
-                    let sURL = "\(self.homeURL)users/\(id)"
+                    let sURL = "\(homeURL)users/\(id)"
                     println("GETTING USER")
                     self.getUserData(sURL){
                         (dict: NSDictionary) in
-                        self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
-                        self.defaults.setValue("", forKey: "password")
+                        defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                        defaults.setValue("", forKey: "password")
                         println("User data fetched frpom getuserdata: \(dict)")
                         // Save password to Keychain for future authentifications
                         let service = NSBundle.mainBundle().bundleIdentifier
@@ -209,7 +204,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                 println(httpResponse.statusCode)
                 println(httpResponse.URL)
                 let responseURL = httpResponse.URL?.absoluteString
-                if httpResponse.statusCode == 200 && responseURL == self.homeURL{
+                if httpResponse.statusCode == 200 && responseURL == homeURL{
                     succeeded = true
                 }
                 // Did the JSONObjectWithData constructor return an error? If so, log the error to the console
@@ -219,7 +214,11 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                     println()
                     let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
                     //                println("Error could not parse JSON: '\(jsonStr)'")
-                    postCompleted(succeeded: succeeded, msg: "Error", id: httpResponse.allHeaderFields["id"] as! String)
+                    if let id = httpResponse.allHeaderFields["id"] as? String {
+                        postCompleted(succeeded: succeeded, msg: "Error", id: httpResponse.allHeaderFields["id"] as! String)
+                    } else {
+                        postCompleted(succeeded: succeeded, msg: "Error", id: "")
+                    }
                 }
                 else {
                     // The JSONObjectWithData constructor didn't return an error. But, we should still
@@ -352,18 +351,18 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                 
                 println("FB Credentials: \(email), \(username), \(pass), \(first), \(last), \(gender), \(birthday)")
                 
-                self.signup(["email": "\(email)", "username": "\(username)", "password": "\(pass)", "gender": "\(gender)", "firstname": "\(first)", "lastname": "\(last)", "birthday": "\(birthday)", "provider": "facebook", "providerId": "\(providerId)", "providerCheck": "facebook"], url: "\(self.homeURL)register"){
+                self.signup(["email": "\(email)", "username": "\(username)", "password": "\(pass)", "gender": "\(gender)", "firstname": "\(first)", "lastname": "\(last)", "birthday": "\(birthday)", "provider": "facebook", "providerId": "\(providerId)", "providerCheck": "facebook"], url: "\(homeURL)register"){
                     (result: Bool, msg: String, id: String) in
                     self.success = result
                     println(self.success)
                     if(self.success){
                         NSOperationQueue.mainQueue().addOperationWithBlock{
-                            let sURL = "\(self.homeURL)users/\(id)"
+                            let sURL = "\(homeURL)users/\(id)"
                             println("GETTING USER")
                             self.getUserData(sURL){
                                 (dict: NSDictionary) in
-                                self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
-                                self.defaults.setValue("", forKey: "password")
+                                defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                                defaults.setValue("", forKey: "password")
                                 println("User data fetched from getuserdata: \(dict)")
                                 // Save password to Keychain for future authentifications
                                 let service = NSBundle.mainBundle().bundleIdentifier
@@ -384,12 +383,12 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
                             println(self.success)
                             if(self.success){
                                 NSOperationQueue.mainQueue().addOperationWithBlock{
-                                    let sURL = "\(self.homeURL)users/\(id)"
+                                    let sURL = "\(homeURL)users/\(id)"
                                     println("GETTING USER")
                                     self.getUserData(sURL){
                                         (dict: NSDictionary) in
-                                        self.defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
-                                        self.defaults.setValue("", forKey: "password")
+                                        defaults.setValuesForKeysWithDictionary(dict as [NSObject : AnyObject])
+                                        defaults.setValue("", forKey: "password")
                                         println("User data fetched frpom getuserdata: \(dict)")
                                         // Save password to Keychain for future authentifications
                                         let service = NSBundle.mainBundle().bundleIdentifier
@@ -450,7 +449,7 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
@@ -494,8 +493,9 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         genderText.delegate = self
         cityText.delegate = self
         
-        // set to obscure password input
+        // extra text field configurations
         passText.secureTextEntry = true
+        emailText.keyboardType = UIKeyboardType.EmailAddress
         
     }
     

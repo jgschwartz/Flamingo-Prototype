@@ -19,6 +19,7 @@ class MessagesViewController: JSQMessagesViewController {
     var groupName = "Group 1"
     var groupSize: Int!
     var sessionID: String!
+    var parentVC: ContainerViewController!
     
     var messages = [Message]()
     var avatars = Dictionary<String, UIImage>()
@@ -39,11 +40,13 @@ class MessagesViewController: JSQMessagesViewController {
     UIColor(red: 0/255, green: 0/255, blue: 153/255, alpha: 1), // royal blue
     UIColor(red: 153/255, green: 0/255, blue: 102/255, alpha: 1), // magenta
     UIColor(red: 102/255, green: 0/255, blue: 204/255, alpha: 1), // violet
-    UIColor(red: 204/255, green: 51/255, blue: 0/255, alpha: 1) // burnt orange
+    UIColor(red: 204/255, green: 51/255, blue: 0/255, alpha: 1), // burnt orange
+    UIColor(red: 88/255, green: 218/255, blue: 132/255, alpha: 1), // light green
+    UIColor(red: 255/255, green: 127/255, blue: 33/255, alpha: 1), // cleveland orange
+    UIColor(red: 38/255, green: 124/255, blue: 201/255, alpha: 1), // sea blue
+    UIColor(red: 25/255, green: 197/255, blue: 179/255, alpha: 1), // aquamarine
+    UIColor(red: 28/255, green: 214/255, blue: 91/255, alpha: 1) // algae
     ]
-    
-    let defaults = NSUserDefaults.standardUserDefaults()
-    
     
     // *** STEP 1: STORE FIREBASE REFERENCES
     var messagesRef: Firebase!
@@ -83,45 +86,43 @@ class MessagesViewController: JSQMessagesViewController {
             "groupSize": groupSize])
         println(groupName + " added")
     }
-//    
-//    func setupAvatarImage(name: String, imageUrl: String?, incoming: Bool) {
-//        if let stringUrl = imageUrl {
-//            if let url = NSURL(string: stringUrl) {
-//                if let data = NSData(contentsOfURL: url) {
-//                    let image = UIImage(data: data)
-//                    let diameter = incoming ? UInt(collectionView.collectionViewLayout.incomingAvatarViewSize.width) : UInt(collectionView.collectionViewLayout.outgoingAvatarViewSize.width)
-//                    var initials = "Anon"
+    
+    func setupAvatarImage(name: String, imageUrl: String?, incoming: Bool) {
+        if let stringUrl = imageUrl {
+            if let url = NSURL(string: stringUrl) {
+                if let data = NSData(contentsOfURL: url) {
+                    let image = UIImage(data: data)
+                    let diameter = incoming ? UInt(collectionView.collectionViewLayout.incomingAvatarViewSize.width) : UInt(collectionView.collectionViewLayout.outgoingAvatarViewSize.width)
+                    var initials = split(groupName) {$0 == " "} [1] as String
+                    let color = UIColor.blueColor()
 //                    if let firstname = defaults.stringForKey("firstname") {
 //                        let lastname = defaults.stringForKey("lastname")
 //                        initials = firstname.substringToIndex(1) + lastname?.substringToIndex(1)
 //                    }
-//                    let avatarImage = JSQMessagesAvatarFactory.avatarWithUserInitials(initials, backgroundColor: color, textColor: UIColor.blackColor(), font: UIFont.systemFontOfSize(CGFloat(13)), diameter: diameter)
-//                    avatars[name] = avatarImage
-//                    return
-//                }
-//            }
-//        }
-//    
-//        // At some point, we failed at getting the image (probably broken URL), so default to avatarColor
-//        setupAvatarColor(name, incoming: incoming)
-//    }
+                    let avatarImage = JSQMessagesAvatarFactory.avatarWithUserInitials(initials, backgroundColor: color, textColor: UIColor.blackColor(), font: UIFont.systemFontOfSize(CGFloat(13)), diameter: diameter)
+                    avatars[name] = avatarImage
+                    return
+                }
+            }
+        }
+    
+        // At some point, we failed at getting the image (probably broken URL), so default to avatarColor
+        setupAvatarColor(name, incoming: incoming)
+    }
     
     func setupAvatarColor(name: String, incoming: Bool) {
         let diameter = incoming ? UInt(collectionView.collectionViewLayout.incomingAvatarViewSize.width) : UInt(collectionView.collectionViewLayout.outgoingAvatarViewSize.width)
-        
+
         let rgbValue = name.hash
         let r = CGFloat(Float((rgbValue & 0xFF0000) >> 16)/255.0)
         let g = CGFloat(Float((rgbValue & 0xFF00) >> 8)/255.0)
         let b = CGFloat(Float(rgbValue & 0xFF)/255.0)
-        let color = UIColor(red: r, green: g, blue: b, alpha: 0.5)
+        var color = UIColor(red: r, green: g, blue: b, alpha: 0.5)
+        let groupNum = split(name) {$0 == " "} [1].toInt()!
+        color = colorArray[groupNum % colorArray.count]
+        color = UIColor.blueColor()
+        var initials = split(name) {$0 == " "} [1] as String
         
-        let nameLength = count(name)
-//        let initials : String? = name.substringToIndex(advance(sender.startIndex, min(3, nameLength)))
-        var initials = "Anon"
-        if let firstname = defaults.stringForKey("firstname") {
-            let lastname = defaults.stringForKey("lastname")!
-            initials = String(firstname[firstname.startIndex]) + String(lastname[lastname.startIndex])
-        }
         let userImage = JSQMessagesAvatarFactory.avatarWithUserInitials(initials, backgroundColor: color, textColor: UIColor.blackColor(), font: UIFont.systemFontOfSize(CGFloat(13)), diameter: diameter)
         
         avatars[name] = userImage
@@ -129,12 +130,17 @@ class MessagesViewController: JSQMessagesViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         chatroom = (self.city + "-" + self.locationName).stringByReplacingOccurrencesOfString(" ", withString: "-")
+        
+//        performSegueWithIdentifier("groupMessageSegue", sender: self)
+ //       println("segueing")
 
         inputToolbar.contentView.leftBarButtonItem = nil
         automaticallyScrollsToMostRecentMessage = true
         navigationItem.title = "\(locationName)"
+        navigationController?.navigationBar.topItem?.title = "\(locationName)"
+        title = "\(locationName)"
         groupsRef = Firebase(url: "https://startup-stuff.firebaseio.com/chatrooms/\(chatroom)/groups")
         
         if (defaults.stringForKey("username") != nil){
@@ -146,7 +152,8 @@ class MessagesViewController: JSQMessagesViewController {
             sender = sessionID
         }
         colorArray = sorted(colorArray) {_, _ in arc4random() % 2 == 0} // shuffle array
-        
+        var groupArray = [String]()
+        var groupFound = false
         groupsRef.observeSingleEventOfType(FEventType.Value, withBlock: { (snapshot) in
             println("SNAPSHOT : \(snapshot)")
             let childrenCount = snapshot.childrenCount
@@ -157,20 +164,31 @@ class MessagesViewController: JSQMessagesViewController {
                     let tempSender = child.value.valueForKey("sender") as! String
                     if self.sender == tempSender {
                         self.groupName = child.value.valueForKey("group") as! String
-                        break
-                    } else if curChild == childrenCount { // NSEnumerator has no hasNext() function...
-                        let lastGroup = child.value.valueForKey("group") as! String
-                        let lastArr = split(lastGroup) {$0 == " "} // Groups named as Group 1, Group 2, etc
-                        let lastNum: Int = lastArr[1].toInt()!
-                        self.groupName = "Group \(lastNum+1)"
-                        self.addGroup()
+                        groupFound = true
+                    } else {
+                        let group = child.value.valueForKey("group") as! String
+                        groupArray.append(group) // add all groups to array except self for group2group
+
+                        if curChild == childrenCount && !groupFound { // NSEnumerator has no hasNext() function...
+                            let lastGroup = child.value.valueForKey("group") as! String
+                            let lastArr = split(lastGroup) {$0 == " "} // Groups named as Group 1, Group 2, etc
+                            let lastNum: Int = lastArr[1].toInt()!
+                            self.groupName = "Group \(lastNum+1)"
+                            self.addGroup()
+                        }
                     }
-                    curChild += 1
+                    curChild += 1 // iterate to next child
                 }
             } else {
                 self.addGroup()
             }
+            
+            let tabbarVC = self.parentVC.parentViewController as! TabBarController
+            tabbarVC.groupArray = groupArray
+            tabbarVC.groupName = self.groupName
+            println("ALL GROUPS: \(groupArray)")
         })
+        
         setupFirebase()
     }
     
@@ -235,8 +253,9 @@ class MessagesViewController: JSQMessagesViewController {
         if let avatar = avatars[message.sender()] {
             return UIImageView(image: avatar)
         } else {
-//            setupAvatarImage(message.sender(), imageUrl: message.imageUrl(), incoming: true)
+            setupAvatarColor(message.groupName, incoming: true)
             return UIImageView(image:avatars[message.sender()])
+//            return nil
         }
     }
     
@@ -307,5 +326,13 @@ class MessagesViewController: JSQMessagesViewController {
         }
         
         return kJSQMessagesCollectionViewCellLabelHeightDefault
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "groupMessageSegue" {
+            println("to group meßage")
+            let groupVC = segue.destinationViewController as! GroupMessagesViewController
+            groupVC.sessionID = sessionID
+        }
     }
 }

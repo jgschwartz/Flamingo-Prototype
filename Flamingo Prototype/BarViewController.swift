@@ -11,14 +11,15 @@ import GoogleMaps
 
 class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
-    var type: String = ""
+    var type: String!
     var city: String!
     var locationID: String!
     var locationName: String!
     var groupSize: Int!
     var age: Int!
     var price: Int!
+    var lat: CLLocationDegrees!
+    var long: CLLocationDegrees!
     var taggedFriends = Dictionary<String, UIImage>()
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var infoLabel: UILabel!
@@ -27,13 +28,32 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
     @IBOutlet weak var reviewTableView: UITableView!
     var reviewArray = [NSDictionary]()
     var selectedPath: NSIndexPath!
+    @IBOutlet weak var totalRating: UIImageView!
     
+    @IBOutlet weak var goingButton: UIButton!
     @IBOutlet weak var profileButton: UIBarButtonItem!
     @IBOutlet weak var barHeader: UILabel!
     let activityIndicator = UIActivityIndicatorView()    
     @IBOutlet weak var taggedFriendsButton: UIButton!
-    let defaults = NSUserDefaults.standardUserDefaults()
     var parentVC : TabBarController!
+    
+    @IBAction func goingPressed(sender: AnyObject) {
+        if let provider = defaults.stringForKey("provider") {
+            if provider == "facebook" {
+                performSegueWithIdentifier("tagSegue", sender: self)
+            } else {
+                performSegueWithIdentifier("mapSegue", sender: self)
+            }
+        } else {
+            performSegueWithIdentifier("mapSegue", sender: self)
+        }
+    }
+    
+    // Called when a review is submitted from the app
+    func addReview(review: NSDictionary) {
+        reviewArray = [review] + reviewArray
+        self.reviewTableView.reloadData()
+    }
     
     func getAllLocations(completion: (result: NSDictionary)->Void) -> Void{
         // just a GET request
@@ -46,26 +66,26 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
             let json: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parseError)
             println("All Locations: \(json)")
             if response == nil {
-                completion(result: ["Error":"Non Connection"])
+                completion(result: ["Error":"No Connection"])
             }
             if(json != nil){
                 allLocations = json as! NSArray
                 location = self.chooseALocation(allLocations)
                 completion(result: location)
+                // Set up info fields and reviews
+                let id = location["_id"] as! String
+                println("location id: \(id)")
+                self.getReviews(id, completion: {
+                    (result: [NSDictionary]) in
+                    self.reviewArray = result
+                    println(result)
+                    NSOperationQueue.mainQueue().addOperationWithBlock{
+                        self.reviewTableView.reloadData()
+                    }
+                })
             } else {
                 completion(result: location)
             }
-            // Set up info fields and reviews
-            let id = location["_id"] as! String
-            println("location id: \(id)")
-            self.getReviews(id, completion: {
-                (result: [NSDictionary]) in
-                self.reviewArray = result
-                println(result)
-                NSOperationQueue.mainQueue().addOperationWithBlock{
-                    self.reviewTableView.reloadData()
-                }
-            })
         }
         task.resume()
     }
@@ -109,16 +129,18 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
             if(json != nil){
                 allReviews = json as! NSArray
                 println("allReviews: \(allReviews.count)")
-                var index = 0
+                var index = allReviews.count - 1
                 var fetched = 0
+                var single = NSDictionary()
                 // get only reviews with content, but no more than 5
-                while index < allReviews.count && fetched < 5 {
-                    let rbool = ((allReviews[index] as! NSDictionary).valueForKey("title") as! String) != ""
+                while index > -1 && fetched < 5 {
+                    single = allReviews[index] as! NSDictionary
+                    let rbool = (single.valueForKey("title") as! String) != ""
                     if rbool {
-                        review.append(allReviews[index] as! NSDictionary)
+                        review.append(single)
                         fetched++
                     }
-                    index++
+                    index--
                 }
                 completion(result: review)
             } else {
@@ -132,27 +154,37 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        parentVC = parentViewController as! TabBarController
-        self.type = parentVC.type
+        println("TAGGED FRIENDS IS \(taggedFriends.count)")
         
-        city = parentVC.city
-        age = parentVC.age
-        groupSize = parentVC.groupSize
-        price = parentVC.price
+        var tabbar = false
+        var tabItems = [UITabBarItem]()
+        if let parent = parentViewController as? TabBarController {
+            tabbar = true
+            parentVC = parent
+            type = parentVC.type
+            city = parentVC.city
+            age = parentVC.age
+            groupSize = parentVC.groupSize
+            price = parentVC.price
+            
+            // disable tab bar until location is retrieved and loaded
+            tabItems = parentVC.tabBar.items as! [UITabBarItem]
+            for item in tabItems {
+                item.enabled = false
+            }
+        }
         
         
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
         
-        // disable tab bar until location is retrieved and loaded
-        let tabItems = parentVC.tabBar.items as! [UITabBarItem]
-        for item in tabItems {
-            item.enabled = false
-        }
+        totalRating.layer.cornerRadius = 5
+        totalRating.layer.borderColor = UIColor.blackColor().CGColor
+        totalRating.layer.borderWidth = 1.0
         
         barHeader.hidden = true
         addressLabel.hidden = true
@@ -160,7 +192,22 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
         infoText.hidden = true
         reviewLabel.hidden = true
         reviewTableView.hidden = true
+        goingButton.hidden = true
         
+//        goingButton.layer.cornerRadius = 5
+//        goingButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+//        goingButton.layer.borderColor = UIColor.blackColor().CGColor
+//        goingButton.layer.borderWidth = 1.0
+//        goingButton.layer.backgroundColor = UIColor.lightGrayColor().CGColor
+//        goingButton.layer.shadowColor = UIColor.blackColor().CGColor
+//        goingButton.layer.shadowOffset = CGSize(width: 5, height: 5)
+//        goingButton.layer.shadowOpacity = 1
+//        goingButton.layer.shadowRadius = 10
+        
+        reviewTableView.tintColor = view.tintColor
+        reviewTableView.contentInset.left = -15
+        reviewTableView.separatorColor = UIColor.blackColor()
+        reviewTableView.separatorInset = UIEdgeInsetsZero
         
         // set up activity indicator to be gray and fill screen
         activityIndicator.frame = self.view.frame
@@ -177,17 +224,19 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
                 if(result.count == 0){
                     // Algorithm failed, no connection, etc
                     self.navigationItem.title = "Error"
-                    self.barHeader.text = "No Connecion."
+                    self.barHeader.text = "No Connection."
                     self.barHeader.hidden = false
                     self.infoLabel.text = "Could not connect to server."
                     self.activityIndicator.stopAnimating()
                 } else {
                     self.locationName = result["name"] as! String
-                    self.parentVC.locationName = self.locationName
-                    let firstItem = self.parentVC.tabBar.items?.first as! UITabBarItem
-                    firstItem.title = self.locationName
+                    if tabbar {
+                        self.parentVC.locationName = self.locationName
+                        let firstItem = self.parentVC.tabBar.items?.first as! UITabBarItem
+                        firstItem.title = self.locationName
+                    }
                     self.locationID = result["_id"] as! String
-                    self.parentVC.locationID = self.locationID
+//                    self.parentVC.locationID = self.locationID
                     let address = result["address"] as! String
                     let query = (self.locationName + " " + self.city).stringByReplacingOccurrencesOfString(" ", withString: "+")
                     println("ADDRESS: \(address)")
@@ -196,11 +245,11 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
                     var geocoder = CLGeocoder()
                     geocoder.geocodeAddressString("\(address), \(self.city)", completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
                         if let placemark = placemarks?[0] as? CLPlacemark {
-                            let newLat = placemark.location.coordinate.latitude
-                            let newLong = placemark.location.coordinate.longitude
-                            println("LAT: \(newLat), LONG: \(newLong)")
-                            self.parentVC.lat = newLat
-                            self.parentVC.long = newLong
+                            self.lat = placemark.location.coordinate.latitude
+                            self.long = placemark.location.coordinate.longitude
+                            println("LAT: \(self.lat), LONG: \(self.long)")
+//                            self.parentVC.lat = newLat
+//                            self.parentVC.long = newLong
                         }
                     })
                     
@@ -216,14 +265,22 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
                     self.reviewTableView.hidden = false
                     self.reviewLabel.hidden = false
                     
-                    for item in tabItems {
-                        item.enabled = true
+                    if tabbar {
+                        for item in tabItems {
+                            item.enabled = true
+                        }
+                    } else {
+                        self.goingButton.hidden = false
                     }
 
                     self.activityIndicator.stopAnimating()
                 }
             }
         })
+        
+        navigationController?.navigationItem.title = locationName
+        navigationItem.title = locationName
+        title = locationName
         
         // Set link to profile page if user is logged in
         if let user = defaults.stringForKey("username") {
@@ -240,6 +297,7 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
         let cell = tableView.cellForRowAtIndexPath(indexPath)
         if let image = cell?.imageView?.image {
             // selected cell is a valid review
+            cell?.backgroundColor = UIColor.clearColor()
             selectedPath = indexPath
             performSegueWithIdentifier("selectedReviewSegue", sender: self)
         }
@@ -253,18 +311,22 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
                 cell?.textLabel?.text = reviewArray[row].valueForKey("title") as? String
                 cell?.textLabel?.textColor = view.tintColor
                 let rating = reviewArray[row].valueForKey("rating") as! Int
-                cell?.imageView?.image = UIImage(named: "Dice \(rating)")
+                cell?.imageView?.image = UIImage(named: "Trans Star Dice \(rating)")
             } else {
                 cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "cell")
                 cell?.textLabel?.text = reviewArray[row].valueForKey("title") as? String
                 cell?.textLabel?.textColor = view.tintColor
                 let rating = reviewArray[row].valueForKey("rating") as! Int
-                cell?.imageView?.image = UIImage(named: "Dice \(rating)")
+                cell?.imageView?.image = UIImage(named: "Trans Star Dice \(rating)")
             }
         } else {
             cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "cell")
             cell?.textLabel?.text = "No reviews have been posted yet"
         }
+        cell?.backgroundColor = UIColor.clearColor()
+        cell?.contentView.layer.borderColor = UIColor.blackColor().CGColor
+        cell?.selectionStyle = UITableViewCellSelectionStyle.None
+        //            cell?.contentView.layer.borderWidth = 1.0
         return cell!
     }
     
@@ -277,7 +339,9 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
     }
     
     override func viewWillAppear(animated: Bool) {
-        taggedFriends = parentVC.taggedFriends
+        if parentVC != nil {
+            taggedFriends = parentVC.taggedFriends
+        }
         if taggedFriends.count > 0 {
             let count = taggedFriends.count
             let friendsPlural = count > 1 ? "Friends" : "Friend"
@@ -297,10 +361,32 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
         if(segue.identifier == "taggedFriendsSegue"){
             let taggedVC = segue.destinationViewController as! TaggedFriendsTableViewController
             taggedVC.taggedFriends = taggedFriends
-            taggedVC.parentVC = parentVC
+            taggedVC.parentVC = self
         } else if segue.identifier == "selectedReviewSegue" {
             let selVC = segue.destinationViewController as! SelectedReviewViewController
             selVC.review = reviewArray[selectedPath.row]
+        } else if segue.identifier == "tagSegue" {
+            let friendsVC = segue.destinationViewController as! FriendsViewController
+            friendsVC.city = city
+            friendsVC.locationID = locationID
+            friendsVC.locationName = locationName
+            friendsVC.groupSize = groupSize
+            friendsVC.lat = lat
+            friendsVC.long = long
+            friendsVC.type = type
+            friendsVC.age = age
+            friendsVC.price = price
+        } else if segue.identifier == "mapSegue" {
+            let mapVC = segue.destinationViewController as! MapViewController
+            mapVC.city = city
+            mapVC.locationID = locationID
+            mapVC.locationName = locationName
+            mapVC.groupSize = groupSize
+            mapVC.lat = lat
+            mapVC.long = long
+            mapVC.type = type
+            mapVC.age = age
+            mapVC.price = price
         }
     }
     

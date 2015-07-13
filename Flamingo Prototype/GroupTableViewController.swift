@@ -1,28 +1,32 @@
 //
-//  TaggedFriendsTableViewController.swift
+//  GroupTableViewController.swift
 //  Flamingo Prototype
 //
-//  Created by Jared Schwartz on 6/19/15.
+//  Created by Jared Schwartz on 7/7/15.
 //  Copyright (c) 2015 Jared Schwartz. All rights reserved.
 //
 
 import UIKit
 
-class TaggedFriendsTableViewController: UITableViewController {
+class GroupTableViewController: UITableViewController {
 
-    var taggedFriends = Dictionary<String, UIImage>()
-    var taggedArray = [String]()
-    var parentVC: BarViewController!
+    var groupArray: [String]!
+    var groupOther: String!
+    var groupName: String!
+    var parentVC: TabBarController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.title = "Friends Attending"
+//        if let parent = parentViewController as? TabBarController {
+//            parentVC = parent
+//        } else if let parent = parentViewController?.parentViewController as? TabBarController {
+//            parentVC = parent
+//        }
+        parentVC = parentViewController as! TabBarController
+        groupArray = parentVC.groupArray
         
-        taggedFriends = parentVC.taggedFriends
-        
-        taggedArray = [String](taggedFriends.keys)
-
+        navigationItem.leftBarButtonItem = nil
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -37,6 +41,11 @@ class TaggedFriendsTableViewController: UITableViewController {
     }
 
     // MARK: - Table view data source
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        performSegueWithIdentifier("groupMessageSegue", sender: self)
+        groupOther = groupArray[indexPath.row]
+    }
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
@@ -47,16 +56,15 @@ class TaggedFriendsTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return taggedFriends.count
+        return groupArray.count
     }
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("friendReuseIdentifier", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! UITableViewCell
 
-        let name = taggedArray[indexPath.row]
-        cell.textLabel!.text = name
-        cell.imageView?.image = taggedFriends[name]
+        let cellTitle = groupArray[indexPath.row]
+        cell.textLabel?.text = cellTitle
 
         return cell
     }
@@ -97,14 +105,17 @@ class TaggedFriendsTableViewController: UITableViewController {
     }
     */
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
+        if segue.identifier == "groupMessageSegue" {
+            let containerVC = segue.destinationViewController as! ContainerViewController
+            containerVC.parentVC = self
+            containerVC.parentparent = parentVC
+        }
     }
-    */
+
 
 }

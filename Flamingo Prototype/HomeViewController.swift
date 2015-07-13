@@ -19,9 +19,6 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     let groupArray = [Int](1...20)
     var groupPickerView = UIPickerView()
     
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
-    let defaults = NSUserDefaults.standardUserDefaults()
-    
     @IBAction func go(sender: AnyObject) {
         if(groupText.text.isEmpty){
             let alertTitle = "Incomplete Form"
@@ -44,16 +41,16 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
             switch locationSegment.selectedSegmentIndex {
             case 0:
                 type = "bars"
-                performSegueWithIdentifier("tabSegue", sender: self)
+                performSegueWithIdentifier("landingSegue", sender: self)
             case 1:
                 type = "clubs"
-                performSegueWithIdentifier("tabSegue", sender: self)
+                performSegueWithIdentifier("landingSegue", sender: self)
             case 2:
                 type = "restaurants"
-                performSegueWithIdentifier("tabSegue", sender: self)
+                performSegueWithIdentifier("landingSegue", sender: self)
             default:
                 type = "restaurants"
-                performSegueWithIdentifier("tabSegue", sender: self)
+                performSegueWithIdentifier("landingSegue", sender: self)
             }
         }
         NSNotificationCenter.defaultCenter().postNotificationName("goToResults", object: self)
@@ -84,9 +81,13 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        println("starting corner radius: \(groupText.layer.cornerRadius)")
+        groupText.layer.cornerRadius = 5
+        groupText.layer.borderWidth = 1.0
+        
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
@@ -123,6 +124,7 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
 //                })
 //            }
 //        }
+        groupText.resignFirstResponder()
         
         if let fbAccessToken = FBSDKAccessToken.currentAccessToken() {
             let curDate = NSDate()
@@ -186,18 +188,18 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "tabSegue" {
+        if segue.identifier == "landingSegue" {
             
-            let tabVC = segue.destinationViewController as! TabBarController
-            tabVC.groupSize = groupText.text.toInt()
-            tabVC.age = defaults.integerForKey("age")
+            let barVC = segue.destinationViewController as! BarViewController
+            barVC.groupSize = groupText.text.toInt()
+            barVC.age = defaults.integerForKey("age")
             if let city = defaults.stringForKey("city") {
-                tabVC.city = city
+                barVC.city = city
             } else {
-                tabVC.city = "Basel"
+                barVC.city = "Basel"
             }
-            tabVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
-            tabVC.type = type
+            barVC.price = priceSegment.selectedSegmentIndex + 1 // database uses 1, 2, 3 instead of 0, 1, 2
+            barVC.type = type
         }
     }
 

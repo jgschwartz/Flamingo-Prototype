@@ -10,6 +10,10 @@
 		A90283811B1C547E00FCF8D3 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90283801B1C547E00FCF8D3 /* FBSDKCoreKit.framework */; };
 		A90283831B1C5DD500FCF8D3 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90283821B1C5DD500FCF8D3 /* FBSDKLoginKit.framework */; };
 		A90283851B1C5DF400FCF8D3 /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90283841B1C5DF400FCF8D3 /* FBSDKShareKit.framework */; };
+		A90398FD1B4A9F1100C9E838 /* KOYNBlueGradient.png in Resources */ = {isa = PBXBuildFile; fileRef = A90398FC1B4A9F1100C9E838 /* KOYNBlueGradient.png */; };
+		A90398FF1B4AC3EE00C9E838 /* GroupMessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90398FE1B4AC3EE00C9E838 /* GroupMessagesViewController.swift */; };
+		A90399011B4BD24200C9E838 /* MessagesTabBarControllerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90399001B4BD24200C9E838 /* MessagesTabBarControllerViewController.swift */; };
+		A90399031B4C012F00C9E838 /* GroupTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90399021B4C012F00C9E838 /* GroupTableViewController.swift */; };
 		A904A4211B2841C8006571F7 /* BarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A904A4201B2841C8006571F7 /* BarViewController.swift */; };
 		A905EE301B38048000D65B53 /* UpdateProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */; };
 		A905EE321B39745500D65B53 /* ReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A905EE311B39745500D65B53 /* ReviewViewController.swift */; };
@@ -111,6 +115,10 @@
 		A90283801B1C547E00FCF8D3 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../../FacebookSDK/FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		A90283821B1C5DD500FCF8D3 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../../FacebookSDK/FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		A90283841B1C5DF400FCF8D3 /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKShareKit.framework; path = ../../FacebookSDK/FBSDKShareKit.framework; sourceTree = "<group>"; };
+		A90398FC1B4A9F1100C9E838 /* KOYNBlueGradient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = KOYNBlueGradient.png; path = ../../../KOYNBlueGradient.png; sourceTree = "<group>"; };
+		A90398FE1B4AC3EE00C9E838 /* GroupMessagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMessagesViewController.swift; sourceTree = "<group>"; };
+		A90399001B4BD24200C9E838 /* MessagesTabBarControllerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesTabBarControllerViewController.swift; sourceTree = "<group>"; };
+		A90399021B4C012F00C9E838 /* GroupTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupTableViewController.swift; sourceTree = "<group>"; };
 		A904A4201B2841C8006571F7 /* BarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarViewController.swift; sourceTree = "<group>"; };
 		A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateProfileViewController.swift; sourceTree = "<group>"; };
 		A905EE311B39745500D65B53 /* ReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewController.swift; sourceTree = "<group>"; };
@@ -313,13 +321,16 @@
 				A905EE2F1B38048000D65B53 /* UpdateProfileViewController.swift */,
 				A905EE391B3DA06500D65B53 /* ChangePasswordViewController.swift */,
 				A904A4201B2841C8006571F7 /* BarViewController.swift */,
-				A9BAF6E31B304C4E00734507 /* MessagesViewController.swift */,
 				A905EE351B3C092E00D65B53 /* ContainerViewController.swift */,
+				A9BAF6E31B304C4E00734507 /* MessagesViewController.swift */,
+				A90398FE1B4AC3EE00C9E838 /* GroupMessagesViewController.swift */,
+				A90399021B4C012F00C9E838 /* GroupTableViewController.swift */,
 				A959CF241B34057500A47FB0 /* FriendsViewController.swift */,
 				A959CF281B34341100A47FB0 /* TaggedFriendsTableViewController.swift */,
 				A98B08B21B4408E300298724 /* SelectedReviewViewController.swift */,
 				A905EE311B39745500D65B53 /* ReviewViewController.swift */,
 				A905EE371B3C314C00D65B53 /* MapViewController.swift */,
+				A90399001B4BD24200C9E838 /* MessagesTabBarControllerViewController.swift */,
 				A905EE331B3AF56300D65B53 /* TabBarController.swift */,
 				A9110A941B15FC7B00DE37C9 /* Images.xcassets */,
 				A9110A961B15FC7B00DE37C9 /* LaunchScreen.xib */,
@@ -331,6 +342,7 @@
 		A9110A8B1B15FC7B00DE37C9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A90398FC1B4A9F1100C9E838 /* KOYNBlueGradient.png */,
 				A9BAF6DB1B2EF17800734507 /* FlamingoGradientJPG.jpg */,
 				A9BAF6DC1B2EF17800734507 /* FlamingoGradientPNG */,
 				A9110A8C1B15FC7B00DE37C9 /* Info.plist */,
@@ -637,6 +649,7 @@
 				A9D342351B305EA90060B119 /* bubble_min.png in Resources */,
 				A9D342361B305EA90060B119 /* bubble_min@2x.png in Resources */,
 				A9D3424C1B305EA90060B119 /* JSQMessagesViewController.xib in Resources */,
+				A90398FD1B4A9F1100C9E838 /* KOYNBlueGradient.png in Resources */,
 				A9D342391B305EA90060B119 /* bubble_stroked.png in Resources */,
 				A9D3423C1B305EA90060B119 /* bubble_stroked_tailless@2x.png in Resources */,
 				A9D3423A1B305EA90060B119 /* bubble_stroked@2x.png in Resources */,
@@ -725,6 +738,7 @@
 				A9D342561B305EA90060B119 /* JSQMessagesCollectionViewCell.m in Sources */,
 				A9959C881B2065E2006224B4 /* LocksmithRequest.swift in Sources */,
 				A905EE321B39745500D65B53 /* ReviewViewController.swift in Sources */,
+				A90399031B4C012F00C9E838 /* GroupTableViewController.swift in Sources */,
 				A9D3425E1B305EA90060B119 /* JSQMessagesLoadEarlierHeaderView.m in Sources */,
 				A9D342481B305EA90060B119 /* UIImage+JSQMessages.m in Sources */,
 				A9BAF6E41B304C4E00734507 /* MessagesViewController.swift in Sources */,
@@ -734,6 +748,7 @@
 				A9D3425B1B305EA90060B119 /* JSQMessagesComposerTextView.m in Sources */,
 				A9D3424D1B305EA90060B119 /* JSQMessagesAvatarFactory.m in Sources */,
 				A959CF251B34057500A47FB0 /* FriendsViewController.swift in Sources */,
+				A90399011B4BD24200C9E838 /* MessagesTabBarControllerViewController.swift in Sources */,
 				A9D342461B305EA90060B119 /* NSString+JSQMessages.m in Sources */,
 				A9D342571B305EA90060B119 /* JSQMessagesCollectionViewCellIncoming.m in Sources */,
 				A9D3424B1B305EA90060B119 /* JSQMessagesViewController.m in Sources */,
@@ -743,6 +758,7 @@
 				A9959C841B205A71006224B4 /* ProfileViewController.swift in Sources */,
 				A9D3425D1B305EA90060B119 /* JSQMessagesLabel.m in Sources */,
 				A9A637451B19D6B50049D46F /* StartViewController.swift in Sources */,
+				A90398FF1B4AC3EE00C9E838 /* GroupMessagesViewController.swift in Sources */,
 				A9D340571B3057B00060B119 /* Message.swift in Sources */,
 				A9D342591B305EA90060B119 /* JSQMessagesCollectionViewCellOutgoing.m in Sources */,
 				A9D342471B305EA90060B119 /* UIColor+JSQMessages.m in Sources */,

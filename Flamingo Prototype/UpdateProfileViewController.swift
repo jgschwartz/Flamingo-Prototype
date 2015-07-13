@@ -24,8 +24,6 @@ class UpdateProfileViewController: UIViewController, UIAlertViewDelegate, UIPick
     
     var dataToUpdate = Dictionary<String, String>()
     var fieldsToUpdate = [String]()
-    let defaults = NSUserDefaults.standardUserDefaults()
-    let homeURL = "https://thawing-garden-5169.herokuapp.com/"
     
     @IBAction func updateAccount(sender: AnyObject) {
         dataToUpdate.removeAll(keepCapacity: true)
@@ -84,7 +82,7 @@ class UpdateProfileViewController: UIViewController, UIAlertViewDelegate, UIPick
             updateUser(dataToUpdate, url: "\(homeURL)users/\(id)") {
                 (succeeded: Bool, msg: String) in
                 if succeeded {
-                    self.defaults.setValuesForKeysWithDictionary(self.dataToUpdate)
+                    defaults.setValuesForKeysWithDictionary(self.dataToUpdate)
 
                     // calculate new age if birthday is updated
                     if !self.birthdayText.text.isEmpty {
@@ -96,7 +94,7 @@ class UpdateProfileViewController: UIViewController, UIAlertViewDelegate, UIPick
                         let unit = NSCalendarUnit.CalendarUnitYear
                         let age = calendar.components(unit, fromDate: startDate!, toDate: curDate, options: nil)
                         println(age)
-                        self.defaults.setValue(age.year, forKey: "age")
+                        defaults.setValue(age.year, forKey: "age")
                     }
                     
                     var updateMessage = ""
@@ -249,7 +247,7 @@ class UpdateProfileViewController: UIViewController, UIAlertViewDelegate, UIPick
         
         // Set background to gradient image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: "FlamingoGradientPNG.png")?.drawInRect(self.view.bounds)
+        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
         var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         self.view.backgroundColor = UIColor(patternImage: image)
