@@ -9,7 +9,7 @@
 import UIKit
 import FBSDKLoginKit
 
-class UpdateProfileViewController: UIViewController, UIAlertViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
+class UpdateProfileViewController: CustomKoynViewController, UIAlertViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
     
     @IBOutlet weak var newEmailText: UITextField!
     @IBOutlet weak var confirmEmailText: UITextField!
@@ -245,13 +245,6 @@ class UpdateProfileViewController: UIViewController, UIAlertViewDelegate, UIPick
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
-        
         self.title = "Preferences"
         self.navigationItem.backBarButtonItem?.title = "Profile"
         
@@ -268,10 +261,14 @@ class UpdateProfileViewController: UIViewController, UIAlertViewDelegate, UIPick
         cityText.inputView = cityPickerView
         cityPickerView.backgroundColor = UIColor.clearColor()
         
-        newEmailText.delegate = self
-        confirmEmailText.delegate = self
-        birthdayText.delegate = self
-        cityText.delegate = self
+        let textFieldArray = [newEmailText, confirmEmailText, birthdayText, cityText]
+        
+        for field in textFieldArray {
+            field.delegate = self
+            field.layer.cornerRadius = 5
+            field.layer.borderWidth = 1.0
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {

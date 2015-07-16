@@ -8,14 +8,22 @@
 
 import UIKit
 
-class ContainerViewController: UIViewController {
+class ContainerViewController: CustomKoynViewController {
     
     @IBOutlet weak var profileButton: UIBarButtonItem!
     var parentVC: GroupTableViewController!
     var parentparent: TabBarController!
+    @IBOutlet weak var containerView: UIView!
+    @IBOutlet weak var containerViewMain: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.navigationController?.navigationBar.translucent = false
+//        // ios 7 has issues with padding on the left and right
+//        if NSClassFromString("NSOperatingSystemVersion") == nil {
+//            containerViewMain.bounds = CGRectInset(containerViewMain.frame, -10.0, -10.0);
+//        }
         
         if let username = defaults.stringForKey("username") {
             navigationItem.rightBarButtonItem = profileButton

@@ -10,7 +10,7 @@ import UIKit
 import FBSDKCoreKit
 import FBSDKLoginKit
 
-class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
+class SignupViewController: CustomKoynViewController, FBSDKLoginButtonDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
     
     @IBOutlet weak var emailText: UITextField!
     @IBOutlet weak var userText: UITextField!
@@ -21,7 +21,6 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
     @IBOutlet weak var ageText: UITextField!
     @IBOutlet weak var genderText: UITextField!
     @IBOutlet weak var cityText: UITextField!
-
     let activityIndicator = UIActivityIndicatorView()
     
     var cityPickerView: UIPickerView = UIPickerView()
@@ -447,13 +446,6 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
         self.view.addSubview(activityIndicator)
         
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
-        
         // Set up FB login button
         
         // check if user already logged in through facebook:
@@ -468,8 +460,16 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         // Set up picker views for input on text fields
         datePickerView.datePickerMode = UIDatePickerMode.Date
         let calendar = NSCalendar.currentCalendar()
-        let legalDrinkingAge = calendar.dateByAddingUnit(NSCalendarUnit.CalendarUnitYear, value: -21, toDate: NSDate(), options: nil)
-        datePickerView.date = legalDrinkingAge!
+        var legalDrinkingAge = NSDate()
+        if (NSClassFromString("NSOperatingSystemVersion") != nil) {
+            // iOS 8 and later
+            legalDrinkingAge = calendar.dateByAddingUnit(NSCalendarUnit.CalendarUnitYear, value: -21, toDate: NSDate(), options: nil)!
+        } else {
+            let component = NSDateComponents()
+            component.year = -21
+            legalDrinkingAge = NSCalendar.currentCalendar().dateByAddingComponents(component, toDate: NSDate(), options: NSCalendarOptions.SearchBackwards)!
+        }
+        datePickerView.date = legalDrinkingAge
         
         genderPickerView.delegate = self
         genderPickerView.dataSource = self
@@ -483,19 +483,19 @@ class SignupViewController: UIViewController, FBSDKLoginButtonDelegate, UIPicker
         cityText.inputView = cityPickerView
         cityPickerView.backgroundColor = UIColor.clearColor()
         
-        // Set up text field delegates
-        emailText.delegate = self
-        userText.delegate = self
-        firstnameText.delegate = self
-        lastnameText.delegate = self
-        passText.delegate = self
-        ageText.delegate = self
-        genderText.delegate = self
-        cityText.delegate = self
+        let textFieldDict = [emailText: "Email", userText: "Username", firstnameText: "First", lastnameText: "Last", passText: "Password", ageText: "Age", genderText: "Gender", cityText: "City"]
         
+        for field in textFieldDict.keys {
+            field.delegate = self
+            field.layer.cornerRadius = 5
+            field.layer.borderWidth = 1.0
+            field.placeholder = textFieldDict[field]
+        }
+
         // extra text field configurations
         passText.secureTextEntry = true
         emailText.keyboardType = UIKeyboardType.EmailAddress
+        ageText.keyboardType = UIKeyboardType.NumberPad
         
     }
     

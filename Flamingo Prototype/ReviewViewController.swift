@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ReviewViewController: UIViewController, UITextViewDelegate {
+class ReviewViewController: CustomKoynViewController, UITextViewDelegate {
 
     
     @IBOutlet weak var locationLabel: UILabel!
@@ -147,13 +147,6 @@ class ReviewViewController: UIViewController, UITextViewDelegate {
 //        }
         parentVC = parentViewController as! TabBarController
         
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
-        
         diceView.layer.cornerRadius = 5
         diceView.layer.borderColor = UIColor.blackColor().CGColor
         diceView.layer.borderWidth = 1.0
@@ -167,6 +160,12 @@ class ReviewViewController: UIViewController, UITextViewDelegate {
         reviewText.layer.borderWidth = 1.0
         titleText.layer.cornerRadius = 5
         titleText.layer.borderWidth = 1.0
+        
+//        diceView.layer.backgroundColor = UIColor.clearColor().CGColor
+//        titleText.backgroundColor = UIColor.clearColor()
+//        reviewText.layer.backgroundColor = UIColor.clearColor().CGColor
+//        titleText.attributedPlaceholder = NSAttributedString(string: titleText.placeholder!, attributes: [NSForegroundColorAttributeName: UIColor.whiteColor()])
+        
     }
 
     override func didReceiveMemoryWarning() {

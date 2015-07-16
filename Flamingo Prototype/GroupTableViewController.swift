@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GroupTableViewController: UITableViewController {
+class GroupTableViewController: CustomKoynTableViewController {
 
     var groupArray: [String]!
     var groupOther: String!
@@ -18,15 +18,20 @@ class GroupTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.edgesForExtendedLayout = UIRectEdge.None
 //        if let parent = parentViewController as? TabBarController {
 //            parentVC = parent
 //        } else if let parent = parentViewController?.parentViewController as? TabBarController {
 //            parentVC = parent
 //        }
-        parentVC = parentViewController as! TabBarController
+//        parentVC = parentViewController as! TabBarController
         groupArray = parentVC.groupArray
         
         navigationItem.leftBarButtonItem = nil
+        
+        let imageView = UIImageView(image: UIImage(named: bgImageName)!)
+        
+        tableView.backgroundView = imageView
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -65,6 +70,8 @@ class GroupTableViewController: UITableViewController {
 
         let cellTitle = groupArray[indexPath.row]
         cell.textLabel?.text = cellTitle
+        
+        cell.backgroundColor = UIColor.clearColor()
 
         return cell
     }

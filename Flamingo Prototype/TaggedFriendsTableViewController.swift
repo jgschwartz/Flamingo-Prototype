@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TaggedFriendsTableViewController: UITableViewController {
+class TaggedFriendsTableViewController: CustomKoynTableViewController {
 
     var taggedFriends = Dictionary<String, UIImage>()
     var taggedArray = [String]()
@@ -23,6 +23,13 @@ class TaggedFriendsTableViewController: UITableViewController {
         
         taggedArray = [String](taggedFriends.keys)
 
+//        tableView.contentInset.right = -15
+//        tableView.contentInset.left = -15
+//        tableView.separatorInset.left = 0
+//        tableView.separatorInset.right = -15
+//        tableView.contentInset = UIEdgeInsetsZero
+//        tableView.separatorInset.left = 0
+        tableView.separatorColor = UIColor.blackColor()
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -57,7 +64,7 @@ class TaggedFriendsTableViewController: UITableViewController {
         let name = taggedArray[indexPath.row]
         cell.textLabel!.text = name
         cell.imageView?.image = taggedFriends[name]
-
+        cell.backgroundColor = UIColor.clearColor()
         return cell
     }
     

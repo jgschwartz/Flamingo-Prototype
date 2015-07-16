@@ -9,7 +9,7 @@
 import UIKit
 import GoogleMaps
 
-class MapViewController: UIViewController, GMSMapViewDelegate {
+class MapViewController: CustomKoynViewController, GMSMapViewDelegate {
     
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var directionsButton: UIButton!
@@ -53,8 +53,18 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
             
         mapView.delegate = self
         
-        directionsButton.backgroundColor = mapView.backgroundColor
-        chatButton.backgroundColor = mapView.backgroundColor
+        if NSClassFromString("NSOperatingSystemVersion") == nil {
+            directionsButton.contentEdgeInsets.left = 10
+            chatButton.contentEdgeInsets.right = 10
+        }
+        
+        directionsButton.layer.cornerRadius = 5
+        chatButton.layer.cornerRadius = 5
+        directionsButton.contentEdgeInsets.right += 5
+        chatButton.contentEdgeInsets.left += 5
+        directionsButton.backgroundColor = UIColor(red: 60/255, green: 173/255, blue: 212/255, alpha: 1)
+        chatButton.backgroundColor = UIColor(red: 60/255, green: 173/255, blue: 212/255, alpha: 1)
+
         //(UIDeviceRGBColorSpace 0.929412 0.917647 0.886275 1)
         
         if let username = defaults.stringForKey("username") {

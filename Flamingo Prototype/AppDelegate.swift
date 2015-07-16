@@ -24,22 +24,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        defaults.removeObjectForKey("taggedFriends")
+        
+        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        var storyboard = UIStoryboard(name: "Main", bundle: nil)
 
-        let defaults = NSUserDefaults.standardUserDefaults()
+        UIButton.appearance().tintColor = self.window?.tintColor
+
         if let user = defaults.stringForKey("username") {
             
-            self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
             
-            var storyboard = UIStoryboard(name: "Main", bundle: nil)
             
             var initialViewController = storyboard.instantiateViewControllerWithIdentifier("HomeNavigationController") as! UINavigationController
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
+        } else {
+            self.window?.rootViewController = storyboard.instantiateInitialViewController() as! UINavigationController
         }
         
         // Enable Google Maps API
-        GMSServices.provideAPIKey("AIzaSyDQr0xhO8xBQIRCvPdBjuoailLwcipt49M")
+        GMSServices.provideAPIKey("AIzaSyBTBZ81wJ1gn0OnIi7r8XVwK9PXVlFj7Bo")
         
         // Enable Facebook login
         FBSDKLoginButton.initialize()

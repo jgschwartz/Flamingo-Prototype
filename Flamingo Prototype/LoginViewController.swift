@@ -9,7 +9,7 @@
 import UIKit
 import FBSDKLoginKit
 
-class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate, UIAlertViewDelegate {
+class LoginViewController: CustomKoynViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate, UIAlertViewDelegate {
     
     @IBOutlet weak var userText: UITextField!
     @IBOutlet weak var passText: UITextField!
@@ -367,7 +367,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 
                 var pass = "password"
                 let service = NSBundle.mainBundle().bundleIdentifier
-                println(user)
+                println(username)
                 let (dict, loadError) = Locksmith.loadDataForUserAccount(username, inService: service!)
                 println("locksmith dict is: \(dict)")
                 if loadError != nil {
@@ -472,17 +472,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
         self.view.addSubview(activityIndicator)
         
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
-        
         fbLogin.readPermissions = ["email", "public_profile", "user_friends", "user_birthday"]
         fbLogin.delegate = self
         userText.delegate = self
         passText.delegate = self
+        userText.layer.cornerRadius = 5
+        userText.layer.borderWidth = 1.0
+        passText.layer.cornerRadius = 5
+        passText.layer.borderWidth = 1.0
         
         passText.secureTextEntry = true
     }

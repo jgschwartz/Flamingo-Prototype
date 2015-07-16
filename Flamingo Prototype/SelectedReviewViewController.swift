@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SelectedReviewViewController: UIViewController {
+class SelectedReviewViewController: CustomKoynViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var ratingView: UIImageView!
@@ -17,15 +17,7 @@ class SelectedReviewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
-        
+
         let title = review["title"] as! String
         let content = review["content"] as! String
         let rating = review["rating"] as! Int

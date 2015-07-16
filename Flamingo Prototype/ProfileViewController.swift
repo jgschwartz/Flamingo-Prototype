@@ -9,7 +9,7 @@
 import UIKit
 import FBSDKLoginKit
 
-class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewDelegate, UITableViewDataSource {
+class ProfileViewController: CustomKoynViewController, UIAlertViewDelegate, UITableViewDelegate, UITableViewDataSource {
     
     var mainColor : UIColor! //UIColor(red: 227/255, green: 97/255, blue: 250/255, alpha: 1)
     var sectionArray = [String]()
@@ -136,13 +136,6 @@ class ProfileViewController: UIViewController, UIAlertViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
         
         mainColor = view.tintColor
         

@@ -9,7 +9,7 @@
 import UIKit
 import FBSDKCoreKit
 
-class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource {
+class FriendsViewController: CustomKoynViewController, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource {
 
     var filteredFriendsArray = [String]()
     var namePicDict = Dictionary<String, UIImage?>()
@@ -30,12 +30,20 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
     var age: Int!
     var price: Int!
     var type: String!
+    var defaultFontsize: CGFloat!
+    var selectedIndex: NSIndexPath!
     
     @IBAction func tagButton(sender: AnyObject) {
         if !selected.isEmpty {
             filteredFriendsArray = filteredFriendsArray.filter({$0 != self.textField.text})
             taggedFriends.updateValue(selected.values.first!!, forKey: selected.keys.first!)
             selected.removeAll(keepCapacity: true)
+        }
+        if let index = selectedIndex{
+            if let selectedCell = autoCompleteTableView.cellForRowAtIndexPath(index) {
+                let fontsize = selectedCell.textLabel!.font.pointSize
+                selectedCell.textLabel?.font = UIFont.systemFontOfSize(defaultFontsize)
+            }
         }
         autoCompleteArray.removeAll(keepCapacity: false)
         autoCompleteTableView.reloadData()
@@ -94,6 +102,7 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
         } else
         {
             cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: autoCompleteRowIdentifier)
+            defaultFontsize = cell?.textLabel?.font.pointSize
         }
         cell?.backgroundColor = UIColor.clearColor()
         cell?.selectionStyle = UITableViewCellSelectionStyle.None
@@ -107,14 +116,13 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let selectedCell : UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
         if let name = selectedCell.textLabel!.text {
-//            selectedCell.textLabel?.textColor = view.tintColor
-            let fontsize = selectedCell.textLabel!.font.pointSize
-            selectedCell.textLabel?.font = UIFont.boldSystemFontOfSize(fontsize + 3)
+            selectedCell.textLabel?.font = UIFont.boldSystemFontOfSize(defaultFontsize)
             selectedCell.backgroundColor = UIColor.clearColor()
             selectedCell.layer.backgroundColor = UIColor.clearColor().CGColor
             textField.text = name
             selected.removeAll(keepCapacity: true)
             selected.updateValue(selectedCell.imageView?.image, forKey: name)
+            selectedIndex = indexPath
         }
     }
     
@@ -122,8 +130,7 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
         let selectedCell : UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
         if let name = selectedCell.textLabel!.text {
             selectedCell.textLabel?.textColor = UIColor.blackColor()
-            let fontsize = selectedCell.textLabel!.font.pointSize
-            selectedCell.textLabel?.font = UIFont.systemFontOfSize(fontsize - 3)
+            selectedCell.textLabel?.font = UIFont.systemFontOfSize(defaultFontsize)
         }
     }
     
@@ -135,16 +142,8 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
-        
         autoCompleteTableView.backgroundColor = UIColor.clearColor()
         autoCompleteTableView.contentInset.left = -15
-        autoCompleteTableView.layoutMargins = UIEdgeInsetsZero
         autoCompleteTableView.separatorInset = UIEdgeInsetsZero
         autoCompleteTableView.separatorColor = UIColor.blackColor()
         
@@ -188,6 +187,8 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
         self.view.addSubview(autoCompleteTableView)
         
         textField.delegate = self
+        textField.layer.cornerRadius = 5
+        textField.layer.borderWidth = 1.0
     }
     
     func graphForPicture(){
@@ -213,10 +214,15 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
             taggedFriends = parentVC.taggedFriends
             finishedTaggingButton.hidden = true
         } else {
-            let stackSize = navigationController?.viewControllers.count
-            if let parentVC = navigationController?.viewControllers[stackSize!-2] as? BarViewController {
-                taggedFriends = parentVC.taggedFriends
+            if let data = defaults.objectForKey("taggedFriends") as? NSData {
+                taggedFriends = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Dictionary<String, UIImage>
+            } else {
+                taggedFriends = Dictionary<String, UIImage>()
             }
+//            let stackSize = navigationController?.viewControllers.count
+//            if let parentVC = navigationController?.viewControllers[stackSize!-2] as? BarViewController {
+//                taggedFriends = parentVC.taggedFriends
+//            }
         }
     }
     
@@ -224,10 +230,12 @@ class FriendsViewController: UIViewController, UITextFieldDelegate, UITableViewD
         if let parentVC = parentViewController as? TabBarController {
             parentVC.taggedFriends = taggedFriends
         } else {
-            let stackSize = navigationController?.viewControllers.count
-            if let parentVC = navigationController?.viewControllers[stackSize!-2] as? BarViewController {
-                parentVC.taggedFriends = taggedFriends
-            }
+//            let stackSize = navigationController?.viewControllers.count
+//            if let parentVC = navigationController?.viewControllers[stackSize!-2] as? BarViewController {
+//                parentVC.taggedFriends = taggedFriends
+//            }
+            let data = NSKeyedArchiver.archivedDataWithRootObject(taggedFriends)
+            defaults.setValue(data, forKey: "taggedFriends")
         }
     }
 

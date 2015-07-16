@@ -130,12 +130,14 @@ class MessagesViewController: JSQMessagesViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        
+//        inputToolbar.bounds = CGRectInset(inputToolbar.frame, -10, -10)
         
         chatroom = (self.city + "-" + self.locationName).stringByReplacingOccurrencesOfString(" ", withString: "-")
         
 //        performSegueWithIdentifier("groupMessageSegue", sender: self)
  //       println("segueing")
-
+        
         inputToolbar.contentView.leftBarButtonItem = nil
         automaticallyScrollsToMostRecentMessage = true
         navigationItem.title = "\(locationName)"

@@ -9,7 +9,7 @@
 import UIKit
 import FBSDKLoginKit
 
-class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class HomeViewController: CustomKoynViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
     @IBOutlet weak var groupText: UITextField!
     @IBOutlet weak var locationSegment: UISegmentedControl!
@@ -81,16 +81,8 @@ class HomeViewController: UIViewController, UIPickerViewDataSource, UIPickerView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        println("starting corner radius: \(groupText.layer.cornerRadius)")
         groupText.layer.cornerRadius = 5
         groupText.layer.borderWidth = 1.0
-        
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
 
         // Do any additional setup after loading the view.
         groupPickerView.delegate = self

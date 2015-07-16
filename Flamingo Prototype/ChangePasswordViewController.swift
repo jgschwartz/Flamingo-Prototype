@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ChangePasswordViewController: UIViewController, UITextFieldDelegate {
+class ChangePasswordViewController: CustomKoynViewController, UITextFieldDelegate {
 
     @IBOutlet weak var oldPassText: UITextField!
     @IBOutlet weak var newPassText: UITextField!
@@ -165,20 +165,17 @@ class ChangePasswordViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
         
         self.title = "Change Password"
         
-        oldPassText.delegate = self
-        newPassText.delegate = self
-        confirmPassText.delegate = self
+        let textFieldArray = [oldPassText, newPassText, confirmPassText]
+        
+        for field in textFieldArray {
+            field.delegate = self
+            field.layer.cornerRadius = 5
+            field.layer.borderWidth = 1.0
+        }
+
     }
 
     override func didReceiveMemoryWarning() {

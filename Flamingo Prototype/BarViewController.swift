@@ -9,7 +9,7 @@
 import UIKit
 import GoogleMaps
 
-class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class BarViewController: CustomKoynViewController, UITableViewDelegate, UITableViewDataSource {
 
     var type: String!
     var city: String!
@@ -20,7 +20,7 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
     var price: Int!
     var lat: CLLocationDegrees!
     var long: CLLocationDegrees!
-    var taggedFriends = Dictionary<String, UIImage>()
+    var taggedFriends: Dictionary<String, UIImage>!
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var infoLabel: UILabel!
     @IBOutlet weak var infoText: UITextView!
@@ -91,28 +91,31 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
     }
     
     func chooseALocation(allLocations: NSArray) -> NSDictionary{
-        //        var possibles = [NSDictionary]()
-        //        var featured = [NSDictionary]()
-        //        for loc in allLocations {
-        //            let locCity = loc["city"] as! String
-        //            let ageMin = loc["ageMin"] as! Int
-        //            let ageMax = loc["ageMax"] as! Int
-        //              let priceRange = loc["price"]
-        //            // TODO: make sure all ages are ints
-        //            // TODO: add groupsize, price
-        //            if(locCity == city && ageMin < age && ageMax > age && priceRange < price) {
-        //                possibles.append(loc as! NSDictionary)
-        //                if(loc["featured"] as! String == "true") {
-        //                    featured.append(loc as! NSDictionary)
-        //                }
-        //            }
-        //        }
-        //        if(featured.count > 0){
-        //            return featured[0]
-        //        } else {
-        //            return possibles[0]
-        //        }
-        return allLocations[1] as! NSDictionary
+        var possibles = [NSDictionary]()
+        var featured = [NSDictionary]()
+        for loc in allLocations {
+            let locCity = loc["city"] as! String
+            let ageMin = loc["ageMin"] as! Int
+            let ageMax = loc["ageMax"] as! Int
+            let priceRange = loc["price"] as! Int
+            // TODO: make sure all ages are ints
+            // TODO: add groupsize, price
+            if(locCity == city && ageMin < age && ageMax > age && priceRange < price) {
+                possibles.append(loc as! NSDictionary)
+                if let featureFeature = loc["featured"] as? String {
+                    if featureFeature == "true" {
+                        featured.append(loc as! NSDictionary)
+                    }
+                }
+            }
+        }
+        if(featured.count > 0){
+            return featured[0]
+        } else if possibles.count > 0 {
+            return possibles[0]
+        } else {
+            return allLocations[0] as! NSDictionary
+        }
     }
     
     func getReviews(id: String, completion: (result: [NSDictionary])->Void) -> Void{
@@ -130,17 +133,31 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
                 allReviews = json as! NSArray
                 println("allReviews: \(allReviews.count)")
                 var index = allReviews.count - 1
+                let revEnum = allReviews.reverseObjectEnumerator()
                 var fetched = 0
                 var single = NSDictionary()
                 // get only reviews with content, but no more than 5
-                while index > -1 && fetched < 5 {
-                    single = allReviews[index] as! NSDictionary
-                    let rbool = (single.valueForKey("title") as! String) != ""
-                    if rbool {
-                        review.append(single)
-                        fetched++
+                var sumRatings = 0.0
+                for i in 0..<allReviews.count {
+                    single = revEnum.nextObject() as! NSDictionary
+                    let rating = single.valueForKey("rating") as! Int
+                    sumRatings += Double(rating)
+                    
+                    if fetched < 5 {
+                        let rbool = (single.valueForKey("title") as! String) != ""
+                        if rbool {
+                            review.append(single)
+                            fetched++
+                        }
                     }
                     index--
+                }
+                println("RATINGS TOTAL : \(sumRatings)")
+                println("REVIEWS COUNT: \(allReviews.count)")
+                let rating: Int = Int(round(sumRatings / Double(allReviews.count)))
+                println(rating)
+                NSOperationQueue.mainQueue().addOperationWithBlock{
+                    self.totalRating.image = UIImage(named: "Trans Star Dice \(rating)")
                 }
                 completion(result: review)
             } else {
@@ -153,8 +170,6 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        println("TAGGED FRIENDS IS \(taggedFriends.count)")
         
         var tabbar = false
         var tabItems = [UITabBarItem]()
@@ -174,14 +189,6 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
             }
         }
         
-        
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
-        
         totalRating.layer.cornerRadius = 5
         totalRating.layer.borderColor = UIColor.blackColor().CGColor
         totalRating.layer.borderWidth = 1.0
@@ -194,15 +201,9 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
         reviewTableView.hidden = true
         goingButton.hidden = true
         
-//        goingButton.layer.cornerRadius = 5
-//        goingButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-//        goingButton.layer.borderColor = UIColor.blackColor().CGColor
-//        goingButton.layer.borderWidth = 1.0
-//        goingButton.layer.backgroundColor = UIColor.lightGrayColor().CGColor
-//        goingButton.layer.shadowColor = UIColor.blackColor().CGColor
-//        goingButton.layer.shadowOffset = CGSize(width: 5, height: 5)
-//        goingButton.layer.shadowOpacity = 1
-//        goingButton.layer.shadowRadius = 10
+        if NSClassFromString("NSOperatingSystemVersion") == nil {
+            taggedFriendsButton.contentEdgeInsets.right = 10
+        }
         
         reviewTableView.tintColor = view.tintColor
         reviewTableView.contentInset.left = -15
@@ -216,6 +217,9 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
         activityIndicator.center = self.view.center
         activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
         self.view.addSubview(activityIndicator)
+        
+        lat = 50
+        long = 50
         
         activityIndicator.startAnimating()
         getAllLocations({
@@ -253,6 +257,10 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
                         }
                     })
                     
+                    if let info = result["information"] as? String {
+                        self.infoText.text = info
+                    }
+                    
                     // Set text for bar result
                     println("We're going to \(self.locationName)!")
                     self.barHeader.text = self.locationName
@@ -269,6 +277,14 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
                         for item in tabItems {
                             item.enabled = true
                         }
+                        var constraint = NSLayoutConstraint(item: self.goingButton, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: 0)
+                        self.view.addConstraint(constraint)
+                        constraint = NSLayoutConstraint(item: self.goingButton, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: self.bottomLayoutGuide, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 0)
+                        self.view.addConstraint(constraint)
+//                        constraint = NSLayoutConstraint(item: self.reviewTableView, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: self.bottomLayoutGuide, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 10)
+//                        self.view.addConstraint(constraint)
+//                        constraint = NSLayoutConstraint(item: self.infoText, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: self.bottomLayoutGuide, attribute: NSLayoutAttribute.Bottom, multiplier: 1.0, constant: 10)
+//                        self.view.addConstraint(constraint)
                     } else {
                         self.goingButton.hidden = false
                     }
@@ -281,6 +297,8 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
         navigationController?.navigationItem.title = locationName
         navigationItem.title = locationName
         title = locationName
+        
+        infoText.scrollRangeToVisible(NSMakeRange(0, 0))
         
         // Set link to profile page if user is logged in
         if let user = defaults.stringForKey("username") {
@@ -341,6 +359,12 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
     override func viewWillAppear(animated: Bool) {
         if parentVC != nil {
             taggedFriends = parentVC.taggedFriends
+        } else {
+            if let data = defaults.objectForKey("taggedFriends") as? NSData {
+                taggedFriends = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Dictionary<String, UIImage>
+            } else {
+                taggedFriends = Dictionary<String, UIImage>()
+            }
         }
         if taggedFriends.count > 0 {
             let count = taggedFriends.count
@@ -376,6 +400,10 @@ class BarViewController: UIViewController, UITableViewDelegate, UITableViewDataS
             friendsVC.type = type
             friendsVC.age = age
             friendsVC.price = price
+            
+            let data = NSKeyedArchiver.archivedDataWithRootObject(taggedFriends)
+            defaults.setValue(data, forKey: "taggedFriends")
+            
         } else if segue.identifier == "mapSegue" {
             let mapVC = segue.destinationViewController as! MapViewController
             mapVC.city = city

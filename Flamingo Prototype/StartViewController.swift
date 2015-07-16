@@ -8,9 +8,9 @@
 
 import UIKit
 
-class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
+class StartViewController: CustomKoynViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
     
-    let ageArray = [Int](18...100)
+    let ageArray = [Int](13...100)
     var agePickerView: UIPickerView = UIPickerView()
 
     let cityArray = ["Basel"]
@@ -26,6 +26,9 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     @IBOutlet weak var groupText: UITextField!
     @IBOutlet weak var locationSegment: UISegmentedControl!
     @IBOutlet weak var priceSegment: UISegmentedControl!
+    @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var signupButton: UIButton!
+    @IBOutlet weak var goButton: UIButton!
     
     @IBAction func go(sender: AnyObject) {
         println(locationSegment.highlighted)
@@ -120,13 +123,32 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Set background to gradient image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        UIImage(named: bgImageName)?.drawInRect(self.view.bounds)
-        var image: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.view.backgroundColor = UIColor(patternImage: image)
+        let buttonArray = [loginButton, signupButton, goButton]
+        
+//        for button in buttonArray {
+////            button.backgroundColor = UIColor(red: 230/255, green: 210/255, blue: 170/255, alpha: 1);            button.setTitleColor(UIColor(red: 115/255, green: 0/255, blue: 10/255, alpha: 1), forState: UIControlState.Normal)
+//            button.layer.cornerRadius = 5
+//            button.layer.borderColor = UIColor(red: 70/255, green: 70/255, blue: 70/255, alpha: 1).CGColor
+//            button.layer.borderWidth = 1.0
+//            button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+////            button.layer.shadowColor = UIColor(red: 70/255, green: 70/255, blue: 70/255, alpha: 1).CGColor
+////            button.layer.shadowOffset = CGSize(width: 5, height: 5)
+////            button.layer.shadowOpacity = 1
+////            button.layer.shadowRadius = 5
+//            button.sizeToFit()
+//        }
+        
+        //        goingButton.layer.cornerRadius = 5
+        //        goingButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        //        goingButton.layer.borderColor = UIColor.blackColor().CGColor
+        //        goingButton.layer.borderWidth = 1.0
+        //        goingButton.layer.backgroundColor = UIColor.lightGrayColor().CGColor
+        //        goingButton.layer.shadowColor = UIColor.blackColor().CGColor
+        //        goingButton.layer.shadowOffset = CGSize(width: 5, height: 5)
+        //        goingButton.layer.shadowOpacity = 1
+        //        goingButton.layer.shadowRadius = 10
 
+        
         /* Set up the picker views as input on the text fields */
         
         agePickerView.delegate = self
@@ -134,7 +156,7 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         agePickerView.tag = 0
         ageText.inputView = agePickerView
         groupPickerView.backgroundColor = UIColor.clearColor()
-        agePickerView.selectRow(7, inComponent: 0, animated: false)
+        agePickerView.selectRow(12, inComponent: 0, animated: false)
 
         cityPickerView.delegate = self
         cityPickerView.dataSource = self
@@ -149,6 +171,13 @@ class StartViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         groupText.inputView = groupPickerView
         groupPickerView.backgroundColor = UIColor.clearColor()
         groupPickerView.selectRow(4, inComponent: 0, animated: false)
+        
+        ageText.layer.cornerRadius = 5
+        cityText.layer.cornerRadius = 5
+        groupText.layer.cornerRadius = 5
+        ageText.layer.borderWidth = 1.0
+        cityText.layer.borderWidth = 1.0
+        groupText.layer.borderWidth = 1.0
     }
     
     override func viewWillAppear(animated: Bool) {

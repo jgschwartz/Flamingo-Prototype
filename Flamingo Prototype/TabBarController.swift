@@ -30,6 +30,10 @@ class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if NSClassFromString("NSOperatingSystemVersion") == nil {
+            tabBar.translucent = false
+//            tabBar.alpha = 0.5
+        }
         let locItem = tabBar.items?.first as! UITabBarItem
         locItem.title = type.capitalizedString
         

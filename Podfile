@@ -1,17 +1,17 @@
 # Uncomment this line to define a global platform for your project
 source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '8.3'
+platform :ios, ‘7.1’
 pod 'GoogleMaps'
 pod 'Firebase', '>= 2.3.1'
 
-workspace 'FlamingoWorkspace'
-#xcodeproj '../Flamingo Prototype.xcodeproj'
+workspace ‘KoynWorkspace'
+#xcodeproj ‘../Koyn.xcodeproj'
 
-target 'Flamingo Prototype' do
+target ‘Koyn’ do
 
 end
 
-target 'Flamingo PrototypeTests' do
+target ‘KoynTests' do
 
 end
 
